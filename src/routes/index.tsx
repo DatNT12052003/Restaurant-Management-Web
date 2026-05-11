@@ -4,11 +4,21 @@ import AuthGuard from "./guards/AuthGuard";
 import RoleGuard from "./guards/RoleGuard";
 import { adminRoutes } from "./admin.route";
 import AdminLayout from "@/layouts/AdminLayout";
+import ForgotPassword from "@/pages/public/ForgotPassword";
+import ConfirmOTP from "@/pages/public/ConfirmOTP";
 
 export const router = createBrowserRouter([
     {
         path: "/login",
         element: <Login />,
+    },
+    {
+        path: "/forgot-password",
+        element: <ForgotPassword />,
+    },
+    {
+        path: "/confirm-otp",
+        element: <ConfirmOTP />,
     },
     {
         element: <AuthGuard />,

@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from "./hooks";
 import { useEffect, useRef } from "react";
 import { getMeThunk, refreshTokenThunk } from "./store/auth/authThunk";
 import { setInitialized } from "./store/auth/authSlice";
+import { Toaster } from "sonner";
 
 const App = () => {
     const dispatch = useAppDispatch();
@@ -33,7 +34,12 @@ const App = () => {
     if (!isInitialized) {
         return <div>Loading...</div>;
     }
-    return <RouterProvider router={router} />;
+    return (
+        <>
+            <Toaster position="top-right" richColors />
+            <RouterProvider router={router} />
+        </>
+    );
 };
 
 export default App;

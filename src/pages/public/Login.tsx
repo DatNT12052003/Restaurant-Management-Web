@@ -135,6 +135,7 @@ const Login = () => {
                             <button
                                 type="button"
                                 className="text-sm font-medium text-amber-700 transition-all hover:underline hover:underline-offset-4 dark:text-amber-400"
+                                onClick={() => navigate("/forgot-password")}
                             >
                                 {t("auth:login.forgot_password")}
                             </button>
