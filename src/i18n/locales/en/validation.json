@@ -1,0 +1,8 @@
+{
+    "login": {
+        "username_required": "Username is required",
+        "username_min": "Username must be at least 5 characters",
+        "password_required": "Password is required",
+        "password_min": "Password must be at least 6 characters"
+    }
+}
