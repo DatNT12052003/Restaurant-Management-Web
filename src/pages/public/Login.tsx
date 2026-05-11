@@ -1,4 +1,4 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Lock, User, LogIn, UtensilsCrossed } from "lucide-react";
@@ -12,11 +12,15 @@ import loginBg from "@/assets/images/login-bg.png";
 import { LanguageSwitcher } from "@/components/common/LanguageSwitcher";
 import { useTranslation } from "react-i18next";
 import { getLoginSchema, type LoginFormValues } from "@/validations/schemas/login";
+import { useAppDispatch } from "@/hooks";
+import { getMeThunk, loginThunk } from "@/store/auth/authThunk";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
     const { t } = useTranslation();
-    const [showPassword, setShowPassword] = React.useState(false);
-
+    const navigate = useNavigate();
+    const dispatch = useAppDispatch();
+    const [showPassword, setShowPassword] = useState(false);
     const {
         register,
         handleSubmit,
@@ -29,10 +33,18 @@ const Login = () => {
         },
     });
 
-    const onSubmit = async (data: LoginFormValues) => {
+    const onSubmit = async (credentials: LoginFormValues) => {
         try {
-            console.log("Login data:", data);
-            // TODO: call API login with branch context
+            await dispatch(loginThunk(credentials)).unwrap();
+            const user = await dispatch(getMeThunk()).unwrap();
+            const roles = user.roles || [];
+            if (roles.includes("admin")) {
+                navigate("/admin/dashboard");
+            } else if (roles.includes("employee")) {
+                navigate("/employee/tasks");
+            } else {
+                navigate("/guest/welcome");
+            }
         } catch (error) {
             console.error(error);
         }
