@@ -36,6 +36,10 @@ const authSlice = createSlice({
                 state.username = action.payload.username;
                 state.access_token = action.payload.access_token;
             })
+            .addCase(loginThunk.rejected, (state: IAuthState, action: { error: { message: string } }) => {
+                state.loading = false;
+                state.error = action.error.message || "An error occurred";
+            })
             .addCase(getMeThunk.fulfilled, (state: IAuthState, action: { payload: IMe }) => {
                 state.loading = false;
                 state.isAuthenticated = true;
@@ -45,7 +49,7 @@ const authSlice = createSlice({
                 state.account_id = action.payload.account_id || state.account_id;
                 state.username = action.payload.username || state.username;
             })
-            .addCase(loginThunk.rejected, (state: IAuthState, action: { error: { message: string } }) => {
+            .addCase(getMeThunk.rejected, (state: IAuthState, action: { error: { message: string } }) => {
                 state.loading = false;
                 state.error = action.error.message || "An error occurred";
             })
