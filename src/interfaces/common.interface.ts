@@ -5,3 +5,9 @@ export interface IResponse<T> {
     errors?: any;
     data?: T;
 }
+
+export interface ISidebarMenuItem {
+    path: string;
+    label: string;
+    icon: React.ComponentType<{ className?: string }>;
+}
