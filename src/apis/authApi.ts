@@ -1,7 +1,17 @@
 import type { IResponse } from "@/interfaces";
 import api from "./axios";
 
-import type { ILogin, ILoginResponse, IMe, IRefreshTokenResponse } from "@/interfaces/auth.interface";
+import type {
+    IConfirmOTP,
+    IConfirmOTPResponse,
+    IForgotPassword,
+    IForgotPasswordResponse,
+    ILogin,
+    ILoginResponse,
+    IMe,
+    IRefreshTokenResponse,
+    IResetPassword,
+} from "@/interfaces/auth.interface";
 
 export const login = async (credentials: ILogin): Promise<IResponse<ILoginResponse>> => {
     const response = await api.post<IResponse<ILoginResponse>>("/auth/login", credentials);
@@ -33,4 +43,28 @@ export const logout = async (): Promise<void> => {
 
 export const logoutAll = async (): Promise<void> => {
     await api.post("/auth/logout-all");
+};
+
+export const forgotPassword = async (credentials: IForgotPassword): Promise<IResponse<IForgotPasswordResponse>> => {
+    const response = await api.post<IResponse<IForgotPasswordResponse>>("/auth/forgot-password", credentials);
+    if (!response.data.success) {
+        throw new Error(response.data.message);
+    }
+    return response.data;
+};
+
+export const confirmOTP = async (credentials: IConfirmOTP): Promise<IResponse<IConfirmOTPResponse>> => {
+    const response = await api.post<IResponse<IConfirmOTPResponse>>("/auth/confirm-otp", credentials);
+    if (!response.data.success) {
+        throw new Error(response.data.message);
+    }
+    return response.data;
+};
+
+export const resetPassword = async (data: IResetPassword): Promise<IResponse<null>> => {
+    const response = await api.post<IResponse<null>>("/auth/reset-password", data);
+    if (!response.data.success) {
+        throw new Error(response.data.message);
+    }
+    return response.data;
 };

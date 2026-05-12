@@ -15,6 +15,7 @@ import { getLoginSchema, type LoginFormValues } from "@/validations/schemas/logi
 import { useAppDispatch } from "@/hooks";
 import { getMeThunk, loginThunk } from "@/store/auth/authThunk";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const Login = () => {
     const { t } = useTranslation();
@@ -37,7 +38,7 @@ const Login = () => {
         try {
             await dispatch(loginThunk(credentials)).unwrap();
             const user = await dispatch(getMeThunk()).unwrap();
-            const roles = user.roles || [];
+            const roles = user.data?.roles || [];
             if (roles.includes("admin")) {
                 navigate("/admin/dashboard");
             } else if (roles.includes("employee")) {
@@ -45,8 +46,9 @@ const Login = () => {
             } else {
                 navigate("/guest/welcome");
             }
+            toast.success("Đăng nhập thành công!");
         } catch (error) {
-            console.error(error);
+            toast.error("Có lỗi xảy ra khi đăng nhập. Vui lòng thử lại.");
         }
     };
 

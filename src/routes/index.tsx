@@ -6,6 +6,7 @@ import { adminRoutes } from "./admin.route";
 import AdminLayout from "@/layouts/AdminLayout";
 import ForgotPassword from "@/pages/public/ForgotPassword";
 import ConfirmOTP from "@/pages/public/ConfirmOTP";
+import ResetPassword from "@/pages/public/ResetPassword";
 
 export const router = createBrowserRouter([
     {
@@ -19,6 +20,10 @@ export const router = createBrowserRouter([
     {
         path: "/confirm-otp",
         element: <ConfirmOTP />,
+    },
+    {
+        path: "/reset-password",
+        element: <ResetPassword />,
     },
     {
         element: <AuthGuard />,

@@ -1,0 +1,1 @@
+export type OTPTypeEnum = "RESET_PASSWORD" | "VERIFY_EMAIL" | "LOGIN" | "CHANGE_EMAIL" | "TWO_FA";

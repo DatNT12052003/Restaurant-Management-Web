@@ -11,27 +11,37 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
+import { useTranslation } from "react-i18next";
+import { useAppDispatch } from "@/hooks";
+import { confirmOTPThunk } from "@/store/auth/authThunk";
 
-// Schema validation for OTP (6 digits)
 const otpSchema = z.object({
-    otp: z.string().length(6, "Mã OTP phải có 6 chữ số").regex(/^\d+$/, "Mã OTP chỉ được chứa chữ số"),
+    code: z
+        .string()
+        .refine((val) => val.length === 6 || val.length === 0, {
+            message: "Mã OTP phải có 6 chữ số",
+        })
+        .refine((val) => val.length === 0 || /^\d+$/.test(val), {
+            message: "Mã OTP chỉ được chứa chữ số",
+        }),
 });
 
 type OTPFormValues = z.infer<typeof otpSchema>;
 
-export default function ConfirmOTP() {
+const ConfirmOTP = () => {
+    const { t } = useTranslation();
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
+
     const location = useLocation();
-    // Lấy email từ state (từ trang ForgotPassword)
-    const email = (location.state as { email?: string })?.email || "user@example.com";
+    const { account_id, email } = location.state || {};
 
     const [isLoading, setIsLoading] = useState(false);
     const [isResending, setIsResending] = useState(false);
-    const [countdown, setCountdown] = useState(60);
+    const [countdown, setCountdown] = useState(300);
     const [canResend, setCanResend] = useState(false);
     const [otpValue, setOtpValue] = useState("");
 
-    // react-hook-form để hiển thị lỗi validation
     const {
         handleSubmit,
         setError,
@@ -39,10 +49,9 @@ export default function ConfirmOTP() {
         formState: { errors },
     } = useForm<OTPFormValues>({
         resolver: zodResolver(otpSchema),
-        defaultValues: { otp: "" },
+        defaultValues: { code: "" },
     });
 
-    // Timer đếm ngược
     useEffect(() => {
         if (countdown > 0 && !canResend) {
             const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
@@ -55,28 +64,33 @@ export default function ConfirmOTP() {
     // Xử lý thay đổi OTP và xóa lỗi
     const handleOtpChange = (value: string) => {
         setOtpValue(value);
-        if (errors.otp) clearErrors("otp");
+        if (errors.code) clearErrors("code");
     };
 
-    // Xác thực OTP
     const handleVerifyOTP = async () => {
-        // Validate thủ công bằng schema
-        console.log("Verifying OTP:", otpValue, "for email:", email);
-        const result = otpSchema.safeParse({ otp: otpValue });
-
-        if (!result.success) {
-            setError("otp", { message: result.error.message });
+        if (otpValue.length !== 6) {
+            setError("code", { message: "Vui lòng nhập đủ 6 chữ số" });
             return;
         }
 
-        setIsLoading(true);
-        // Simulate API call xác thực OTP
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        console.log("Verifying OTP:", otpValue, "for email:", email);
-        // Giả sử thành công
-        toast.success("Xác thực thành công! Vui lòng tạo mật khẩu mới.");
-        navigate("/reset-password", { state: { email, otp: otpValue } });
-        setIsLoading(false);
+        const result = otpSchema.safeParse({ code: otpValue });
+        if (!result.success) {
+            setError("code", { message: result.error.message });
+            return;
+        }
+
+        try {
+            setIsLoading(true);
+            const response = await dispatch(
+                confirmOTPThunk({ account_id, code: otpValue, type: "RESET_PASSWORD" }),
+            ).unwrap();
+            toast.success("Xác thực thành công! Vui lòng tạo mật khẩu mới.");
+            navigate("/reset-password", { state: { reset_password_token: response.data?.reset_password_token } });
+        } catch (error) {
+            toast.error("Xác thực thất bại. Vui lòng thử lại.");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     // Gửi lại OTP
@@ -119,7 +133,7 @@ export default function ConfirmOTP() {
                 <CardContent className="px-6 pb-8 pt-0">
                     <form onSubmit={handleSubmit(handleVerifyOTP)} className="space-y-5">
                         <div className="space-y-3">
-                            <Label htmlFor="otp" className="text-sm font-medium">
+                            <Label htmlFor="code" className="text-sm font-medium">
                                 Mã OTP
                             </Label>
                             <div className="flex justify-center">
@@ -140,7 +154,7 @@ export default function ConfirmOTP() {
                                     </InputOTPGroup>
                                 </InputOTP>
                             </div>
-                            {errors.otp && <p className="text-center text-xs text-red-500">{errors.otp.message}</p>}
+                            {errors.code && <p className="text-center text-xs text-red-500">{errors.code.message}</p>}
                         </div>
 
                         <div className="flex items-center justify-between text-sm">
@@ -197,4 +211,6 @@ export default function ConfirmOTP() {
             </Card>
         </div>
     );
-}
+};
+
+export default ConfirmOTP;
