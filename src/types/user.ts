@@ -1,3 +1,3 @@
-export type GenderEnum = "MALE" | "FEMALE" | "OTHER";
+export type GenderEnum = "male" | "female" | "other";
 
-export type UserStatusEnum = "ACTIVE" | "INACTIVE";
+export type UserStatusEnum = "active" | "inactive";

@@ -4,5 +4,18 @@
         "username_min": "Tên đăng nhập phải có ít nhất 5 ký tự",
         "password_required": "Mật khẩu là bắt buộc",
         "password_min": "Mật khẩu phải có ít nhất 6 ký tự"
+    },
+    "forgot_password": {
+        "email_invalid": "Email không hợp lệ"
+    },
+    "confirm_otp": {
+        "code_required": "Mã OTP là bắt buộc",
+        "code_length": "Mã OTP phải có 6 chữ số",
+        "code_digits": "Mã OTP chỉ được chứa chữ số"
+    },
+    "reset_password": {
+        "new_password_min": "Mật khẩu mới phải có ít nhất 6 ký tự",
+        "confirm_password_min": "Xác nhận mật khẩu phải có ít nhất 6 ký tự",
+        "confirm_password_match": "Xác nhận mật khẩu phải khớp với mật khẩu mới"
     }
 }

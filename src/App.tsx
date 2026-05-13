@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from "./hooks";
 import { useEffect, useRef } from "react";
 import { getMeThunk, refreshTokenThunk } from "./store/auth/authThunk";
 import { setInitialized } from "./store/auth/authSlice";
+import { Toaster } from "sonner";
 
 const App = () => {
     const dispatch = useAppDispatch();
@@ -21,7 +22,6 @@ const App = () => {
                 await dispatch(refreshTokenThunk()).unwrap();
                 await dispatch(getMeThunk()).unwrap();
             } catch (error) {
-                console.log("Không có phiên đăng nhập cũ");
             } finally {
                 dispatch(setInitialized(true));
             }
@@ -31,9 +31,14 @@ const App = () => {
     }, [dispatch]);
 
     if (!isInitialized) {
-        return <div>Loading...</div>;
+        return;
     }
-    return <RouterProvider router={router} />;
+    return (
+        <>
+            <Toaster position="bottom-right" richColors />
+            <RouterProvider router={router} />
+        </>
+    );
 };
 
 export default App;

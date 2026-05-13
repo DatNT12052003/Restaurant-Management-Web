@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Lock, User, LogIn, UtensilsCrossed } from "lucide-react";
@@ -11,10 +11,11 @@ import { Label } from "@/components/ui/label";
 import loginBg from "@/assets/images/login-bg.png";
 import { LanguageSwitcher } from "@/components/common/LanguageSwitcher";
 import { useTranslation } from "react-i18next";
-import { getLoginSchema, type LoginFormValues } from "@/validations/schemas/login";
+import { getLoginSchema, type LoginFormValues } from "@/validations/schemas";
 import { useAppDispatch } from "@/hooks";
 import { getMeThunk, loginThunk } from "@/store/auth/authThunk";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const Login = () => {
     const { t } = useTranslation();
@@ -35,9 +36,9 @@ const Login = () => {
 
     const onSubmit = async (credentials: LoginFormValues) => {
         try {
-            await dispatch(loginThunk(credentials)).unwrap();
+            const result = await dispatch(loginThunk(credentials)).unwrap();
             const user = await dispatch(getMeThunk()).unwrap();
-            const roles = user.roles || [];
+            const roles = user.data?.roles || [];
             if (roles.includes("admin")) {
                 navigate("/admin/dashboard");
             } else if (roles.includes("employee")) {
@@ -45,8 +46,9 @@ const Login = () => {
             } else {
                 navigate("/guest/welcome");
             }
-        } catch (error) {
-            console.error(error);
+            toast.success(result.message);
+        } catch (error: any) {
+            toast.error(error.message);
         }
     };
 
@@ -56,7 +58,6 @@ const Login = () => {
                 <LanguageSwitcher />
             </div>
 
-            {/* Background pattern & overlay */}
             <div className="absolute inset-0 z-0 opacity-10">
                 <div
                     className="absolute inset-0 bg-cover bg-center mix-blend-overlay"
@@ -134,7 +135,8 @@ const Login = () => {
                             </label>
                             <button
                                 type="button"
-                                className="text-sm font-medium text-amber-700 transition-all hover:underline hover:underline-offset-4 dark:text-amber-400"
+                                className="text-sm font-medium text-amber-700 transition-all hover:underline hover:underline-offset-4 dark:text-amber-400 hover:cursor-pointer"
+                                onClick={() => navigate("/forgot-password", { state: { from: "/login" } })}
                             >
                                 {t("auth:login.forgot_password")}
                             </button>
@@ -142,7 +144,7 @@ const Login = () => {
 
                         <Button
                             type="submit"
-                            className="h-11 w-full bg-gradient-to-r from-amber-700 to-orange-700 font-semibold shadow-md transition-all hover:from-amber-800 hover:to-orange-800 hover:shadow-lg active:scale-[0.98] dark:from-amber-600 dark:to-orange-600"
+                            className="h-11 w-full bg-gradient-to-r from-amber-700 to-orange-700 font-semibold shadow-md transition-all hover:from-amber-800 hover:to-orange-800 hover:shadow-lg active:scale-[0.98] dark:from-amber-600 dark:to-orange-600 hover:cursor-pointer"
                             disabled={isSubmitting}
                         >
                             {isSubmitting ? (
