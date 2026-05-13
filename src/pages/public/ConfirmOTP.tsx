@@ -52,7 +52,7 @@ const ConfirmOTP = () => {
         try {
             setIsLoading(true);
             const result = await dispatch(
-                confirmOTPThunk({ account_id, code: data.code, type: "RESET_PASSWORD" }),
+                confirmOTPThunk({ account_id, code: data.code, type: "reset_password" }),
             ).unwrap();
             toast.success(result.message);
             navigate("/reset-password", {
@@ -68,7 +68,7 @@ const ConfirmOTP = () => {
     const handleResendOTP = async () => {
         try {
             setIsResending(true);
-            const result = await dispatch(forgotPasswordThunk({ email, type: "RESET_PASSWORD" })).unwrap();
+            const result = await dispatch(forgotPasswordThunk({ email, type: "reset_password" })).unwrap();
             toast.success(result.message);
             setCountdown(300);
             reset({ code: "" });

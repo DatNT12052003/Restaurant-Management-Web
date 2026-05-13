@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { toast } from "sonner";
 import { ArrowLeft, Eye, EyeOff, Lock, KeyRound } from "lucide-react";
 import loginBg from "@/assets/images/login-bg.png";
@@ -16,18 +15,6 @@ import { useTranslation } from "react-i18next";
 import { resetPasswordThunk } from "@/store/auth/authThunk";
 import { LanguageSwitcher } from "@/components/common/LanguageSwitcher";
 import { getResetPasswordSchema, type ResetPasswordFormValues } from "@/validations/schemas";
-
-// const resetPasswordSchema = z
-//     .object({
-//         newPassword: z.string().min(6, "Mật khẩu phải có ít nhất 6 ký tự"),
-//         confirmPassword: z.string().min(6, "Mật khẩu phải có ít nhất 6 ký tự"),
-//     })
-//     .refine((data) => data.newPassword === data.confirmPassword, {
-//         message: "Mật khẩu nhập lại không khớp",
-//         path: ["confirmPassword"],
-//     });
-
-// type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
 
 export const ResetPassword = () => {
     const { t } = useTranslation();

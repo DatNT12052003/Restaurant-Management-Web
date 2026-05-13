@@ -34,7 +34,7 @@ const ForgotPassword = () => {
     const onSubmit = async (data: ForgotPasswordFormValues) => {
         try {
             setIsLoading(true);
-            const result = await dispatch(forgotPasswordThunk({ email: data.email, type: "RESET_PASSWORD" })).unwrap();
+            const result = await dispatch(forgotPasswordThunk({ email: data.email, type: "reset_password" })).unwrap();
             navigate("/confirm-otp", {
                 state: { account_id: result.data?.account_id, email: data.email, from: "/forgot-password" },
             });

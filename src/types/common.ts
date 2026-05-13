@@ -1,1 +1,1 @@
-export type OTPTypeEnum = "RESET_PASSWORD" | "VERIFY_EMAIL" | "LOGIN" | "CHANGE_EMAIL" | "TWO_FA";
+export type OTPTypeEnum = "reset_password" | "verify_email" | "login" | "change_email" | "two_fa";

@@ -1,12 +1,12 @@
 export const GENDER = {
-    MALE: "MALE",
-    FEMALE: "FEMALE",
-    OTHER: "OTHER",
+    MALE: "male",
+    FEMALE: "female",
+    OTHER: "other",
 };
 
 export const USER_STATUS = {
-    ACTIVE: "ACTIVE",
-    INACTIVE: "INACTIVE",
+    ACTIVE: "active",
+    INACTIVE: "inactive",
 };
 
 export const ROLE = {

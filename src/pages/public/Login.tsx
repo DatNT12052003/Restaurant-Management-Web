@@ -58,7 +58,6 @@ const Login = () => {
                 <LanguageSwitcher />
             </div>
 
-            {/* Background pattern & overlay */}
             <div className="absolute inset-0 z-0 opacity-10">
                 <div
                     className="absolute inset-0 bg-cover bg-center mix-blend-overlay"
