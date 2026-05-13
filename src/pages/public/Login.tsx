@@ -136,7 +136,7 @@ const Login = () => {
                             </label>
                             <button
                                 type="button"
-                                className="text-sm font-medium text-amber-700 transition-all hover:underline hover:underline-offset-4 dark:text-amber-400"
+                                className="text-sm font-medium text-amber-700 transition-all hover:underline hover:underline-offset-4 dark:text-amber-400 hover:cursor-pointer"
                                 onClick={() => navigate("/forgot-password", { state: { from: "/login" } })}
                             >
                                 {t("auth:login.forgot_password")}
@@ -145,7 +145,7 @@ const Login = () => {
 
                         <Button
                             type="submit"
-                            className="h-11 w-full bg-gradient-to-r from-amber-700 to-orange-700 font-semibold shadow-md transition-all hover:from-amber-800 hover:to-orange-800 hover:shadow-lg active:scale-[0.98] dark:from-amber-600 dark:to-orange-600"
+                            className="h-11 w-full bg-gradient-to-r from-amber-700 to-orange-700 font-semibold shadow-md transition-all hover:from-amber-800 hover:to-orange-800 hover:shadow-lg active:scale-[0.98] dark:from-amber-600 dark:to-orange-600 hover:cursor-pointer"
                             disabled={isSubmitting}
                         >
                             {isSubmitting ? (

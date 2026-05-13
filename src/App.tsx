@@ -22,7 +22,6 @@ const App = () => {
                 await dispatch(refreshTokenThunk()).unwrap();
                 await dispatch(getMeThunk()).unwrap();
             } catch (error) {
-                console.log("Không có phiên đăng nhập cũ");
             } finally {
                 dispatch(setInitialized(true));
             }
@@ -32,7 +31,7 @@ const App = () => {
     }, [dispatch]);
 
     if (!isInitialized) {
-        return <div>Loading...</div>;
+        return;
     }
     return (
         <>
