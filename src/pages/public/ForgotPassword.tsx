@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { toast } from "sonner";
 import { ArrowLeft, Mail, Send } from "lucide-react";
 import loginBg from "@/assets/images/login-bg.png";
@@ -14,13 +13,8 @@ import { Label } from "@/components/ui/label";
 import { useTranslation } from "react-i18next";
 import { useAppDispatch } from "@/hooks";
 import { forgotPasswordThunk } from "@/store/auth/authThunk";
-
-// Schema validation
-const forgotPasswordSchema = z.object({
-    email: z.string().email("Vui lòng nhập email hợp lệ"),
-});
-
-type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
+import { getForgotPasswordSchema, type ForgotPasswordFormValues } from "@/validations/schemas";
+import { LanguageSwitcher } from "@/components/common/LanguageSwitcher";
 
 const ForgotPassword = () => {
     const { t } = useTranslation();
@@ -33,22 +27,20 @@ const ForgotPassword = () => {
         handleSubmit,
         formState: { errors },
     } = useForm<ForgotPasswordFormValues>({
-        resolver: zodResolver(forgotPasswordSchema),
+        resolver: zodResolver(getForgotPasswordSchema(t)),
         defaultValues: { email: "" },
     });
 
     const onSubmit = async (data: ForgotPasswordFormValues) => {
         try {
             setIsLoading(true);
-            const response = await dispatch(
-                forgotPasswordThunk({ email: data.email, type: "RESET_PASSWORD" }),
-            ).unwrap();
-            navigate("/confirm-otp", { state: { account_id: response.data?.account_id, email: data.email } });
-            toast.success("Yêu cầu đặt lại mật khẩu đã được gửi!", {
-                description: `Vui lòng kiểm tra email ${data.email}.`,
+            const result = await dispatch(forgotPasswordThunk({ email: data.email, type: "RESET_PASSWORD" })).unwrap();
+            navigate("/confirm-otp", {
+                state: { account_id: result.data?.account_id, email: data.email, from: "/forgot-password" },
             });
-        } catch (error) {
-            toast.error("Có lỗi xảy ra khi gửi yêu cầu đặt lại mật khẩu.");
+            toast.success(result.message);
+        } catch (error: any) {
+            toast.error(error.message);
         } finally {
             setIsLoading(false);
         }
@@ -56,6 +48,10 @@ const ForgotPassword = () => {
 
     return (
         <div className="relative flex min-h-screen items-center justify-center bg-gradient-to-br from-amber-50 via-orange-50 to-red-50 px-4 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+            <div className="absolute right-4 top-4 z-20">
+                <LanguageSwitcher />
+            </div>
+
             <div className="absolute inset-0 z-0 opacity-10">
                 <div
                     className="absolute inset-0 bg-cover bg-center mix-blend-overlay"
@@ -71,10 +67,10 @@ const ForgotPassword = () => {
                         <Mail className="h-8 w-8 text-amber-700 dark:text-amber-400" />
                     </div>
                     <CardTitle className="text-3xl font-bold tracking-tight text-amber-900 dark:text-amber-100">
-                        Quên mật khẩu
+                        {t("auth:forgot_password.title")}
                     </CardTitle>
                     <CardDescription className="text-sm text-muted-foreground">
-                        Nhập email đăng ký của bạn, chúng tôi sẽ gửi link đặt lại mật khẩu
+                        {t("auth:forgot_password.description")}
                     </CardDescription>
                 </CardHeader>
 
@@ -82,14 +78,14 @@ const ForgotPassword = () => {
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                         <div className="space-y-2">
                             <Label htmlFor="email" className="text-sm font-medium">
-                                Email
+                                {t("auth:forgot_password.email")}
                             </Label>
                             <div className="relative">
                                 <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground transition-colors peer-focus:text-amber-600" />
                                 <Input
                                     id="email"
                                     type="email"
-                                    placeholder="admin@rms.com"
+                                    placeholder={t("auth:forgot_password.email_placeholder")}
                                     className={`h-11 pl-10 transition-all focus:ring-2 focus:ring-amber-500/20 ${
                                         errors.email ? "border-red-500 focus-visible:ring-red-500" : ""
                                     }`}
@@ -108,12 +104,12 @@ const ForgotPassword = () => {
                             {isLoading ? (
                                 <div className="flex items-center gap-2">
                                     <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                                    Đang xử lý...
+                                    {t("auth:forgot_password.processing")}
                                 </div>
                             ) : (
                                 <>
                                     <Send className="mr-2 h-4 w-4" />
-                                    Gửi yêu cầu
+                                    {t("auth:forgot_password.send")}
                                 </>
                             )}
                         </Button>
@@ -123,7 +119,7 @@ const ForgotPassword = () => {
                 <CardFooter className="flex justify-center">
                     <Link to="/login" className="text-sm text-amber-700 hover:underline flex items-center gap-1">
                         <ArrowLeft className="h-4 w-4" />
-                        Quay lại đăng nhập
+                        {t("auth:forgot_password.back_to_login")}
                     </Link>
                 </CardFooter>
             </Card>

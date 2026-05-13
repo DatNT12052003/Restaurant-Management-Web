@@ -4,5 +4,18 @@
         "username_min": "Username must be at least 5 characters",
         "password_required": "Password is required",
         "password_min": "Password must be at least 6 characters"
+    },
+    "forgot_password": {
+        "email_invalid": "Email is invalid"
+    },
+    "confirm_otp": {
+        "code_required": "OTP code is required",
+        "code_length": "OTP code must be 6 digits",
+        "code_digits": "OTP code must contain only digits"
+    },
+    "reset_password": {
+        "new_password_min": "New password must be at least 6 characters",
+        "confirm_password_min": "Confirm password must be at least 6 characters",
+        "confirm_password_match": "Confirm password must match the new password"
     }
 }

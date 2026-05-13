@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { toast } from "sonner";
 import { ArrowLeft, RotateCw, ShieldCheck } from "lucide-react";
 import loginBg from "@/assets/images/login-bg.png";
@@ -13,20 +12,9 @@ import { Label } from "@/components/ui/label";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { useTranslation } from "react-i18next";
 import { useAppDispatch } from "@/hooks";
-import { confirmOTPThunk } from "@/store/auth/authThunk";
-
-const otpSchema = z.object({
-    code: z
-        .string()
-        .refine((val) => val.length === 6 || val.length === 0, {
-            message: "Mã OTP phải có 6 chữ số",
-        })
-        .refine((val) => val.length === 0 || /^\d+$/.test(val), {
-            message: "Mã OTP chỉ được chứa chữ số",
-        }),
-});
-
-type OTPFormValues = z.infer<typeof otpSchema>;
+import { confirmOTPThunk, forgotPasswordThunk } from "@/store/auth/authThunk";
+import { LanguageSwitcher } from "@/components/common/LanguageSwitcher";
+import { getOtpSchema, type OtpFormValues } from "@/validations/schemas";
 
 const ConfirmOTP = () => {
     const { t } = useTranslation();
@@ -40,15 +28,14 @@ const ConfirmOTP = () => {
     const [isResending, setIsResending] = useState(false);
     const [countdown, setCountdown] = useState(300);
     const [canResend, setCanResend] = useState(false);
-    const [otpValue, setOtpValue] = useState("");
 
     const {
+        control,
         handleSubmit,
-        setError,
-        clearErrors,
+        reset,
         formState: { errors },
-    } = useForm<OTPFormValues>({
-        resolver: zodResolver(otpSchema),
+    } = useForm<OtpFormValues>({
+        resolver: zodResolver(getOtpSchema(t)),
         defaultValues: { code: "" },
     });
 
@@ -61,52 +48,44 @@ const ConfirmOTP = () => {
         }
     }, [countdown, canResend]);
 
-    // Xử lý thay đổi OTP và xóa lỗi
-    const handleOtpChange = (value: string) => {
-        setOtpValue(value);
-        if (errors.code) clearErrors("code");
-    };
-
-    const handleVerifyOTP = async () => {
-        if (otpValue.length !== 6) {
-            setError("code", { message: "Vui lòng nhập đủ 6 chữ số" });
-            return;
-        }
-
-        const result = otpSchema.safeParse({ code: otpValue });
-        if (!result.success) {
-            setError("code", { message: result.error.message });
-            return;
-        }
-
+    const handleVerifyOTP = async (data: OtpFormValues) => {
         try {
             setIsLoading(true);
-            const response = await dispatch(
-                confirmOTPThunk({ account_id, code: otpValue, type: "RESET_PASSWORD" }),
+            const result = await dispatch(
+                confirmOTPThunk({ account_id, code: data.code, type: "RESET_PASSWORD" }),
             ).unwrap();
-            toast.success("Xác thực thành công! Vui lòng tạo mật khẩu mới.");
-            navigate("/reset-password", { state: { reset_password_token: response.data?.reset_password_token } });
-        } catch (error) {
-            toast.error("Xác thực thất bại. Vui lòng thử lại.");
+            toast.success(result.message);
+            navigate("/reset-password", {
+                state: { reset_password_token: result.data?.reset_password_token, from: "/confirm-otp" },
+            });
+        } catch (error: any) {
+            toast.error(error.message);
         } finally {
             setIsLoading(false);
         }
     };
 
-    // Gửi lại OTP
     const handleResendOTP = async () => {
-        setIsResending(true);
-        await new Promise((resolve) => setTimeout(resolve, 800));
-        console.log("Resend OTP to:", email);
-        toast.success("Mã OTP mới đã được gửi đến email của bạn.");
-        setCountdown(60);
-        setCanResend(false);
-        setIsResending(false);
+        try {
+            setIsResending(true);
+            const result = await dispatch(forgotPasswordThunk({ email, type: "RESET_PASSWORD" })).unwrap();
+            toast.success(result.message);
+            setCountdown(300);
+            reset({ code: "" });
+            setCanResend(false);
+        } catch (error: any) {
+            toast.error(error.message);
+        } finally {
+            setIsResending(false);
+        }
     };
 
     return (
         <div className="relative flex min-h-screen items-center justify-center bg-gradient-to-br from-amber-50 via-orange-50 to-red-50 px-4 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
-            {/* Background pattern (optional) */}
+            <div className="absolute right-4 top-4 z-20">
+                <LanguageSwitcher />
+            </div>
+
             <div className="absolute inset-0 z-0 opacity-10">
                 <div
                     className="absolute inset-0 bg-cover bg-center mix-blend-overlay"
@@ -122,10 +101,10 @@ const ConfirmOTP = () => {
                         <ShieldCheck className="h-8 w-8 text-amber-700 dark:text-amber-400" />
                     </div>
                     <CardTitle className="text-3xl font-bold tracking-tight text-amber-900 dark:text-amber-100">
-                        Xác thực OTP
+                        {t("auth:confirm_otp.title")}
                     </CardTitle>
                     <CardDescription className="text-sm text-muted-foreground">
-                        Nhập mã xác thực gồm 6 chữ số đã được gửi đến email{" "}
+                        {t("auth:confirm_otp.description")}{" "}
                         <span className="font-medium text-amber-700 dark:text-amber-400">{email}</span>
                     </CardDescription>
                 </CardHeader>
@@ -134,25 +113,31 @@ const ConfirmOTP = () => {
                     <form onSubmit={handleSubmit(handleVerifyOTP)} className="space-y-5">
                         <div className="space-y-3">
                             <Label htmlFor="code" className="text-sm font-medium">
-                                Mã OTP
+                                {t("auth:confirm_otp.code")}
                             </Label>
                             <div className="flex justify-center">
-                                <InputOTP
-                                    maxLength={6}
-                                    value={otpValue}
-                                    onChange={handleOtpChange}
-                                    disabled={isLoading}
-                                    pattern="^[0-9]+$"
-                                >
-                                    <InputOTPGroup>
-                                        <InputOTPSlot index={0} />
-                                        <InputOTPSlot index={1} />
-                                        <InputOTPSlot index={2} />
-                                        <InputOTPSlot index={3} />
-                                        <InputOTPSlot index={4} />
-                                        <InputOTPSlot index={5} />
-                                    </InputOTPGroup>
-                                </InputOTP>
+                                <Controller
+                                    name="code"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <InputOTP
+                                            maxLength={6}
+                                            value={field.value}
+                                            onChange={field.onChange}
+                                            disabled={isLoading}
+                                            pattern="^[0-9]+$"
+                                        >
+                                            <InputOTPGroup>
+                                                <InputOTPSlot index={0} />
+                                                <InputOTPSlot index={1} />
+                                                <InputOTPSlot index={2} />
+                                                <InputOTPSlot index={3} />
+                                                <InputOTPSlot index={4} />
+                                                <InputOTPSlot index={5} />
+                                            </InputOTPGroup>
+                                        </InputOTP>
+                                    )}
+                                />
                             </div>
                             {errors.code && <p className="text-center text-xs text-red-500">{errors.code.message}</p>}
                         </div>
@@ -171,14 +156,18 @@ const ConfirmOTP = () => {
                                         ) : (
                                             <RotateCw className="h-3 w-3" />
                                         )}
-                                        Gửi lại mã
+                                        {t("auth:confirm_otp.resend")}
                                     </button>
                                 ) : (
-                                    <span>Gửi lại sau {countdown} giây</span>
+                                    <span>{t("auth:confirm_otp.countdown_message", { countdown })}</span>
                                 )}
                             </span>
-                            <Link to="/forgot-password" className="text-amber-700 hover:underline">
-                                Nhập lại email
+                            <Link
+                                to="/forgot-password"
+                                state={{ from: "/confirm-otp" }}
+                                className="text-amber-700 hover:underline"
+                            >
+                                {t("auth:confirm_otp.enter_email")}
                             </Link>
                         </div>
 
@@ -190,12 +179,12 @@ const ConfirmOTP = () => {
                             {isLoading ? (
                                 <div className="flex items-center gap-2">
                                     <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                                    Đang xác thực...
+                                    {t("auth:confirm_otp.processing")}
                                 </div>
                             ) : (
                                 <>
                                     <ShieldCheck className="mr-2 h-4 w-4" />
-                                    Xác nhận
+                                    {t("auth:confirm_otp.verify_button")}
                                 </>
                             )}
                         </Button>
@@ -205,7 +194,7 @@ const ConfirmOTP = () => {
                 <CardFooter className="flex justify-center">
                     <Link to="/login" className="text-sm text-amber-700 hover:underline flex items-center gap-1">
                         <ArrowLeft className="h-4 w-4" />
-                        Quay lại đăng nhập
+                        {t("auth:confirm_otp.back_to_login")}
                     </Link>
                 </CardFooter>
             </Card>

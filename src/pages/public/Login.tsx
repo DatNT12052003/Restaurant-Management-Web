@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Lock, User, LogIn, UtensilsCrossed } from "lucide-react";
@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import loginBg from "@/assets/images/login-bg.png";
 import { LanguageSwitcher } from "@/components/common/LanguageSwitcher";
 import { useTranslation } from "react-i18next";
-import { getLoginSchema, type LoginFormValues } from "@/validations/schemas/login";
+import { getLoginSchema, type LoginFormValues } from "@/validations/schemas";
 import { useAppDispatch } from "@/hooks";
 import { getMeThunk, loginThunk } from "@/store/auth/authThunk";
 import { useNavigate } from "react-router-dom";
@@ -36,7 +36,7 @@ const Login = () => {
 
     const onSubmit = async (credentials: LoginFormValues) => {
         try {
-            await dispatch(loginThunk(credentials)).unwrap();
+            const result = await dispatch(loginThunk(credentials)).unwrap();
             const user = await dispatch(getMeThunk()).unwrap();
             const roles = user.data?.roles || [];
             if (roles.includes("admin")) {
@@ -46,9 +46,9 @@ const Login = () => {
             } else {
                 navigate("/guest/welcome");
             }
-            toast.success("Đăng nhập thành công!");
-        } catch (error) {
-            toast.error("Có lỗi xảy ra khi đăng nhập. Vui lòng thử lại.");
+            toast.success(result.message);
+        } catch (error: any) {
+            toast.error(error.message);
         }
     };
 
@@ -137,7 +137,7 @@ const Login = () => {
                             <button
                                 type="button"
                                 className="text-sm font-medium text-amber-700 transition-all hover:underline hover:underline-offset-4 dark:text-amber-400"
-                                onClick={() => navigate("/forgot-password")}
+                                onClick={() => navigate("/forgot-password", { state: { from: "/login" } })}
                             >
                                 {t("auth:login.forgot_password")}
                             </button>

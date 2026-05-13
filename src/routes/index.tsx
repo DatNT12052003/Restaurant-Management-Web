@@ -7,6 +7,7 @@ import AdminLayout from "@/layouts/AdminLayout";
 import ForgotPassword from "@/pages/public/ForgotPassword";
 import ConfirmOTP from "@/pages/public/ConfirmOTP";
 import ResetPassword from "@/pages/public/ResetPassword";
+import SequentialRoute from "./guards/SequentialRoute";
 
 export const router = createBrowserRouter([
     {
@@ -15,15 +16,27 @@ export const router = createBrowserRouter([
     },
     {
         path: "/forgot-password",
-        element: <ForgotPassword />,
+        element: (
+            <SequentialRoute requiredPrevPath={["/login", "/confirm-otp"]}>
+                <ForgotPassword />
+            </SequentialRoute>
+        ),
     },
     {
         path: "/confirm-otp",
-        element: <ConfirmOTP />,
+        element: (
+            <SequentialRoute requiredPrevPath={["/forgot-password"]}>
+                <ConfirmOTP />
+            </SequentialRoute>
+        ),
     },
     {
         path: "/reset-password",
-        element: <ResetPassword />,
+        element: (
+            <SequentialRoute requiredPrevPath={["/confirm-otp"]}>
+                <ResetPassword />
+            </SequentialRoute>
+        ),
     },
     {
         element: <AuthGuard />,

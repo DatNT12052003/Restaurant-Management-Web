@@ -36,7 +36,7 @@ const App = () => {
     }
     return (
         <>
-            <Toaster position="top-right" richColors />
+            <Toaster position="bottom-right" richColors />
             <RouterProvider router={router} />
         </>
     );

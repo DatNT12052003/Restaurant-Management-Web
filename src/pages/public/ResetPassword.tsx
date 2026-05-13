@@ -14,19 +14,20 @@ import { Label } from "@/components/ui/label";
 import { useAppDispatch } from "@/hooks";
 import { useTranslation } from "react-i18next";
 import { resetPasswordThunk } from "@/store/auth/authThunk";
+import { LanguageSwitcher } from "@/components/common/LanguageSwitcher";
+import { getResetPasswordSchema, type ResetPasswordFormValues } from "@/validations/schemas";
 
-// Schema validation
-const resetPasswordSchema = z
-    .object({
-        newPassword: z.string().min(6, "Mật khẩu phải có ít nhất 6 ký tự"),
-        confirmPassword: z.string().min(6, "Mật khẩu phải có ít nhất 6 ký tự"),
-    })
-    .refine((data) => data.newPassword === data.confirmPassword, {
-        message: "Mật khẩu nhập lại không khớp",
-        path: ["confirmPassword"],
-    });
+// const resetPasswordSchema = z
+//     .object({
+//         newPassword: z.string().min(6, "Mật khẩu phải có ít nhất 6 ký tự"),
+//         confirmPassword: z.string().min(6, "Mật khẩu phải có ít nhất 6 ký tự"),
+//     })
+//     .refine((data) => data.newPassword === data.confirmPassword, {
+//         message: "Mật khẩu nhập lại không khớp",
+//         path: ["confirmPassword"],
+//     });
 
-type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
+// type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
 
 export const ResetPassword = () => {
     const { t } = useTranslation();
@@ -44,7 +45,7 @@ export const ResetPassword = () => {
         handleSubmit,
         formState: { errors },
     } = useForm<ResetPasswordFormValues>({
-        resolver: zodResolver(resetPasswordSchema),
+        resolver: zodResolver(getResetPasswordSchema(t)),
         defaultValues: {
             newPassword: "",
             confirmPassword: "",
@@ -54,17 +55,17 @@ export const ResetPassword = () => {
     const onSubmit = async (data: ResetPasswordFormValues) => {
         try {
             setIsLoading(true);
-            await dispatch(
+            const result = await dispatch(
                 resetPasswordThunk({
                     reset_password_token,
                     new_password: data.newPassword,
                     confirm_password: data.confirmPassword,
                 }),
             ).unwrap();
-            toast.success("Mật khẩu đã được đặt lại thành công! Vui lòng đăng nhập.");
+            toast.success(result.message);
             navigate("/login");
-        } catch (error) {
-            toast.error("Có lỗi xảy ra khi đặt lại mật khẩu. Vui lòng thử lại.");
+        } catch (error: any) {
+            toast.error(error.message);
         } finally {
             setIsLoading(false);
         }
@@ -72,7 +73,10 @@ export const ResetPassword = () => {
 
     return (
         <div className="relative flex min-h-screen items-center justify-center bg-gradient-to-br from-amber-50 via-orange-50 to-red-50 px-4 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
-            {/* Background pattern */}
+            <div className="absolute right-4 top-4 z-20">
+                <LanguageSwitcher />
+            </div>
+
             <div className="absolute inset-0 z-0 opacity-10">
                 <div
                     className="absolute inset-0 bg-cover bg-center mix-blend-overlay"
@@ -88,10 +92,10 @@ export const ResetPassword = () => {
                         <KeyRound className="h-8 w-8 text-amber-700 dark:text-amber-400" />
                     </div>
                     <CardTitle className="text-3xl font-bold tracking-tight text-amber-900 dark:text-amber-100">
-                        Đặt lại mật khẩu
+                        {t("auth:reset_password.title")}
                     </CardTitle>
                     <CardDescription className="text-sm text-muted-foreground">
-                        Tạo mật khẩu mới cho tài khoản của bạn
+                        {t("auth:reset_password.description")}
                     </CardDescription>
                 </CardHeader>
 
@@ -99,14 +103,14 @@ export const ResetPassword = () => {
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                         <div className="space-y-2">
                             <Label htmlFor="newPassword" className="text-sm font-medium">
-                                Mật khẩu mới
+                                {t("auth:reset_password.new_password")}
                             </Label>
                             <div className="relative">
                                 <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground transition-colors peer-focus:text-amber-600" />
                                 <Input
                                     id="newPassword"
                                     type={showNewPassword ? "text" : "password"}
-                                    placeholder="Nhập mật khẩu mới"
+                                    placeholder={t("auth:reset_password.new_password_placeholder")}
                                     className={`h-11 pl-10 pr-10 transition-all focus:ring-2 focus:ring-amber-500/20 ${
                                         errors.newPassword ? "border-red-500 focus-visible:ring-red-500" : ""
                                     }`}
@@ -125,14 +129,14 @@ export const ResetPassword = () => {
 
                         <div className="space-y-2">
                             <Label htmlFor="confirmPassword" className="text-sm font-medium">
-                                Nhập lại mật khẩu mới
+                                {t("auth:reset_password.confirm_password")}
                             </Label>
                             <div className="relative">
                                 <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground transition-colors peer-focus:text-amber-600" />
                                 <Input
                                     id="confirmPassword"
                                     type={showConfirmPassword ? "text" : "password"}
-                                    placeholder="Nhập lại mật khẩu mới"
+                                    placeholder={t("auth:reset_password.confirm_password_placeholder")}
                                     className={`h-11 pl-10 pr-10 transition-all focus:ring-2 focus:ring-amber-500/20 ${
                                         errors.confirmPassword ? "border-red-500 focus-visible:ring-red-500" : ""
                                     }`}
@@ -159,12 +163,12 @@ export const ResetPassword = () => {
                             {isLoading ? (
                                 <div className="flex items-center gap-2">
                                     <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                                    Đang xử lý...
+                                    {t("auth:reset_password.processing")}
                                 </div>
                             ) : (
                                 <>
                                     <KeyRound className="mr-2 h-4 w-4" />
-                                    Xác nhận đặt lại
+                                    {t("auth:reset_password.reset_button")}
                                 </>
                             )}
                         </Button>
@@ -174,7 +178,7 @@ export const ResetPassword = () => {
                 <CardFooter className="flex justify-center">
                     <Link to="/login" className="flex items-center gap-1 text-sm text-amber-700 hover:underline">
                         <ArrowLeft className="h-4 w-4" />
-                        Quay lại đăng nhập
+                        {t("auth:reset_password.back_to_login")}
                     </Link>
                 </CardFooter>
             </Card>

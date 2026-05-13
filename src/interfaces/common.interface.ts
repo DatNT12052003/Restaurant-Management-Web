@@ -11,3 +11,7 @@ export interface ISidebarMenuItem {
     label: string;
     icon: React.ComponentType<{ className?: string }>;
 }
+
+export interface ILocalState {
+    from: string;
+}
