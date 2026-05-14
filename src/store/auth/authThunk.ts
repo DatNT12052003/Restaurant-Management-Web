@@ -14,52 +14,87 @@ import type {
 } from "@/interfaces/auth.interface";
 import type { IResponse } from "@/interfaces";
 
-export const loginThunk = createAsyncThunk<IResponse<ILoginResponse>, ILogin>("auth/login", async (credentials) => {
-    const response = await login(credentials);
-    return response;
-});
+export const loginThunk = createAsyncThunk<IResponse<ILoginResponse>, ILogin>(
+    "auth/login",
+    async (credentials, { rejectWithValue }) => {
+        try {
+            const response = await login(credentials);
+            return response;
+        } catch (error: any) {
+            return rejectWithValue(error.response.data);
+        }
+    },
+);
 
-export const getMeThunk = createAsyncThunk<IResponse<IMe>, void>("auth/getMe", async () => {
-    const response = await getMe();
-    return response;
+export const getMeThunk = createAsyncThunk<IResponse<IMe>, void>("auth/getMe", async (_, { rejectWithValue }) => {
+    try {
+        const response = await getMe();
+        return response;
+    } catch (error: any) {
+        return rejectWithValue(error.response.data);
+    }
 });
 
 export const refreshTokenThunk = createAsyncThunk<IResponse<IRefreshTokenResponse>, void>(
     "auth/refreshToken",
-    async () => {
-        const response = await refreshToken();
-        return response;
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await refreshToken();
+            return response;
+        } catch (error: any) {
+            return rejectWithValue(error.response.data);
+        }
     },
 );
 
-export const logoutThunk = createAsyncThunk<void, void>("auth/logout", async () => {
-    await logout();
+export const logoutThunk = createAsyncThunk<void, void>("auth/logout", async (_, { rejectWithValue }) => {
+    try {
+        await logout();
+    } catch (error: any) {
+        return rejectWithValue(error.response.data);
+    }
 });
 
-export const logoutAllThunk = createAsyncThunk<void, void>("auth/logoutAll", async () => {
-    await logoutAll();
+export const logoutAllThunk = createAsyncThunk<void, void>("auth/logoutAll", async (_, { rejectWithValue }) => {
+    try {
+        await logoutAll();
+    } catch (error: any) {
+        return rejectWithValue(error.response.data);
+    }
 });
 
 export const forgotPasswordThunk = createAsyncThunk<IResponse<IForgotPasswordResponse>, IForgotPassword>(
     "auth/forgotPassword",
-    async (credentials) => {
-        const response = await forgotPassword(credentials);
-        return response;
+    async (credentials, { rejectWithValue }) => {
+        try {
+            const response = await forgotPassword(credentials);
+            return response;
+        } catch (error: any) {
+            return rejectWithValue(error.response.data);
+        }
     },
 );
 
 export const confirmOTPThunk = createAsyncThunk<IResponse<IConfirmOTPResponse>, IConfirmOTP>(
     "auth/confirmOTP",
-    async (credentials) => {
-        const response = await confirmOTP(credentials);
-        return response;
+    async (credentials, { rejectWithValue }) => {
+        try {
+            const response = await confirmOTP(credentials);
+            return response;
+        } catch (error: any) {
+            return rejectWithValue(error.response.data);
+        }
     },
 );
 
 export const resetPasswordThunk = createAsyncThunk<IResponse<null>, IResetPassword>(
     "auth/resetPassword",
-    async (data) => {
-        const response = await resetPassword(data);
-        return response;
+    async (data, { rejectWithValue }) => {
+        try {
+            const response = await resetPassword(data);
+            return response;
+        } catch (error: any) {
+            return rejectWithValue(error.response.data);
+        }
     },
 );

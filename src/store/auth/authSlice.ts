@@ -36,9 +36,9 @@ const authSlice = createSlice({
                 state.username = action.payload.data?.username || null;
                 state.access_token = action.payload.data?.access_token || null;
             })
-            .addCase(loginThunk.rejected, (state: IAuthState, action: { error: { message: string } }) => {
+            .addCase(loginThunk.rejected, (state: IAuthState, action: { payload: IResponse<null> }) => {
                 state.loading = false;
-                state.error = action.error.message || "An error occurred";
+                state.error = action.payload.message || "An error occurred";
             })
             .addCase(getMeThunk.fulfilled, (state: IAuthState, action: { payload: IResponse<IMe> }) => {
                 state.loading = false;
@@ -49,9 +49,9 @@ const authSlice = createSlice({
                 state.account_id = action.payload.data?.account_id || null;
                 state.username = action.payload.data?.username || null;
             })
-            .addCase(getMeThunk.rejected, (state: IAuthState, action: { error: { message: string } }) => {
+            .addCase(getMeThunk.rejected, (state: IAuthState, action: { payload: IResponse<null> }) => {
                 state.loading = false;
-                state.error = action.error.message || "An error occurred";
+                state.error = action.payload.message || "An error occurred";
             })
             .addCase(refreshTokenThunk.pending, (state: IAuthState) => {
                 state.loading = true;
@@ -65,18 +65,17 @@ const authSlice = createSlice({
                     state.access_token = action.payload.data?.access_token || null;
                 },
             )
-            .addCase(refreshTokenThunk.rejected, (state: IAuthState, action: { error: { message: string } }) => {
+            .addCase(refreshTokenThunk.rejected, (state: IAuthState, action: { payload: IResponse<null> }) => {
                 state.loading = false;
                 state.isAuthenticated = false;
                 state.account_id = null;
                 state.username = null;
                 state.access_token = null;
-                state.error = action.error.message || "An error occurred";
+                state.error = action.payload.message || "An error occurred";
             });
     },
 });
 
 export const { setInitialized } = authSlice.actions;
-
 const authReducer = authSlice.reducer;
 export default authReducer;

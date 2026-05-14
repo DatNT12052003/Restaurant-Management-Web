@@ -6,6 +6,12 @@ export interface IResponse<T> {
     data?: T;
 }
 
+export interface IPagination {
+    limit: number;
+    currentPage: number;
+    totalPages: number;
+    totalItems: number;
+}
 export interface ISidebarMenuItem {
     path: string;
     label: string;

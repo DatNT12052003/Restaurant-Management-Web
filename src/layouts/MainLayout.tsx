@@ -19,27 +19,29 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useAppDispatch } from "@/hooks";
 import { logoutThunk } from "@/store/auth/authThunk";
-import type { ISidebarMenuItem } from "@/interfaces";
-import type { IUser } from "@/apis/userApi";
-
-const branches = [
-    { id: 1, name: "Nhà hàng Trung tâm" },
-    { id: 2, name: "Chi nhánh Hải Châu" },
-    { id: 3, name: "Chi nhánh Ngũ Hành Sơn" },
-];
+import type { IRestaurant, ISidebarMenuItem, IUser } from "@/interfaces";
 
 interface MainLayoutProps {
     mainMenuItems?: ISidebarMenuItem[];
     user?: IUser;
     roles?: string[];
+    branches?: IRestaurant[];
+    currentBranch?: IRestaurant | null;
     defaultCollapsed?: boolean;
 }
 
-const MainLayout = ({ defaultCollapsed = false, mainMenuItems = [], user, roles }: MainLayoutProps) => {
+const MainLayout = ({
+    defaultCollapsed = false,
+    mainMenuItems = [],
+    user,
+    roles,
+    branches,
+    currentBranch,
+}: MainLayoutProps) => {
     const dispatch = useAppDispatch();
     const [collapsed, setCollapsed] = useState(defaultCollapsed);
+    const [currentRestaurant, setCurrentRestaurant] = useState<IRestaurant | null>(currentBranch || null);
     const [isMobileOpen, setIsMobileOpen] = useState(false);
-    const [currentBranch, setCurrentBranch] = useState(branches[0]);
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -54,6 +56,17 @@ const MainLayout = ({ defaultCollapsed = false, mainMenuItems = [], user, roles 
     useEffect(() => {
         localStorage.setItem("sidebar_collapsed", String(collapsed));
     }, [collapsed]);
+
+    useEffect(() => {
+        const restaurant = localStorage.getItem("selected_branch");
+        if (restaurant) {
+            setCurrentRestaurant(JSON.parse(restaurant));
+        }
+    }, []);
+
+    useEffect(() => {
+        localStorage.setItem("selected_branch", JSON.stringify(currentRestaurant));
+    }, [currentRestaurant]);
 
     useEffect(() => {
         setIsMobileOpen(false);
@@ -192,22 +205,28 @@ const MainLayout = ({ defaultCollapsed = false, mainMenuItems = [], user, roles 
                                 <DropdownMenuTrigger asChild>
                                     <Button variant="outline" size="sm" className="gap-2">
                                         <Store className="h-4 w-4" />
-                                        <span className="hidden sm:inline">{currentBranch.name}</span>
+                                        <span className="hidden sm:inline">
+                                            {currentRestaurant?.name ?? "Chọn chi nhánh"}
+                                        </span>
                                     </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                    <DropdownMenuLabel>Chi nhánh hiện tại</DropdownMenuLabel>
-                                    <DropdownMenuSeparator />
-                                    {branches.map((branch) => (
-                                        <DropdownMenuItem
-                                            key={branch.id}
-                                            onClick={() => setCurrentBranch(branch)}
-                                            className={cn(currentBranch.id === branch.id && "bg-accent")}
-                                        >
-                                            {branch.name}
-                                        </DropdownMenuItem>
-                                    ))}
-                                </DropdownMenuContent>
+                                {branches && branches?.length > 0 && (
+                                    <DropdownMenuContent align="end">
+                                        <DropdownMenuLabel>Chi nhánh hiện tại</DropdownMenuLabel>
+                                        <DropdownMenuSeparator />
+                                        {branches.map((branch) => (
+                                            <DropdownMenuItem
+                                                key={branch.id}
+                                                onClick={() => {
+                                                    setCurrentRestaurant(branch);
+                                                }}
+                                                className={cn(currentRestaurant?.id === branch.id && "bg-accent")}
+                                            >
+                                                {branch.name}
+                                            </DropdownMenuItem>
+                                        ))}
+                                    </DropdownMenuContent>
+                                )}
                             </DropdownMenu>
                         )}
 
