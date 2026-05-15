@@ -1,4 +1,4 @@
-import type { RestaurantStatusEnum } from "@/types";
+import type { RestaurantStatusEnum } from "@/enum";
 import type { IPagination } from "./common.interface";
 
 export interface IRestaurant {

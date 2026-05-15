@@ -1,3 +1,4 @@
+import type { FilterOperatorEnum, OrderTypeEnum } from "@/enum";
 export interface IResponse<T> {
     success: boolean;
     statusCode: number;
@@ -20,4 +21,22 @@ export interface ISidebarMenuItem {
 
 export interface ILocalState {
     from: string;
+}
+
+export interface IGetQuery {
+    search?: {
+        text: string;
+        fields: string[];
+    };
+    filters?: {
+        field: string;
+        operator?: FilterOperatorEnum;
+        value: any;
+    }[];
+    orderBy?: {
+        field: string;
+        direction?: OrderTypeEnum;
+    }[];
+    currentPage?: number;
+    limit?: number;
 }

@@ -1,5 +1,15 @@
 import MainLayout from "./MainLayout";
-import { BarChart3, ClipboardList, LayoutDashboard, MenuIcon, Package, Settings, Table2, Users } from "lucide-react";
+import {
+    BarChart3,
+    ClipboardList,
+    LayoutDashboard,
+    MenuIcon,
+    Package,
+    Settings,
+    Table2,
+    Users,
+    User2,
+} from "lucide-react";
 import type { IRestaurant, ISidebarMenuItem } from "@/interfaces";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { useEffect, useState } from "react";
@@ -7,7 +17,8 @@ import { getAllRestaurantsThunk } from "@/store/restaurant/restaurantThunk";
 
 const adminMenuItems: ISidebarMenuItem[] = [
     { path: "/admin/dashboard", label: "Tổng quan", icon: LayoutDashboard },
-    { path: "/admin/staff", label: "Nhân sự", icon: Users },
+    { path: "/admin/employees", label: "Nhân sự", icon: Users },
+    { path: "/admin/guest", label: "Khách hàng", icon: User2 },
     { path: "/admin/tables", label: "Quản lý bàn", icon: Table2 },
     { path: "/admin/menu", label: "Thực đơn", icon: MenuIcon },
     { path: "/admin/orders", label: "Đơn hàng", icon: ClipboardList },

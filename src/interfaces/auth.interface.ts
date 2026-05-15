@@ -1,5 +1,5 @@
 import type { IUser } from "@/interfaces";
-import type { OTPTypeEnum } from "@/types";
+import type { OTPTypeEnum } from "@/enum";
 export interface ILogin {
     username: string;
     password: string;
