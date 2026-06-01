@@ -135,8 +135,8 @@ const MainLayout = ({
             <div className="mt-auto border-t border-sidebar-border p-4">
                 <div className={cn("flex items-center gap-3", collapsed && "justify-center")}>
                     <Avatar className="h-9 w-9">
-                        <AvatarImage src="/avatars/admin.png" alt="Admin" />
-                        <AvatarFallback>AD</AvatarFallback>
+                        <AvatarImage src={user?.avatar_url || ""} alt="avatar" />
+                        <AvatarFallback>{user?.full_name ? user.full_name.charAt(0) : "NA"}</AvatarFallback>
                     </Avatar>
                     {!collapsed && (
                         <div className="flex flex-col overflow-hidden">
@@ -241,8 +241,10 @@ const MainLayout = ({
                             <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" className="relative h-9 w-9 rounded-full">
                                     <Avatar className="h-9 w-9">
-                                        <AvatarImage src="/avatars/admin.png" />
-                                        <AvatarFallback>NA</AvatarFallback>
+                                        <AvatarImage src={user?.avatar_url || ""} alt="avatar" />
+                                        <AvatarFallback>
+                                            {user?.full_name ? user.full_name.charAt(0) : "NA"}
+                                        </AvatarFallback>
                                     </Avatar>
                                 </Button>
                             </DropdownMenuTrigger>
