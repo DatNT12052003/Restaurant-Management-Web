@@ -6,3 +6,4 @@ export * from "./permissionApi";
 export * from "./request";
 export * from "./menuApi";
 export * from "./imageApi";
+export * from "./reservationApi";
