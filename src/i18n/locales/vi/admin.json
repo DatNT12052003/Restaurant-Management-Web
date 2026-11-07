@@ -15,7 +15,8 @@
         "page_of": "Trang {{page}} / {{pages}}",
         "previous": "Trang trước",
         "next": "Trang sau",
-        "select_branch_first": "Hãy chọn chi nhánh ở góc trên bên phải để quản lý phòng và bàn."
+        "select_branch_first": "Hãy chọn chi nhánh ở góc trên bên phải để quản lý phòng và bàn.",
+        "close": "Đóng"
     },
     "menu": {
         "dashboard": "Tổng quan",
@@ -27,7 +28,64 @@
         "menu": "Thực đơn",
         "orders": "Đơn hàng",
         "inventory": "Kho hàng",
-        "reports": "Báo cáo"
+        "reports": "Báo cáo",
+        "title": "Thực đơn",
+        "description": "Thực đơn chung của cả chuỗi; mỗi chi nhánh có thể tắt món hoặc đặt giá riêng.",
+        "tab_dishes": "Món ăn",
+        "tab_combos": "Combo",
+        "tab_tags": "Thẻ",
+        "tab_branch": "Thực đơn chi nhánh",
+        "tab_branch_named": "Thực đơn {{name}}",
+        "search_dish": "Tìm món...",
+        "search_combo": "Tìm combo...",
+        "all_categories": "Tất cả loại",
+        "all_tags": "Tất cả thẻ",
+        "category": {
+            "food": "Món ăn",
+            "drink": "Đồ uống"
+        },
+        "status": {
+            "active": "Đang bán",
+            "discontinued": "Ngừng bán"
+        },
+        "add_dish": "Thêm món",
+        "create_dish": "Thêm món",
+        "edit_dish": "Sửa món",
+        "name": "Tên",
+        "price": "Giá (VNĐ)",
+        "category_label": "Loại",
+        "status_label": "Trạng thái",
+        "description_field": "Mô tả",
+        "tags": "Thẻ",
+        "tags_placeholder": "Chọn thẻ...",
+        "delete_dish_title": "Xóa món",
+        "delete_dish_desc": "Xóa món \"{{name}}\"? Nếu chỉ muốn ngừng bán thì nên chuyển sang Ngừng bán.",
+        "add_combo": "Thêm combo",
+        "create_combo": "Thêm combo",
+        "edit_combo": "Sửa combo",
+        "combo_items": "Món trong combo",
+        "combo_price": "Giá combo (VNĐ)",
+        "combo_items_required": "Hãy thêm ít nhất một món vào combo",
+        "add_dish_to_combo": "Thêm món...",
+        "quantity": "Số lượng",
+        "items_total": "Mua lẻ: {{amount}}",
+        "saving": "Tiết kiệm {{amount}}",
+        "delete_combo_title": "Xóa combo",
+        "delete_combo_desc": "Xóa combo \"{{name}}\"?",
+        "new_tag_placeholder": "Thẻ mới, ví dụ: Cay, Hải sản, Món chay...",
+        "add_tag": "Thêm thẻ",
+        "dish_count": "{{count}} món",
+        "delete_tag_title": "Xóa thẻ",
+        "delete_tag_desc": "Xóa thẻ \"{{name}}\"? Thẻ sẽ được gỡ khỏi {{count}} món.",
+        "branch_select_first": "Hãy chọn chi nhánh ở góc trên bên phải để quản lý thực đơn.",
+        "branch_hint": "Bỏ chọn để ngừng bán món tại chi nhánh này. Để trống giá chi nhánh để dùng giá gốc.",
+        "selling": "Đang bán",
+        "base_price": "Giá gốc",
+        "branch_price": "Giá chi nhánh",
+        "current_price": "Giá bán",
+        "use_base_price": "Giá gốc",
+        "reset_price": "Dùng giá gốc",
+        "invalid_price": "Giá phải là số không âm"
     },
     "roles": {
         "admin": "Quản trị viên",
@@ -45,12 +103,34 @@
         "guest": "Khách hàng"
     },
     "status": {
-        "user": { "active": "Đang làm", "inactive": "Đã nghỉ" },
-        "guest": { "new": "Khách mới", "regular": "Khách quen" },
-        "restaurant": { "unblocked": "Đang hoạt động", "blocked": "Tạm khóa" },
-        "usage": { "available": "Trống", "reserved": "Đã đặt", "occupied": "Có khách", "cleaning": "Đang dọn" },
-        "room_type": { "public": "Sảnh chung", "private": "Phòng riêng", "private_pro": "Phòng VIP" },
-        "gender": { "male": "Nam", "female": "Nữ", "other": "Khác" }
+        "user": {
+            "active": "Đang làm",
+            "inactive": "Đã nghỉ"
+        },
+        "guest": {
+            "new": "Khách mới",
+            "regular": "Khách quen"
+        },
+        "restaurant": {
+            "unblocked": "Đang hoạt động",
+            "blocked": "Tạm khóa"
+        },
+        "usage": {
+            "available": "Trống",
+            "reserved": "Đã đặt",
+            "occupied": "Có khách",
+            "cleaning": "Đang dọn"
+        },
+        "room_type": {
+            "public": "Sảnh chung",
+            "private": "Phòng riêng",
+            "private_pro": "Phòng VIP"
+        },
+        "gender": {
+            "male": "Nam",
+            "female": "Nữ",
+            "other": "Khác"
+        }
     },
     "user": {
         "full_name": "Họ tên",
@@ -163,14 +243,17 @@
             "account": "Tài khoản",
             "room": "Phòng",
             "table": "Bàn",
-            "permission": "Phân quyền"
+            "permission": "Phân quyền",
+            "dish": "Món ăn & thẻ",
+            "combo": "Combo"
         },
         "actions": {
             "create": "Tạo",
             "view": "Xem",
             "update": "Cập nhật",
             "delete": "Xóa",
-            "assign": "Gán quyền"
+            "assign": "Gán quyền",
+            "availability": "Bật/tắt & giá chi nhánh"
         }
     },
     "profile": {
@@ -183,5 +266,17 @@
         "new_password": "Mật khẩu mới",
         "confirm_password": "Nhập lại mật khẩu mới",
         "password_mismatch": "Mật khẩu nhập lại không khớp"
+    },
+    "image": {
+        "title": "Hình ảnh",
+        "of": "Hình ảnh của {{name}}",
+        "upload": "Tải ảnh lên",
+        "empty": "Chưa có ảnh",
+        "primary": "Ảnh đại diện",
+        "set_primary": "Đặt làm ảnh đại diện",
+        "hint": "Tối đa {{max}} ảnh mỗi lần, mỗi ảnh {{size}} MB. Ảnh đầu tiên được dùng làm ảnh đại diện.",
+        "too_many": "Chỉ chọn tối đa {{max}} ảnh mỗi lần",
+        "too_large": "Mỗi ảnh tối đa {{size}} MB",
+        "save_first": "Lưu trước, sau đó có thể thêm ảnh."
     }
 }

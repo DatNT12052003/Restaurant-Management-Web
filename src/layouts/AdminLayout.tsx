@@ -41,7 +41,7 @@ const AdminLayout = () => {
         { path: "/admin/guests", label: t("menu.guests"), icon: User2, permission: "guest.view" },
         { path: "/admin/tables", label: t("menu.tables"), icon: Table2, permission: "room.view" },
         { path: "/admin/permissions", label: t("menu.permissions"), icon: ShieldCheck, permission: "permission.view" },
-        { path: "/admin/menu", label: t("menu.menu"), icon: MenuIcon },
+        { path: "/admin/menu", label: t("menu.menu"), icon: MenuIcon, permission: ["dish.view", "combo.view"] },
         { path: "/admin/orders", label: t("menu.orders"), icon: ClipboardList },
         { path: "/admin/inventory", label: t("menu.inventory"), icon: Package },
         { path: "/admin/reports", label: t("menu.reports"), icon: BarChart3 },

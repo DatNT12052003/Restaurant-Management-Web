@@ -1,10 +1,11 @@
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { Lock, MoreVertical, Pencil, Plus, Trash2, Users } from "lucide-react";
+import { Images, Lock, MoreVertical, Pencil, Plus, Trash2, Users } from "lucide-react";
 
 import { createRoom, createTable, deleteRoom, deleteTable, getAllRooms, getAllTables, updateRoom, updateTable } from "@/apis";
 import ConfirmDialog from "@/components/common/ConfirmDialog";
+import ImageManager from "@/components/common/ImageManager";
 import PageHeader from "@/components/common/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -52,6 +53,7 @@ const RoomsTables = () => {
     const [saving, setSaving] = useState(false);
     const [deletingRoom, setDeletingRoom] = useState<IRoom | null>(null);
     const [deletingTable, setDeletingTable] = useState<ITable | null>(null);
+    const [imagesOf, setImagesOf] = useState<IRoom | null>(null);
 
     const fetcher = useCallback(async (): Promise<{ rooms: IRoom[]; tables: ITable[] }> => {
         if (needBranch) return { rooms: [], tables: [] };
@@ -237,6 +239,15 @@ const RoomsTables = () => {
                                             {t("table.add_table")}
                                         </Button>
                                     )}
+                                    <Button
+                                        size="icon"
+                                        variant="ghost"
+                                        onClick={() => setImagesOf(selectedRoom)}
+                                        aria-label={t("image.title")}
+                                        title={t("image.title")}
+                                    >
+                                        <Images className="h-4 w-4" />
+                                    </Button>
                                     {can("room.update") && (
                                         <Button
                                             size="icon"
@@ -485,6 +496,22 @@ const RoomsTables = () => {
                                 </Button>
                             </DialogFooter>
                         </form>
+                    )}
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={!!imagesOf} onOpenChange={(v) => !v && setImagesOf(null)}>
+                <DialogContent className="sm:max-w-2xl">
+                    <DialogHeader>
+                        <DialogTitle>{t("image.of", { name: imagesOf?.name })}</DialogTitle>
+                    </DialogHeader>
+                    {imagesOf && (
+                        <ImageManager
+                            key={`room-${imagesOf.id}`}
+                            entityType="room"
+                            entityId={imagesOf.id}
+                            canEdit={can("room.update")}
+                        />
                     )}
                 </DialogContent>
             </Dialog>

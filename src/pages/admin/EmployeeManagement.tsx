@@ -40,6 +40,7 @@ import type { UserStatusEnum } from "@/enum";
 import { useAppSelector, useAsyncData, useDebounce, usePermission } from "@/hooks";
 import type { IEmployee, IGetQuery, IPagination, IPermission, IProfileFields } from "@/interfaces";
 import { getErrorMessage } from "@/lib/api-error";
+import { formatMoney } from "@/lib/format";
 
 const PAGE_SIZE = 10;
 
@@ -54,8 +55,6 @@ interface IEmployeeForm {
     avatar: File | null;
 }
 
-const formatMoney = (value: string | number | null | undefined) =>
-    value === null || value === undefined || value === "" ? "—" : Number(value).toLocaleString("vi-VN") + " ₫";
 
 const EmployeeManagement = () => {
     const { t } = useTranslation("admin");
