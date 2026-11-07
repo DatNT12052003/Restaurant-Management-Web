@@ -10,7 +10,7 @@ export const getRestaurantsThunk = createAsyncThunk<IResponse<IGetRestaurants>>(
             const response = await getRestaurants();
             return response;
         } catch (error: any) {
-            return rejectWithValue(error.response.data);
+            return rejectWithValue(error.response?.data ?? { message: error.message });
         }
     },
 );
@@ -22,7 +22,7 @@ export const getAllRestaurantsThunk = createAsyncThunk<IResponse<IRestaurant[]>>
             const response = await getAllRestaurants();
             return response;
         } catch (error: any) {
-            return rejectWithValue(error.response.data);
+            return rejectWithValue(error.response?.data ?? { message: error.message });
         }
     },
 );

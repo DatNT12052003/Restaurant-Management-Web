@@ -1,1 +1,1 @@
-export type RestaurantStatusEnum = "unblock" | "block";
+export type RestaurantStatusEnum = "unblocked" | "blocked";

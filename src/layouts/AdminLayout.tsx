@@ -1,79 +1,69 @@
 import MainLayout from "./MainLayout";
 import {
     BarChart3,
+    Building2,
     ClipboardList,
     LayoutDashboard,
     MenuIcon,
     Package,
-    Settings,
+    ShieldCheck,
     Table2,
     Users,
     User2,
 } from "lucide-react";
-import type { IRestaurant, ISidebarMenuItem } from "@/interfaces";
+import { useTranslation } from "react-i18next";
+import type { ISidebarMenuItem } from "@/interfaces";
 import { useAppDispatch, useAppSelector, usePermission } from "@/hooks";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { getAllRestaurantsThunk } from "@/store/restaurant/restaurantThunk";
 
-const adminMenuItems: ISidebarMenuItem[] = [
-    { path: "/admin/dashboard", label: "Tổng quan", icon: LayoutDashboard },
-    { path: "/admin/employees", label: "Nhân sự", icon: Users, permission: "employee.view" },
-    { path: "/admin/guest", label: "Khách hàng", icon: User2, permission: "guest.view" },
-    { path: "/admin/tables", label: "Quản lý bàn", icon: Table2, permission: "table.view" },
-    { path: "/admin/menu", label: "Thực đơn", icon: MenuIcon },
-    { path: "/admin/orders", label: "Đơn hàng", icon: ClipboardList },
-    { path: "/admin/inventory", label: "Kho hàng", icon: Package },
-    { path: "/admin/reports", label: "Báo cáo", icon: BarChart3 },
-    { path: "/admin/settings", label: "Cài đặt", icon: Settings },
-];
-
 const AdminLayout = () => {
+    const { t } = useTranslation("admin");
     const dispatch = useAppDispatch();
     const user = useAppSelector((state) => state.auth.user);
     const roles = useAppSelector((state) => state.auth.roles);
-    const [isLoading, setIsLoading] = useState(true);
-    const [branchList, setBranchList] = useState<IRestaurant[]>([]);
-
-    const defaultCollapsed = localStorage.getItem("sidebar_collapsed") === "true";
-    const currentBranch = useAppSelector((state) => state.restaurant.currentBranch);
+    const { branches, branchesLoaded, currentBranch } = useAppSelector((state) => state.restaurant);
     const can = usePermission();
 
+    const defaultCollapsed = localStorage.getItem("sidebar_collapsed") === "true";
+
     useEffect(() => {
-        const fetchBranches = async () => {
-            try {
-                const result = await dispatch(getAllRestaurantsThunk()).unwrap();
-                if (result.success) {
-                    const data = result.data || [];
-                    setBranchList(data);
-                }
-            } catch (error) {
-                console.error("Fetch branches failed:", error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        if (user && roles.includes("admin")) {
-            fetchBranches();
+        if (user) {
+            dispatch(getAllRestaurantsThunk());
         }
-    }, [dispatch, user, roles]);
+    }, [dispatch, user]);
 
-    if (!user || !roles.includes("admin")) {
-        return <div>Bạn không có quyền truy cập trang này.</div>;
+    // Các mục chưa có `permission` là trang của giai đoạn sau (hiện hiển thị trang 404)
+    const menuItems: ISidebarMenuItem[] = [
+        { path: "/admin/dashboard", label: t("menu.dashboard"), icon: LayoutDashboard },
+        { path: "/admin/restaurants", label: t("menu.restaurants"), icon: Building2, permission: "restaurant.view" },
+        { path: "/admin/employees", label: t("menu.employees"), icon: Users, permission: "employee.view" },
+        { path: "/admin/guests", label: t("menu.guests"), icon: User2, permission: "guest.view" },
+        { path: "/admin/tables", label: t("menu.tables"), icon: Table2, permission: "room.view" },
+        { path: "/admin/permissions", label: t("menu.permissions"), icon: ShieldCheck, permission: "permission.view" },
+        { path: "/admin/menu", label: t("menu.menu"), icon: MenuIcon },
+        { path: "/admin/orders", label: t("menu.orders"), icon: ClipboardList },
+        { path: "/admin/inventory", label: t("menu.inventory"), icon: Package },
+        { path: "/admin/reports", label: t("menu.reports"), icon: BarChart3 },
+    ];
+
+    if (!user) {
+        return null;
     }
 
-    if (isLoading) {
-        return <div>Đang tải dữ liệu...</div>;
+    if (!branchesLoaded) {
+        return <div className="p-6 text-muted-foreground">{t("common.loading")}</div>;
     }
 
     return (
         <MainLayout
-            mainMenuItems={adminMenuItems.filter((item) => !item.permission || can(item.permission))}
+            mainMenuItems={menuItems.filter((item) => !item.permission || can(item.permission))}
             user={user}
             roles={roles}
-            branches={branchList}
+            branches={branches}
             currentBranch={currentBranch}
             defaultCollapsed={defaultCollapsed}
+            profilePath="/admin/profile"
         />
     );
 };

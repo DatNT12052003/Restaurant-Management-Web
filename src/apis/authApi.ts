@@ -1,4 +1,4 @@
-import type { IResponse } from "@/interfaces";
+import type { IChangePassword, IResponse } from "@/interfaces";
 import api from "./axios";
 
 import type {
@@ -63,6 +63,15 @@ export const confirmOTP = async (credentials: IConfirmOTP): Promise<IResponse<IC
 
 export const resetPassword = async (data: IResetPassword): Promise<IResponse<null>> => {
     const response = await api.post<IResponse<null>>("/auth/reset-password", data);
+    if (!response.data.success) {
+        throw new Error(response.data.message);
+    }
+    return response.data;
+};
+
+/** Đổi mật khẩu: backend đăng xuất các thiết bị khác và trả access token mới cho phiên hiện tại. */
+export const changePassword = async (data: IChangePassword): Promise<IResponse<ILoginResponse>> => {
+    const response = await api.post<IResponse<ILoginResponse>>("/auth/change-password", data);
     if (!response.data.success) {
         throw new Error(response.data.message);
     }

@@ -7,6 +7,8 @@ const axiosInstance = axios.create({
         "Content-Type": "application/json",
         "x-platform": "web",
     },
+    // filters[0][field]=... thay vì filters[][field]=... (qs ở backend cần chỉ số để tách từng filter)
+    paramsSerializer: { indexes: true },
 });
 
 // store được import động để tránh vòng lặp import (store -> thunk -> api -> axios -> store)
@@ -71,7 +73,7 @@ axiosInstance.interceptors.response.use(
             store.dispatch(setAccessToken(newToken));
             originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
             return axiosInstance(originalRequest);
-        } catch (refreshError) {
+        } catch {
             // Refresh thất bại -> phiên hết hạn; AuthGuard sẽ đưa người dùng về /login
             store.dispatch(clearAuth());
             return Promise.reject(error);

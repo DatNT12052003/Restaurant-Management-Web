@@ -1,28 +1,14 @@
 import { ROUTES } from "@/constants/routes";
+import { STAFF_ROLES } from "@/constants/roles";
 
-export const getDashboardByRole = (role: string) => {
-    switch (role) {
-        case "admin":
-            return ROUTES.ADMIN;
-
-        case "manager":
-            return ROUTES.MANAGER;
-
-        case "cashier":
-            return ROUTES.CASHIER;
-
-        case "receptionist":
-            return ROUTES.RECEPTIONIST;
-
-        case "waitstaff":
-            return ROUTES.WAITSTAFF;
-
-        case "head_chef":
-        case "sous_chef":
-        case "commis_chef":
-            return ROUTES.KITCHEN;
-
-        default:
-            return ROUTES.HOME;
+/**
+ * Trang đầu tiên sau khi đăng nhập.
+ * Hiện mọi vai trò nhân viên dùng chung khu quản trị /admin (menu và trang được lọc theo quyền).
+ * Khi có màn hình riêng (thu ngân, bếp, phục vụ...) ở các giai đoạn sau thì tách ra tại đây.
+ */
+export const getDashboardByRole = (role: string | undefined) => {
+    if (role && STAFF_ROLES.includes(role)) {
+        return ROUTES.ADMIN;
     }
+    return ROUTES.HOME;
 };

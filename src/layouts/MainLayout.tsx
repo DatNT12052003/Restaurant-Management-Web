@@ -29,6 +29,8 @@ interface MainLayoutProps {
     branches?: IRestaurant[];
     currentBranch?: IRestaurant | null;
     defaultCollapsed?: boolean;
+    /** Đường dẫn trang hồ sơ cá nhân (mục "Hồ sơ" trong menu tài khoản) */
+    profilePath?: string;
 }
 
 const MainLayout = ({
@@ -38,10 +40,13 @@ const MainLayout = ({
     roles,
     branches,
     currentBranch,
+    profilePath,
 }: MainLayoutProps) => {
     const dispatch = useAppDispatch();
     const [collapsed, setCollapsed] = useState(defaultCollapsed);
-    const [currentRestaurant, setCurrentRestaurant] = useState<IRestaurant | null>(currentBranch || null);
+    // Chi nhánh đang chọn nằm trong Redux store (slice restaurant tự lưu localStorage)
+    const currentRestaurant = currentBranch ?? null;
+    const setCurrentRestaurant = (branch: IRestaurant) => dispatch(setCurrentBranch(branch));
     const [isMobileOpen, setIsMobileOpen] = useState(false);
 
     const navigate = useNavigate();
@@ -57,11 +62,6 @@ const MainLayout = ({
     useEffect(() => {
         localStorage.setItem("sidebar_collapsed", String(collapsed));
     }, [collapsed]);
-
-    // Lưu chi nhánh đang chọn vào store (slice tự lưu localStorage)
-    useEffect(() => {
-        dispatch(setCurrentBranch(currentRestaurant));
-    }, [dispatch, currentRestaurant]);
 
     useEffect(() => {
         setIsMobileOpen(false);
@@ -245,7 +245,9 @@ const MainLayout = ({
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                                 <DropdownMenuLabel>Tài khoản của tôi</DropdownMenuLabel>
-                                <DropdownMenuItem>Hồ sơ</DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => profilePath && navigate(profilePath)}>
+                                    Hồ sơ
+                                </DropdownMenuItem>
                                 <DropdownMenuItem>Cài đặt</DropdownMenuItem>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem className="text-red-600" onClick={handleLogout}>
