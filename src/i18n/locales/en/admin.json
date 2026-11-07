@@ -15,7 +15,8 @@
         "page_of": "Page {{page}} of {{pages}}",
         "previous": "Previous page",
         "next": "Next page",
-        "select_branch_first": "Select a branch in the top-right corner to manage its rooms and tables."
+        "select_branch_first": "Select a branch in the top-right corner to manage its rooms and tables.",
+        "close": "Close"
     },
     "menu": {
         "dashboard": "Dashboard",
@@ -27,7 +28,64 @@
         "menu": "Menu",
         "orders": "Orders",
         "inventory": "Inventory",
-        "reports": "Reports"
+        "reports": "Reports",
+        "title": "Menu",
+        "description": "One menu for the whole chain; each branch can switch items off or set its own price.",
+        "tab_dishes": "Dishes",
+        "tab_combos": "Combos",
+        "tab_tags": "Tags",
+        "tab_branch": "Branch menu",
+        "tab_branch_named": "Menu at {{name}}",
+        "search_dish": "Search dishes...",
+        "search_combo": "Search combos...",
+        "all_categories": "All categories",
+        "all_tags": "All tags",
+        "category": {
+            "food": "Food",
+            "drink": "Drink"
+        },
+        "status": {
+            "active": "On sale",
+            "discontinued": "Discontinued"
+        },
+        "add_dish": "Add dish",
+        "create_dish": "Add dish",
+        "edit_dish": "Edit dish",
+        "name": "Name",
+        "price": "Price (VND)",
+        "category_label": "Category",
+        "status_label": "Status",
+        "description_field": "Description",
+        "tags": "Tags",
+        "tags_placeholder": "Select tags...",
+        "delete_dish_title": "Delete dish",
+        "delete_dish_desc": "Delete \"{{name}}\"? To stop selling it but keep its history, set it to Discontinued instead.",
+        "add_combo": "Add combo",
+        "create_combo": "Add combo",
+        "edit_combo": "Edit combo",
+        "combo_items": "Dishes in combo",
+        "combo_price": "Combo price (VND)",
+        "combo_items_required": "Add at least one dish to the combo",
+        "add_dish_to_combo": "Add a dish...",
+        "quantity": "Quantity",
+        "items_total": "Ordered separately: {{amount}}",
+        "saving": "Saves {{amount}}",
+        "delete_combo_title": "Delete combo",
+        "delete_combo_desc": "Delete combo \"{{name}}\"?",
+        "new_tag_placeholder": "New tag, e.g. Spicy, Seafood, Vegetarian...",
+        "add_tag": "Add tag",
+        "dish_count": "{{count}} dishes",
+        "delete_tag_title": "Delete tag",
+        "delete_tag_desc": "Delete tag \"{{name}}\"? It will be removed from {{count}} dishes.",
+        "branch_select_first": "Select a branch in the top-right corner to manage its menu.",
+        "branch_hint": "Untick to stop selling an item at this branch. Leave the branch price empty to use the base price.",
+        "selling": "On sale",
+        "base_price": "Base price",
+        "branch_price": "Branch price",
+        "current_price": "Selling price",
+        "use_base_price": "Base price",
+        "reset_price": "Use base price",
+        "invalid_price": "Price must be a non-negative number"
     },
     "roles": {
         "admin": "Administrator",
@@ -45,12 +103,34 @@
         "guest": "Customer"
     },
     "status": {
-        "user": { "active": "Working", "inactive": "Left" },
-        "guest": { "new": "New customer", "regular": "Regular" },
-        "restaurant": { "unblocked": "Open", "blocked": "Blocked" },
-        "usage": { "available": "Available", "reserved": "Reserved", "occupied": "Occupied", "cleaning": "Cleaning" },
-        "room_type": { "public": "Main hall", "private": "Private room", "private_pro": "VIP room" },
-        "gender": { "male": "Male", "female": "Female", "other": "Other" }
+        "user": {
+            "active": "Working",
+            "inactive": "Left"
+        },
+        "guest": {
+            "new": "New customer",
+            "regular": "Regular"
+        },
+        "restaurant": {
+            "unblocked": "Open",
+            "blocked": "Blocked"
+        },
+        "usage": {
+            "available": "Available",
+            "reserved": "Reserved",
+            "occupied": "Occupied",
+            "cleaning": "Cleaning"
+        },
+        "room_type": {
+            "public": "Main hall",
+            "private": "Private room",
+            "private_pro": "VIP room"
+        },
+        "gender": {
+            "male": "Male",
+            "female": "Female",
+            "other": "Other"
+        }
     },
     "user": {
         "full_name": "Full name",
@@ -163,14 +243,17 @@
             "account": "Accounts",
             "room": "Rooms",
             "table": "Tables",
-            "permission": "Permissions"
+            "permission": "Permissions",
+            "dish": "Dishes & tags",
+            "combo": "Combos"
         },
         "actions": {
             "create": "Create",
             "view": "View",
             "update": "Update",
             "delete": "Delete",
-            "assign": "Assign"
+            "assign": "Assign",
+            "availability": "Branch on/off & price"
         }
     },
     "profile": {
@@ -183,5 +266,17 @@
         "new_password": "New password",
         "confirm_password": "Confirm new password",
         "password_mismatch": "The passwords do not match"
+    },
+    "image": {
+        "title": "Images",
+        "of": "Images of {{name}}",
+        "upload": "Upload images",
+        "empty": "No images yet",
+        "primary": "Cover",
+        "set_primary": "Set as cover",
+        "hint": "Up to {{max}} images per upload, {{size}} MB each. The first image becomes the cover.",
+        "too_many": "Select at most {{max}} images at a time",
+        "too_large": "Each image must be at most {{size}} MB",
+        "save_first": "Save first, then you can add images."
     }
 }

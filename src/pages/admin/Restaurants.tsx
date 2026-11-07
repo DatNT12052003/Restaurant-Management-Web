@@ -1,11 +1,12 @@
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { Pencil, Plus, Search, Trash2 } from "lucide-react";
+import { Images, Pencil, Plus, Search, Trash2 } from "lucide-react";
 
 import { createRestaurant, deleteRestaurant, getRestaurants, updateRestaurant } from "@/apis";
 import ConfirmDialog from "@/components/common/ConfirmDialog";
 import DataPagination from "@/components/common/DataPagination";
+import ImageManager from "@/components/common/ImageManager";
 import PageHeader from "@/components/common/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -40,6 +41,7 @@ const Restaurants = () => {
     const [form, setForm] = useState<IRestaurantPayload>(EMPTY_FORM);
     const [saving, setSaving] = useState(false);
     const [deleting, setDeleting] = useState<IRestaurant | null>(null);
+    const [imagesOf, setImagesOf] = useState<IRestaurant | null>(null);
 
     const fetcher = useCallback(() => {
         const query: IGetQuery = { currentPage: page, limit: PAGE_SIZE, orderBy: [{ field: "name" }] };
@@ -153,7 +155,7 @@ const Restaurants = () => {
                                 <TableHead>{t("restaurant.name")}</TableHead>
                                 <TableHead>{t("restaurant.address")}</TableHead>
                                 <TableHead>{t("restaurant.status")}</TableHead>
-                                <TableHead className="w-24 text-right">{t("common.actions")}</TableHead>
+                                <TableHead className="w-32 text-right">{t("common.actions")}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -181,7 +183,16 @@ const Restaurants = () => {
                                                 {t(`status.restaurant.${r.status}`)}
                                             </Badge>
                                         </TableCell>
-                                        <TableCell className="text-right">
+                                        <TableCell className="text-right whitespace-nowrap">
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => setImagesOf(r)}
+                                                aria-label={t("image.title")}
+                                                title={t("image.title")}
+                                            >
+                                                <Images className="h-4 w-4" />
+                                            </Button>
                                             {can("restaurant.update") && (
                                                 <Button
                                                     variant="ghost"
@@ -265,6 +276,22 @@ const Restaurants = () => {
                             </Button>
                         </DialogFooter>
                     </form>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={!!imagesOf} onOpenChange={(v) => !v && setImagesOf(null)}>
+                <DialogContent className="sm:max-w-2xl">
+                    <DialogHeader>
+                        <DialogTitle>{t("image.of", { name: imagesOf?.name })}</DialogTitle>
+                    </DialogHeader>
+                    {imagesOf && (
+                        <ImageManager
+                            key={`restaurant-${imagesOf.id}`}
+                            entityType="restaurant"
+                            entityId={imagesOf.id}
+                            canEdit={can("restaurant.update")}
+                        />
+                    )}
                 </DialogContent>
             </Dialog>
 

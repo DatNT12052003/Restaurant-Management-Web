@@ -4,3 +4,5 @@ export * from "./restaurantApi";
 export * from "./roomApi";
 export * from "./permissionApi";
 export * from "./request";
+export * from "./menuApi";
+export * from "./imageApi";
