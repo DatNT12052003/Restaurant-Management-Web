@@ -3,10 +3,9 @@ import { Navigate, Outlet, useLocation } from "react-router-dom";
 
 const AuthGuard = () => {
     const { isAuthenticated, isInitialized } = useAppSelector((state) => state.auth);
+    const location = useLocation();
 
     if (!isInitialized) return null;
-
-    const location = useLocation();
 
     if (!isAuthenticated) {
         return <Navigate to="/login" state={{ from: location }} replace />;

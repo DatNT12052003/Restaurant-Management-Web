@@ -19,27 +19,30 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useAppDispatch } from "@/hooks";
 import { logoutThunk } from "@/store/auth/authThunk";
-import type { ISidebarMenuItem } from "@/interfaces";
-import type { IUser } from "@/apis/userApi";
-
-const branches = [
-    { id: 1, name: "Nhà hàng Trung tâm" },
-    { id: 2, name: "Chi nhánh Hải Châu" },
-    { id: 3, name: "Chi nhánh Ngũ Hành Sơn" },
-];
+import { setCurrentBranch } from "@/store/restaurant/restaurantSlice";
+import type { IRestaurant, ISidebarMenuItem, IUser } from "@/interfaces";
 
 interface MainLayoutProps {
     mainMenuItems?: ISidebarMenuItem[];
     user?: IUser;
     roles?: string[];
+    branches?: IRestaurant[];
+    currentBranch?: IRestaurant | null;
     defaultCollapsed?: boolean;
 }
 
-const MainLayout = ({ defaultCollapsed = false, mainMenuItems = [], user, roles }: MainLayoutProps) => {
+const MainLayout = ({
+    defaultCollapsed = false,
+    mainMenuItems = [],
+    user,
+    roles,
+    branches,
+    currentBranch,
+}: MainLayoutProps) => {
     const dispatch = useAppDispatch();
     const [collapsed, setCollapsed] = useState(defaultCollapsed);
+    const [currentRestaurant, setCurrentRestaurant] = useState<IRestaurant | null>(currentBranch || null);
     const [isMobileOpen, setIsMobileOpen] = useState(false);
-    const [currentBranch, setCurrentBranch] = useState(branches[0]);
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -54,6 +57,11 @@ const MainLayout = ({ defaultCollapsed = false, mainMenuItems = [], user, roles 
     useEffect(() => {
         localStorage.setItem("sidebar_collapsed", String(collapsed));
     }, [collapsed]);
+
+    // Lưu chi nhánh đang chọn vào store (slice tự lưu localStorage)
+    useEffect(() => {
+        dispatch(setCurrentBranch(currentRestaurant));
+    }, [dispatch, currentRestaurant]);
 
     useEffect(() => {
         setIsMobileOpen(false);
@@ -122,8 +130,8 @@ const MainLayout = ({ defaultCollapsed = false, mainMenuItems = [], user, roles 
             <div className="mt-auto border-t border-sidebar-border p-4">
                 <div className={cn("flex items-center gap-3", collapsed && "justify-center")}>
                     <Avatar className="h-9 w-9">
-                        <AvatarImage src="/avatars/admin.png" alt="Admin" />
-                        <AvatarFallback>AD</AvatarFallback>
+                        <AvatarImage src={user?.avatar_url || ""} alt="avatar" />
+                        <AvatarFallback>{user?.full_name ? user.full_name.charAt(0) : "NA"}</AvatarFallback>
                     </Avatar>
                     {!collapsed && (
                         <div className="flex flex-col overflow-hidden">
@@ -150,9 +158,9 @@ const MainLayout = ({ defaultCollapsed = false, mainMenuItems = [], user, roles 
         </div>
     );
 
-    const handleLogout = () => {
-        dispatch(logoutThunk());
-        navigate("/login");
+    const handleLogout = async () => {
+        await dispatch(logoutThunk());
+        navigate("/login", { replace: true });
     };
 
     return (
@@ -192,22 +200,28 @@ const MainLayout = ({ defaultCollapsed = false, mainMenuItems = [], user, roles 
                                 <DropdownMenuTrigger asChild>
                                     <Button variant="outline" size="sm" className="gap-2">
                                         <Store className="h-4 w-4" />
-                                        <span className="hidden sm:inline">{currentBranch.name}</span>
+                                        <span className="hidden sm:inline">
+                                            {currentRestaurant?.name ?? "Chọn chi nhánh"}
+                                        </span>
                                     </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                    <DropdownMenuLabel>Chi nhánh hiện tại</DropdownMenuLabel>
-                                    <DropdownMenuSeparator />
-                                    {branches.map((branch) => (
-                                        <DropdownMenuItem
-                                            key={branch.id}
-                                            onClick={() => setCurrentBranch(branch)}
-                                            className={cn(currentBranch.id === branch.id && "bg-accent")}
-                                        >
-                                            {branch.name}
-                                        </DropdownMenuItem>
-                                    ))}
-                                </DropdownMenuContent>
+                                {branches && branches?.length > 0 && (
+                                    <DropdownMenuContent align="end">
+                                        <DropdownMenuLabel>Chi nhánh hiện tại</DropdownMenuLabel>
+                                        <DropdownMenuSeparator />
+                                        {branches.map((branch) => (
+                                            <DropdownMenuItem
+                                                key={branch.id}
+                                                onClick={() => {
+                                                    setCurrentRestaurant(branch);
+                                                }}
+                                                className={cn(currentRestaurant?.id === branch.id && "bg-accent")}
+                                            >
+                                                {branch.name}
+                                            </DropdownMenuItem>
+                                        ))}
+                                    </DropdownMenuContent>
+                                )}
                             </DropdownMenu>
                         )}
 
@@ -222,8 +236,10 @@ const MainLayout = ({ defaultCollapsed = false, mainMenuItems = [], user, roles 
                             <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" className="relative h-9 w-9 rounded-full">
                                     <Avatar className="h-9 w-9">
-                                        <AvatarImage src="/avatars/admin.png" />
-                                        <AvatarFallback>NA</AvatarFallback>
+                                        <AvatarImage src={user?.avatar_url || ""} alt="avatar" />
+                                        <AvatarFallback>
+                                            {user?.full_name ? user.full_name.charAt(0) : "NA"}
+                                        </AvatarFallback>
                                     </Avatar>
                                 </Button>
                             </DropdownMenuTrigger>
