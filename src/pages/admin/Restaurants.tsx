@@ -24,7 +24,7 @@ import { getErrorMessage } from "@/lib/api-error";
 import { getAllRestaurantsThunk } from "@/store/restaurant/restaurantThunk";
 
 const PAGE_SIZE = 10;
-const EMPTY_FORM: IRestaurantPayload = { name: "", address: "", status: "unblocked" };
+const EMPTY_FORM: IRestaurantPayload = { name: "", address: "", status: "unblocked", service_fee_percent: 0, tax_percent: 0 };
 
 const Restaurants = () => {
     const { t } = useTranslation("admin");
@@ -64,7 +64,13 @@ const Restaurants = () => {
 
     const openEdit = (restaurant: IRestaurant) => {
         setEditing(restaurant);
-        setForm({ name: restaurant.name, address: restaurant.address, status: restaurant.status });
+        setForm({
+            name: restaurant.name,
+            address: restaurant.address,
+            status: restaurant.status,
+            service_fee_percent: Number(restaurant.service_fee_percent ?? 0),
+            tax_percent: Number(restaurant.tax_percent ?? 0),
+        });
         setFormOpen(true);
     };
 
@@ -265,6 +271,33 @@ const Restaurants = () => {
                                         <SelectItem value="blocked">{t("status.restaurant.blocked")}</SelectItem>
                                     </SelectContent>
                                 </Select>
+                            </div>
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="grid gap-2">
+                                    <Label htmlFor="r-fee">{t("restaurant.service_fee_percent")}</Label>
+                                    <Input
+                                        id="r-fee"
+                                        type="number"
+                                        min={0}
+                                        max={100}
+                                        step="0.01"
+                                        value={form.service_fee_percent ?? 0}
+                                        onChange={(e) => setForm({ ...form, service_fee_percent: e.target.value })}
+                                    />
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="r-tax">{t("restaurant.tax_percent")}</Label>
+                                    <Input
+                                        id="r-tax"
+                                        type="number"
+                                        min={0}
+                                        max={100}
+                                        step="0.01"
+                                        value={form.tax_percent ?? 0}
+                                        onChange={(e) => setForm({ ...form, tax_percent: e.target.value })}
+                                    />
+                                </div>
+                                <p className="col-span-2 text-xs text-muted-foreground">{t("restaurant.fee_hint")}</p>
                             </div>
                         </div>
                         <DialogFooter>

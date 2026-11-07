@@ -1,6 +1,7 @@
 import type { KitchenStationEnum, OrderItemStatusEnum, OrderStatusEnum } from "@/enum";
 import type { IPagination } from "./common.interface";
 import type { IReservationTable } from "./reservation.interface";
+import type { IPayment } from "./payment.interface";
 
 export type OrderLineKind = "dish" | "combo";
 
@@ -62,10 +63,19 @@ export interface IOrder {
     assigned_staff_name?: string | null;
     guest?: { id: number; full_name: string; phone_number: string | null } | null;
     line_counts?: Partial<Record<OrderItemStatusEnum, number>>;
+    /** Giai đoạn 5: phí / thuế, đã thu, đang chờ, mã giảm giá */
+    service_fee_rate?: string;
+    tax_rate?: string;
+    service_fee?: string;
+    tax?: string;
+    paid_amount?: string;
+    pending_amount?: string;
+    discount?: { id: number; code: string; name: string; type: string; value: string; min_order_value: string; amount: string } | null;
 }
 
 export interface IOrderDetail extends IOrder {
     rounds: IOrderRound[];
+    payments: IPayment[];
 }
 
 export interface IGetOrders {

@@ -6,6 +6,9 @@ export interface IRestaurant {
     name: string;
     status: RestaurantStatusEnum;
     address: string;
+    /** Phí dịch vụ / thuế (%) áp cho order mới */
+    service_fee_percent?: string;
+    tax_percent?: string;
     created_at?: string;
     updated_at?: string;
 }
@@ -23,4 +26,6 @@ export interface IRestaurantPayload {
     name: string;
     address: string;
     status?: RestaurantStatusEnum;
+    service_fee_percent?: number | string;
+    tax_percent?: number | string;
 }

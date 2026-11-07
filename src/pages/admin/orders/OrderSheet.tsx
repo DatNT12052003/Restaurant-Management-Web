@@ -71,7 +71,7 @@ const Body = ({ orderId, freeTables, onChanged }: { orderId: number; freeTables:
         }
     }, [orderId]);
     const { data: order, loading, reload } = useAsyncData(fetcher);
-    useRealtime(["order:updated", "order:round_sent", "order_item:status_changed"], reload);
+    useRealtime(["order:updated", "order:round_sent", "order_item:status_changed", "payment:changed"], reload);
 
     const [busy, setBusy] = useState(false);
     const [roundOpen, setRoundOpen] = useState(false);
@@ -105,6 +105,8 @@ const Body = ({ orderId, freeTables, onChanged }: { orderId: number; freeTables:
     const lines = order.rounds.flatMap((r) => r.lines);
     const readyLines = lines.filter((l) => l.status === "ready");
     const unfinished = lines.filter((l) => ["pending", "confirmed", "cooking", "ready"].includes(l.status)).length;
+    // Giai đoạn 5: hoàn tất cần thu đủ tiền (thường do thu ngân, order tự hoàn tất khi thu đủ)
+    const unpaid = Number(order.total) - Number(order.paid_amount ?? 0) > 0;
 
     const serveAllReady = async () => {
         setBusy(true);
@@ -204,7 +206,7 @@ const Body = ({ orderId, freeTables, onChanged }: { orderId: number; freeTables:
                                 <Pencil className="h-4 w-4" />
                                 {t("common.edit")}
                             </Button>
-                            <Button size="sm" variant="outline" onClick={() => setCompleteOpen(true)} disabled={busy || unfinished > 0} title={unfinished > 0 ? t("order.complete_hint") : undefined}>
+                            <Button size="sm" variant="outline" onClick={() => setCompleteOpen(true)} disabled={busy || unfinished > 0 || unpaid} title={unfinished > 0 ? t("order.complete_hint") : unpaid ? t("order.unpaid_hint") : undefined}>
                                 <CircleCheck className="h-4 w-4" />
                                 {t("order.complete")}
                             </Button>
@@ -266,14 +268,41 @@ const Body = ({ orderId, freeTables, onChanged }: { orderId: number; freeTables:
                 </div>
                 {Number(order.discount_amount) > 0 && (
                     <div className="flex justify-between text-muted-foreground">
-                        <span>{t("order.discount")}</span>
+                        <span>
+                            {t("order.discount")}
+                            {order.discount && ` (${order.discount.code})`}
+                        </span>
                         <span>-{formatMoney(order.discount_amount)}</span>
+                    </div>
+                )}
+                {Number(order.service_fee ?? 0) > 0 && (
+                    <div className="flex justify-between text-muted-foreground">
+                        <span>{t("cashier.service_fee", { rate: Number(order.service_fee_rate) })}</span>
+                        <span>{formatMoney(order.service_fee)}</span>
+                    </div>
+                )}
+                {Number(order.tax ?? 0) > 0 && (
+                    <div className="flex justify-between text-muted-foreground">
+                        <span>{t("cashier.tax", { rate: Number(order.tax_rate) })}</span>
+                        <span>{formatMoney(order.tax)}</span>
                     </div>
                 )}
                 <div className="flex justify-between text-base font-semibold">
                     <span>{t("order.total")}</span>
                     <span>{formatMoney(order.total)}</span>
                 </div>
+                {Number(order.paid_amount ?? 0) > 0 && (
+                    <>
+                        <div className="flex justify-between text-emerald-700 dark:text-emerald-300">
+                            <span>{t("cashier.paid")}</span>
+                            <span>{formatMoney(order.paid_amount)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span>{t("cashier.remaining")}</span>
+                            <span>{formatMoney(Math.max(0, Number(order.total) - Number(order.paid_amount)))}</span>
+                        </div>
+                    </>
+                )}
             </div>
 
             <RoundDialog order={roundOpen ? order : null} onOpenChange={setRoundOpen} onSent={() => (reload(), onChanged())} />
