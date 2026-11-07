@@ -26,7 +26,7 @@
         "tables": "Rooms & tables",
         "permissions": "Permissions",
         "menu": "Menu",
-        "orders": "Orders",
+        "orders": "Service",
         "inventory": "Inventory",
         "reports": "Reports",
         "title": "Menu",
@@ -86,7 +86,8 @@
         "use_base_price": "Base price",
         "reset_price": "Use base price",
         "invalid_price": "Price must be a non-negative number",
-        "reservations": "Reservations"
+        "reservations": "Reservations",
+        "kitchen": "Kitchen & bar"
     },
     "roles": {
         "admin": "Administrator",
@@ -139,6 +140,21 @@
             "completed": "Completed",
             "cancelled": "Cancelled",
             "no_show": "No-show"
+        },
+        "order": {
+            "pending": "Pending",
+            "confirmed": "Opened",
+            "serving": "Serving",
+            "completed": "Completed",
+            "cancelled": "Cancelled"
+        },
+        "order_item": {
+            "pending": "Waiting",
+            "confirmed": "Accepted",
+            "cooking": "Cooking",
+            "ready": "Ready",
+            "served": "Served",
+            "cancelled": "Cancelled"
         }
     },
     "user": {
@@ -255,7 +271,9 @@
             "permission": "Permissions",
             "dish": "Dishes & tags",
             "combo": "Combos",
-            "reservation": "Reservations"
+            "reservation": "Reservations",
+            "order": "Orders",
+            "order_item": "Order items"
         },
         "actions": {
             "create": "Create",
@@ -263,7 +281,10 @@
             "update": "Update",
             "delete": "Delete",
             "assign": "Assign",
-            "availability": "Branch on/off & price"
+            "availability": "Branch on/off & price",
+            "cancel": "Cancel",
+            "prepare": "Prepare",
+            "serve": "Serve"
         }
     },
     "profile": {
@@ -358,6 +379,98 @@
             "pick_time_first": "Choose a valid time to see free tables.",
             "no_free_tables": "No free tables at this time.",
             "tables_hint": "Only tables free at this time are shown; a dashed border marks a suggested table."
+        },
+        "order_link": "Order {{code}}"
+    },
+    "order": {
+        "title": "Service",
+        "description": "Floor plan with open orders: open orders, order in rounds, serve, transfer tables.",
+        "select_branch_first": "Select a branch in the top-right corner.",
+        "tab_floor": "Floor plan",
+        "tab_history": "Order history",
+        "open_orders": "Open orders",
+        "minutes": "{{count}} min",
+        "not_found": "Order not found",
+        "code": "Order code",
+        "opened_at": "Opened at",
+        "search_code": "Search by order code...",
+        "opened_info": "Opened at {{time}} · assigned to: {{name}}",
+        "note": "Note",
+        "reason": "Reason",
+        "add_round": "Add items",
+        "serve_all": "Serve {{count}} ready items",
+        "served_all": "Served {{count}} items",
+        "serve": "Serve",
+        "add_table": "Add table",
+        "add_table_title": "Add tables",
+        "transfer_table": "Transfer table",
+        "transfer_title": "Move {{name}} to another table",
+        "release_table": "Release table",
+        "no_free_tables": "No free tables.",
+        "complete": "Complete",
+        "complete_hint": "Some items are not served yet",
+        "complete_title": "Complete order {{code}}?",
+        "complete_desc": "Total {{total}}. Its tables will be marked as cleaning.",
+        "cancel": "Cancel order",
+        "cancel_title": "Cancel order {{code}}?",
+        "cancel_desc": "You can cancel only before any item is served. All remaining items will be cancelled.",
+        "cancel_line": "Cancel item",
+        "cancel_line_title": "Cancel {{name}}?",
+        "cancel_line_placeholder": "E.g. the guest changed their mind, out of ingredients...",
+        "edit_title": "Edit order {{code}}",
+        "no_rounds": "No items ordered yet.",
+        "round_label": "Round {{no}}",
+        "subtotal": "Subtotal",
+        "discount": "Discount",
+        "total": "Total",
+        "open": "Open order",
+        "open_title": "Open an order for {{name}}",
+        "from_reservation": "Guests booked this table today:",
+        "extra_tables": "Add more tables (optional)",
+        "seats_warning": "More guests than seats ({{seats}}); add chairs or tables.",
+        "round": {
+            "title": "{{code}} · round {{no}}",
+            "tab_all": "All",
+            "tab_food": "Food",
+            "tab_drink": "Drinks",
+            "tab_combo": "Combos",
+            "search": "Search items...",
+            "no_items": "No items on sale.",
+            "combo": "Combo",
+            "for_table": "For table",
+            "cart": "Items in this round ({{count}})",
+            "cart_hint": "Click an item on the left to add it.",
+            "line_note": "Item note",
+            "round_note": "Note for the whole round (optional)",
+            "total": "Round total",
+            "send": "Send to kitchen",
+            "empty_cart": "No items selected"
+        }
+    },
+    "kitchen": {
+        "title": "Kitchen & bar",
+        "description": "Items to prepare in the order they were sent, updated instantly.",
+        "empty": "No items",
+        "reject": "Reject item (out of ingredients...)",
+        "reject_title": "Reject {{name}}?",
+        "reject_placeholder": "E.g. out of ingredients",
+        "station": {
+            "kitchen": "Kitchen",
+            "bar": "Bar",
+            "all": "All"
+        },
+        "column": {
+            "pending": "New",
+            "confirmed": "Accepted",
+            "cooking": "Cooking",
+            "ready": "Ready to serve"
+        },
+        "action": {
+            "confirmed": "Accept",
+            "cooking": "Start cooking",
+            "ready": "Done",
+            "served": "Served",
+            "cook_now": "Cook now"
         }
     }
 }
