@@ -7,6 +7,7 @@ import Profile from "@/pages/admin/Profile";
 import Restaurants from "@/pages/admin/Restaurants";
 import RoomsTables from "@/pages/admin/RoomsTables";
 import Menu from "@/pages/admin/menu/Menu";
+import Reservations from "@/pages/admin/reservations/Reservations";
 import RequirePermission from "./guards/RequirePermission";
 
 export const adminRoutes: RouteObject[] = [
@@ -45,6 +46,14 @@ export const adminRoutes: RouteObject[] = [
         element: (
             <RequirePermission permission={["room.view", "table.view"]}>
                 <RoomsTables />
+            </RequirePermission>
+        ),
+    },
+    {
+        path: "reservations",
+        element: (
+            <RequirePermission permission="reservation.view">
+                <Reservations />
             </RequirePermission>
         ),
     },

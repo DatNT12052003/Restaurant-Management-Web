@@ -85,7 +85,8 @@
         "current_price": "Giá bán",
         "use_base_price": "Giá gốc",
         "reset_price": "Dùng giá gốc",
-        "invalid_price": "Giá phải là số không âm"
+        "invalid_price": "Giá phải là số không âm",
+        "reservations": "Đặt bàn"
     },
     "roles": {
         "admin": "Quản trị viên",
@@ -130,6 +131,14 @@
             "male": "Nam",
             "female": "Nữ",
             "other": "Khác"
+        },
+        "reservation": {
+            "pending": "Chờ xác nhận",
+            "confirmed": "Đã xác nhận",
+            "arrived": "Đã đến",
+            "completed": "Hoàn tất",
+            "cancelled": "Đã hủy",
+            "no_show": "Không đến"
         }
     },
     "user": {
@@ -245,7 +254,8 @@
             "table": "Bàn",
             "permission": "Phân quyền",
             "dish": "Món ăn & thẻ",
-            "combo": "Combo"
+            "combo": "Combo",
+            "reservation": "Đặt bàn"
         },
         "actions": {
             "create": "Tạo",
@@ -278,5 +288,76 @@
         "too_many": "Chỉ chọn tối đa {{max}} ảnh mỗi lần",
         "too_large": "Mỗi ảnh tối đa {{size}} MB",
         "save_first": "Lưu trước, sau đó có thể thêm ảnh."
+    },
+    "reservation": {
+        "title": "Đặt bàn",
+        "description": "Lịch đặt bàn theo ngày của chi nhánh: tiếp nhận, xếp bàn, xác nhận và đón khách.",
+        "select_branch_first": "Hãy chọn chi nhánh ở góc trên bên phải để xem lịch đặt bàn.",
+        "add": "Đặt bàn",
+        "create": "Đặt bàn mới",
+        "edit": "Sửa đặt bàn",
+        "today": "Hôm nay",
+        "prev_day": "Ngày trước",
+        "next_day": "Ngày sau",
+        "view_timeline": "Theo bàn",
+        "view_list": "Danh sách",
+        "filter": {
+            "active": "Còn hiệu lực",
+            "all": "Tất cả"
+        },
+        "guests_expected": "Dự kiến {{count}} khách",
+        "search_placeholder": "Tìm theo tên hoặc SĐT...",
+        "empty": "Không có đặt bàn nào trong ngày.",
+        "time": "Thời gian",
+        "contact": "Liên hệ",
+        "contact_name": "Tên liên hệ",
+        "contact_phone": "SĐT liên hệ",
+        "guest_count": "Số khách",
+        "status": "Trạng thái",
+        "note": "Ghi chú / yêu cầu đặc biệt",
+        "guests": "{{count}} khách",
+        "seats_total": "{{count}} ghế",
+        "linked_guest": "Khách có tài khoản: {{name}}",
+        "cancel_reason": "Lý do",
+        "cancel_reason_placeholder": "Ví dụ: khách báo bận, không liên lạc được...",
+        "created_info": "Tạo bởi {{name}} lúc {{time}}",
+        "no_show_hint": "Chỉ đánh dấu không đến sau giờ hẹn",
+        "delete_title": "Xóa đặt bàn",
+        "delete_desc": "Xóa đặt bàn của \"{{name}}\"? Bàn sẽ được giải phóng.",
+        "action": {
+            "pending": "Chờ xác nhận",
+            "confirmed": "Xác nhận",
+            "arrived": "Khách đã đến",
+            "completed": "Hoàn tất",
+            "cancelled": "Hủy đặt bàn",
+            "no_show": "Khách không đến"
+        },
+        "timeline": {
+            "table": "Bàn",
+            "click_to_create": "Bấm vào ô trống để đặt bàn từ giờ này"
+        },
+        "form": {
+            "date": "Ngày",
+            "start": "Giờ bắt đầu",
+            "end": "Giờ kết thúc",
+            "next_day": "Giờ kết thúc thuộc ngày hôm sau.",
+            "invalid_time": "Giờ kết thúc phải sau giờ bắt đầu, tối đa {{max}} giờ.",
+            "invalid_guest_count": "Số khách không hợp lệ",
+            "tables_required": "Hãy chọn ít nhất một bàn",
+            "all_room_types": "Mọi loại phòng",
+            "guest_account": "Khách có tài khoản (không bắt buộc)",
+            "guest_search_placeholder": "Tìm khách theo tên, SĐT, email...",
+            "guest_account_hint": "Liên kết để lưu lịch sử đặt bàn của khách; tên và SĐT để trống sẽ lấy từ hồ sơ.",
+            "unlink_guest": "Bỏ liên kết",
+            "note_placeholder": "Ví dụ: ghế trẻ em, sinh nhật, gần cửa sổ...",
+            "confirm_now": "Xác nhận ngay (đã gọi lại cho khách)",
+            "tables": "Bàn",
+            "use_suggestion": "Dùng gợi ý",
+            "selected_summary": "Đã chọn {{tables}} bàn · {{seats}} ghế cho {{guests}} khách",
+            "tables_dropped": "{{count}} bàn đã chọn không còn trống trong khung giờ này và đã được bỏ ra.",
+            "pick_time_first": "Chọn thời gian hợp lệ để xem bàn trống.",
+            "no_free_tables": "Không còn bàn trống trong khung giờ này.",
+            "tables_hint": "Chỉ hiện bàn còn trống trong khung giờ; viền đứt là bàn được gợi ý."
+        }
     }
 }

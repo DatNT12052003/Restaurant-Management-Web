@@ -85,7 +85,8 @@
         "current_price": "Selling price",
         "use_base_price": "Base price",
         "reset_price": "Use base price",
-        "invalid_price": "Price must be a non-negative number"
+        "invalid_price": "Price must be a non-negative number",
+        "reservations": "Reservations"
     },
     "roles": {
         "admin": "Administrator",
@@ -130,6 +131,14 @@
             "male": "Male",
             "female": "Female",
             "other": "Other"
+        },
+        "reservation": {
+            "pending": "Pending",
+            "confirmed": "Confirmed",
+            "arrived": "Arrived",
+            "completed": "Completed",
+            "cancelled": "Cancelled",
+            "no_show": "No-show"
         }
     },
     "user": {
@@ -245,7 +254,8 @@
             "table": "Tables",
             "permission": "Permissions",
             "dish": "Dishes & tags",
-            "combo": "Combos"
+            "combo": "Combos",
+            "reservation": "Reservations"
         },
         "actions": {
             "create": "Create",
@@ -278,5 +288,76 @@
         "too_many": "Select at most {{max}} images at a time",
         "too_large": "Each image must be at most {{size}} MB",
         "save_first": "Save first, then you can add images."
+    },
+    "reservation": {
+        "title": "Reservations",
+        "description": "Daily reservation schedule for the branch: take bookings, assign tables, confirm and check guests in.",
+        "select_branch_first": "Select a branch in the top-right corner to view reservations.",
+        "add": "New reservation",
+        "create": "New reservation",
+        "edit": "Edit reservation",
+        "today": "Today",
+        "prev_day": "Previous day",
+        "next_day": "Next day",
+        "view_timeline": "By table",
+        "view_list": "List",
+        "filter": {
+            "active": "Active",
+            "all": "All"
+        },
+        "guests_expected": "{{count}} guests expected",
+        "search_placeholder": "Search by name or phone...",
+        "empty": "No reservations on this day.",
+        "time": "Time",
+        "contact": "Contact",
+        "contact_name": "Contact name",
+        "contact_phone": "Contact phone",
+        "guest_count": "Guests",
+        "status": "Status",
+        "note": "Notes / special requests",
+        "guests": "{{count}} guests",
+        "seats_total": "{{count}} seats",
+        "linked_guest": "Guest account: {{name}}",
+        "cancel_reason": "Reason",
+        "cancel_reason_placeholder": "E.g. the guest is busy, could not be reached...",
+        "created_info": "Created by {{name}} at {{time}}",
+        "no_show_hint": "You can mark a no-show only after the start time",
+        "delete_title": "Delete reservation",
+        "delete_desc": "Delete the reservation for \"{{name}}\"? Its tables will be released.",
+        "action": {
+            "pending": "Pending",
+            "confirmed": "Confirm",
+            "arrived": "Guests arrived",
+            "completed": "Complete",
+            "cancelled": "Cancel reservation",
+            "no_show": "No-show"
+        },
+        "timeline": {
+            "table": "Table",
+            "click_to_create": "Click an empty slot to book from this time"
+        },
+        "form": {
+            "date": "Date",
+            "start": "Start time",
+            "end": "End time",
+            "next_day": "The end time is on the next day.",
+            "invalid_time": "The end time must be after the start time, at most {{max}} hours.",
+            "invalid_guest_count": "Invalid guest count",
+            "tables_required": "Select at least one table",
+            "all_room_types": "All room types",
+            "guest_account": "Guest account (optional)",
+            "guest_search_placeholder": "Search guests by name, phone, email...",
+            "guest_account_hint": "Linking keeps the guest's booking history; an empty name or phone is taken from their profile.",
+            "unlink_guest": "Unlink",
+            "note_placeholder": "E.g. high chair, birthday, by the window...",
+            "confirm_now": "Confirm now (already called the guest back)",
+            "tables": "Tables",
+            "use_suggestion": "Use suggestion",
+            "selected_summary": "{{tables}} tables selected · {{seats}} seats for {{guests}} guests",
+            "tables_dropped": "{{count}} selected tables are no longer free at this time and were removed.",
+            "pick_time_first": "Choose a valid time to see free tables.",
+            "no_free_tables": "No free tables at this time.",
+            "tables_hint": "Only tables free at this time are shown; a dashed border marks a suggested table."
+        }
     }
 }

@@ -2,6 +2,7 @@ import MainLayout from "./MainLayout";
 import {
     BarChart3,
     Building2,
+    CalendarClock,
     ClipboardList,
     LayoutDashboard,
     MenuIcon,
@@ -40,6 +41,12 @@ const AdminLayout = () => {
         { path: "/admin/employees", label: t("menu.employees"), icon: Users, permission: "employee.view" },
         { path: "/admin/guests", label: t("menu.guests"), icon: User2, permission: "guest.view" },
         { path: "/admin/tables", label: t("menu.tables"), icon: Table2, permission: "room.view" },
+        {
+            path: "/admin/reservations",
+            label: t("menu.reservations"),
+            icon: CalendarClock,
+            permission: "reservation.view",
+        },
         { path: "/admin/permissions", label: t("menu.permissions"), icon: ShieldCheck, permission: "permission.view" },
         { path: "/admin/menu", label: t("menu.menu"), icon: MenuIcon, permission: ["dish.view", "combo.view"] },
         { path: "/admin/orders", label: t("menu.orders"), icon: ClipboardList },
