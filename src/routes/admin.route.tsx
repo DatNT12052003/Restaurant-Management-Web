@@ -10,6 +10,8 @@ import Menu from "@/pages/admin/menu/Menu";
 import Reservations from "@/pages/admin/reservations/Reservations";
 import Orders from "@/pages/admin/orders/Orders";
 import Kitchen from "@/pages/admin/kitchen/Kitchen";
+import Cashier from "@/pages/admin/cashier/Cashier";
+import Discounts from "@/pages/admin/Discounts";
 import RequirePermission from "./guards/RequirePermission";
 
 export const adminRoutes: RouteObject[] = [
@@ -56,6 +58,22 @@ export const adminRoutes: RouteObject[] = [
         element: (
             <RequirePermission permission="order.view">
                 <Orders />
+            </RequirePermission>
+        ),
+    },
+    {
+        path: "cashier",
+        element: (
+            <RequirePermission permission="payment.view">
+                <Cashier />
+            </RequirePermission>
+        ),
+    },
+    {
+        path: "discounts",
+        element: (
+            <RequirePermission permission="discount.view">
+                <Discounts />
             </RequirePermission>
         ),
     },

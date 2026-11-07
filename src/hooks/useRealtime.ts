@@ -8,7 +8,8 @@ export type RealtimeEvent =
     | "order:round_sent"
     | "order_item:status_changed"
     | "table:status_changed"
-    | "reservation:changed";
+    | "reservation:changed"
+    | "payment:changed";
 
 /**
  * Gọi `handler` khi nhận một trong `events` (gộp các sự kiện dồn dập trong `delayMs`), và khi socket kết nối lại

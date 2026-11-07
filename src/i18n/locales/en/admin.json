@@ -87,7 +87,9 @@
         "reset_price": "Use base price",
         "invalid_price": "Price must be a non-negative number",
         "reservations": "Reservations",
-        "kitchen": "Kitchen & bar"
+        "kitchen": "Kitchen & bar",
+        "cashier": "Cashier",
+        "discounts": "Discounts"
     },
     "roles": {
         "admin": "Administrator",
@@ -155,6 +157,18 @@
             "ready": "Ready",
             "served": "Served",
             "cancelled": "Cancelled"
+        },
+        "payment": {
+            "pending": "Pending",
+            "processing": "Processing",
+            "paid": "Paid",
+            "failed": "Failed",
+            "cancelled": "Cancelled",
+            "refunded": "Refunded"
+        },
+        "discount": {
+            "active": "Active",
+            "inactive": "Inactive"
         }
     },
     "user": {
@@ -180,7 +194,10 @@
         "status": "Status",
         "search_placeholder": "Search by name or address...",
         "delete_title": "Delete restaurant",
-        "delete_desc": "Delete \"{{name}}\"? A restaurant can only be deleted when it has no rooms and no staff."
+        "delete_desc": "Delete \"{{name}}\"? A restaurant can only be deleted when it has no rooms and no staff.",
+        "service_fee_percent": "Service fee (%)",
+        "tax_percent": "Tax (%)",
+        "fee_hint": "Applies to orders opened after saving; open orders keep their current rates."
     },
     "room": {
         "title": "Rooms & tables",
@@ -273,7 +290,9 @@
             "combo": "Combos",
             "reservation": "Reservations",
             "order": "Orders",
-            "order_item": "Order items"
+            "order_item": "Order items",
+            "payment": "Payments",
+            "discount": "Discounts"
         },
         "actions": {
             "create": "Create",
@@ -284,7 +303,9 @@
             "availability": "Branch on/off & price",
             "cancel": "Cancel",
             "prepare": "Prepare",
-            "serve": "Serve"
+            "serve": "Serve",
+            "refund": "Refund",
+            "apply": "Apply to orders"
         }
     },
     "profile": {
@@ -445,7 +466,8 @@
             "total": "Round total",
             "send": "Send to kitchen",
             "empty_cart": "No items selected"
-        }
+        },
+        "unpaid_hint": "Not fully paid; the order completes automatically once the cashier collects payment"
     },
     "kitchen": {
         "title": "Kitchen & bar",
@@ -472,5 +494,111 @@
             "served": "Served",
             "cook_now": "Cook now"
         }
+    },
+    "cashier": {
+        "title": "Cashier",
+        "description": "Check out orders: invoice, discount codes, split or multi-method payments, refunds.",
+        "tab_checkout": "Checkout",
+        "tab_history": "Transactions",
+        "search": "Search by order code or table...",
+        "no_open_orders": "No open orders.",
+        "select_order": "Select an order to check out.",
+        "ready_to_pay": "Ready to pay",
+        "items_left": "{{count}} items not served",
+        "due_left": "{{amount}} due",
+        "fully_paid": "Fully paid",
+        "unfinished_hint": "{{count}} items are not served yet; you can take payment now, the order completes once everything is served.",
+        "discount_code": "Discount code",
+        "discount_placeholder": "Enter a code...",
+        "apply": "Apply",
+        "remove_discount": "Remove code",
+        "discount_zero": "(minimum order value not reached)",
+        "take_payment": "Take payment · {{amount}} due",
+        "amount": "Amount",
+        "amount_too_high": "Exceeds the amount due",
+        "split_hint": "Partial payment; the remaining {{rest}} can be paid later (with another method).",
+        "received": "Cash received",
+        "received_too_low": "Cash received is less than the amount",
+        "change": "Change",
+        "reference": "Transaction reference (optional)",
+        "pending_hint": "Awaiting confirmation (money not received yet)",
+        "collect": "Collect {{amount}}",
+        "payments": "Payments",
+        "confirm": "Received",
+        "mark_failed": "Failed",
+        "refund": "Refund",
+        "refund_label": "Refund",
+        "refund_title": "Refund payment {{amount}} ({{method}})",
+        "refund_amount": "Refund amount (max {{max}})",
+        "refund_audit_hint": "Refunds are recorded in the audit log.",
+        "complete": "Complete order",
+        "print": "Print invoice",
+        "invoice_short": "Invoice",
+        "paid": "Paid",
+        "remaining": "Amount due",
+        "overpaid": "Overpaid (refund needed)",
+        "service_fee": "Service fee ({{rate}}%)",
+        "tax": "Tax ({{rate}}%)",
+        "method": {
+            "cash": "Cash",
+            "card": "Card",
+            "transfer": "Bank transfer"
+        },
+        "type": {
+            "payment": "Payment",
+            "refund": "Refund"
+        },
+        "all_methods": "All methods",
+        "all_types": "Payments and refunds",
+        "method_label": "Method",
+        "time": "Time",
+        "cashier": "Cashier",
+        "summary": {
+            "collected": "Collected",
+            "refunded": "Refunded",
+            "net": "Net"
+        },
+        "invoice": {
+            "title": "INVOICE",
+            "completed_at": "Paid at",
+            "staff": "Staff",
+            "item": "Item",
+            "qty": "Qty",
+            "amount": "Amount",
+            "thanks": "Thank you, see you again!"
+        }
+    },
+    "discount": {
+        "title": "Discounts",
+        "description": "Percentage or fixed-amount discounts; at most one code per order.",
+        "add": "Add discount",
+        "edit": "Edit discount",
+        "search": "Search by code or name...",
+        "code": "Code",
+        "name": "Name",
+        "description_field": "Description",
+        "value": "Discount",
+        "scope": "Scope",
+        "chain_wide": "Whole chain",
+        "period": "Period",
+        "no_end": "No end date",
+        "usage": "Used",
+        "type": "Type",
+        "type_percent": "Percentage",
+        "type_fixed": "Fixed amount",
+        "value_percent": "Discount (%)",
+        "value_fixed": "Discount (VND)",
+        "min_order": "Minimum order (VND)",
+        "max_discount": "Maximum discount (VND)",
+        "start_at": "Starts",
+        "end_at": "Ends",
+        "usage_limit": "Total uses",
+        "per_user_limit": "Uses per guest",
+        "unlimited": "Unlimited",
+        "form_hint": "A per-guest limit only works for orders linked to a guest account.",
+        "min_short": "Orders from {{amount}}",
+        "max_short": "max {{amount}}",
+        "delete_title": "Delete discount",
+        "delete_desc": "Delete code {{code}}? Orders that used it keep their discount."
     }
 }

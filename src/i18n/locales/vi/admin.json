@@ -87,7 +87,9 @@
         "reset_price": "Dùng giá gốc",
         "invalid_price": "Giá phải là số không âm",
         "reservations": "Đặt bàn",
-        "kitchen": "Bếp & pha chế"
+        "kitchen": "Bếp & pha chế",
+        "cashier": "Thu ngân",
+        "discounts": "Mã giảm giá"
     },
     "roles": {
         "admin": "Quản trị viên",
@@ -155,6 +157,18 @@
             "ready": "Đã xong",
             "served": "Đã phục vụ",
             "cancelled": "Đã hủy"
+        },
+        "payment": {
+            "pending": "Chờ xác nhận",
+            "processing": "Đang xử lý",
+            "paid": "Đã thanh toán",
+            "failed": "Thất bại",
+            "cancelled": "Đã hủy",
+            "refunded": "Đã hoàn tiền"
+        },
+        "discount": {
+            "active": "Đang áp dụng",
+            "inactive": "Tạm ngưng"
         }
     },
     "user": {
@@ -180,7 +194,10 @@
         "status": "Trạng thái",
         "search_placeholder": "Tìm theo tên hoặc địa chỉ...",
         "delete_title": "Xóa nhà hàng",
-        "delete_desc": "Xóa nhà hàng \"{{name}}\"? Chỉ xóa được khi nhà hàng không còn phòng và nhân viên."
+        "delete_desc": "Xóa nhà hàng \"{{name}}\"? Chỉ xóa được khi nhà hàng không còn phòng và nhân viên.",
+        "service_fee_percent": "Phí dịch vụ (%)",
+        "tax_percent": "Thuế (%)",
+        "fee_hint": "Áp cho order mở sau khi lưu; order đang mở giữ tỷ lệ cũ."
     },
     "room": {
         "title": "Phòng & bàn",
@@ -273,7 +290,9 @@
             "combo": "Combo",
             "reservation": "Đặt bàn",
             "order": "Order",
-            "order_item": "Món trong order"
+            "order_item": "Món trong order",
+            "payment": "Thanh toán",
+            "discount": "Mã giảm giá"
         },
         "actions": {
             "create": "Tạo",
@@ -284,7 +303,9 @@
             "availability": "Bật/tắt & giá chi nhánh",
             "cancel": "Hủy",
             "prepare": "Chế biến",
-            "serve": "Phục vụ"
+            "serve": "Phục vụ",
+            "refund": "Hoàn tiền",
+            "apply": "Áp cho order"
         }
     },
     "profile": {
@@ -445,7 +466,8 @@
             "total": "Thành tiền đợt này",
             "send": "Gửi bếp",
             "empty_cart": "Chưa chọn món nào"
-        }
+        },
+        "unpaid_hint": "Chưa thu đủ tiền; thu ngân thanh toán xong order sẽ tự hoàn tất"
     },
     "kitchen": {
         "title": "Bếp & pha chế",
@@ -472,5 +494,111 @@
             "served": "Đã phục vụ",
             "cook_now": "Làm luôn"
         }
+    },
+    "cashier": {
+        "title": "Thu ngân",
+        "description": "Thanh toán order: hóa đơn, mã giảm giá, thu nhiều lần hoặc nhiều phương thức, hoàn tiền.",
+        "tab_checkout": "Thu tiền",
+        "tab_history": "Lịch sử giao dịch",
+        "search": "Tìm theo mã order hoặc bàn...",
+        "no_open_orders": "Không có order đang mở.",
+        "select_order": "Chọn một order để thanh toán.",
+        "ready_to_pay": "Chờ thanh toán",
+        "items_left": "Còn {{count}} món chưa phục vụ",
+        "due_left": "Còn thu {{amount}}",
+        "fully_paid": "Đã thu đủ",
+        "unfinished_hint": "Còn {{count}} món chưa phục vụ xong; có thể thu trước, order hoàn tất khi phục vụ xong.",
+        "discount_code": "Mã giảm giá",
+        "discount_placeholder": "Nhập mã...",
+        "apply": "Áp dụng",
+        "remove_discount": "Gỡ mã",
+        "discount_zero": "(chưa đạt giá trị tối thiểu)",
+        "take_payment": "Thu tiền · còn phải thu {{amount}}",
+        "amount": "Số tiền",
+        "amount_too_high": "Vượt quá số còn phải thu",
+        "split_hint": "Thu một phần; còn lại {{rest}} sẽ thu lần sau (có thể bằng phương thức khác).",
+        "received": "Khách đưa",
+        "received_too_low": "Tiền khách đưa ít hơn số tiền thanh toán",
+        "change": "Tiền thối",
+        "reference": "Mã giao dịch (không bắt buộc)",
+        "pending_hint": "Chờ xác nhận (chưa nhận được tiền)",
+        "collect": "Thu {{amount}}",
+        "payments": "Các lần thanh toán",
+        "confirm": "Đã nhận tiền",
+        "mark_failed": "Thất bại",
+        "refund": "Hoàn tiền",
+        "refund_label": "Hoàn tiền",
+        "refund_title": "Hoàn tiền giao dịch {{amount}} ({{method}})",
+        "refund_amount": "Số tiền hoàn (tối đa {{max}})",
+        "refund_audit_hint": "Thao tác hoàn tiền được ghi vào nhật ký.",
+        "complete": "Hoàn tất order",
+        "print": "In hóa đơn",
+        "invoice_short": "Hóa đơn",
+        "paid": "Đã thu",
+        "remaining": "Còn phải thu",
+        "overpaid": "Thu thừa (cần hoàn)",
+        "service_fee": "Phí dịch vụ ({{rate}}%)",
+        "tax": "Thuế ({{rate}}%)",
+        "method": {
+            "cash": "Tiền mặt",
+            "card": "Thẻ",
+            "transfer": "Chuyển khoản"
+        },
+        "type": {
+            "payment": "Thu",
+            "refund": "Hoàn"
+        },
+        "all_methods": "Mọi phương thức",
+        "all_types": "Thu và hoàn",
+        "method_label": "Phương thức",
+        "time": "Thời gian",
+        "cashier": "Thu ngân",
+        "summary": {
+            "collected": "Đã thu",
+            "refunded": "Đã hoàn",
+            "net": "Thực thu"
+        },
+        "invoice": {
+            "title": "HÓA ĐƠN THANH TOÁN",
+            "completed_at": "Thanh toán lúc",
+            "staff": "Nhân viên",
+            "item": "Món",
+            "qty": "SL",
+            "amount": "T.Tiền",
+            "thanks": "Cảm ơn quý khách, hẹn gặp lại!"
+        }
+    },
+    "discount": {
+        "title": "Mã giảm giá",
+        "description": "Chương trình giảm giá theo % hoặc số tiền; mỗi order áp tối đa một mã.",
+        "add": "Thêm mã",
+        "edit": "Sửa mã giảm giá",
+        "search": "Tìm theo mã hoặc tên...",
+        "code": "Mã",
+        "name": "Tên chương trình",
+        "description_field": "Mô tả",
+        "value": "Mức giảm",
+        "scope": "Phạm vi",
+        "chain_wide": "Cả chuỗi",
+        "period": "Thời gian",
+        "no_end": "Không thời hạn",
+        "usage": "Đã dùng",
+        "type": "Loại",
+        "type_percent": "Theo %",
+        "type_fixed": "Số tiền cố định",
+        "value_percent": "Giảm (%)",
+        "value_fixed": "Giảm (đ)",
+        "min_order": "Đơn tối thiểu (đ)",
+        "max_discount": "Giảm tối đa (đ)",
+        "start_at": "Bắt đầu",
+        "end_at": "Kết thúc",
+        "usage_limit": "Tổng lượt dùng",
+        "per_user_limit": "Lượt / khách",
+        "unlimited": "Không giới hạn",
+        "form_hint": "Giới hạn lượt theo khách chỉ áp được cho order đã gắn khách có tài khoản.",
+        "min_short": "Đơn từ {{amount}}",
+        "max_short": "tối đa {{amount}}",
+        "delete_title": "Xóa mã giảm giá",
+        "delete_desc": "Xóa mã {{code}}? Các order đã dùng mã vẫn giữ số tiền đã giảm."
     }
 }

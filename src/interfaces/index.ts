@@ -8,3 +8,4 @@ export * from "./permission.interface";
 export * from "./menu.interface";
 export * from "./reservation.interface";
 export * from "./order.interface";
+export * from "./payment.interface";
