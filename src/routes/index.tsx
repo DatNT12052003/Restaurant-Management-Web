@@ -8,8 +8,18 @@ import ForgotPassword from "@/pages/public/ForgotPassword";
 import ConfirmOTP from "@/pages/public/ConfirmOTP";
 import ResetPassword from "@/pages/public/ResetPassword";
 import SequentialRoute from "./guards/SequentialRoute";
+import HomeRedirect from "./guards/HomeRedirect";
+import { NotFoundPage, UnauthorizedPage } from "@/pages/public/ErrorPage";
 
 export const router = createBrowserRouter([
+    {
+        path: "/",
+        element: <HomeRedirect />,
+    },
+    {
+        path: "/unauthorized",
+        element: <UnauthorizedPage />,
+    },
     {
         path: "/login",
         element: <Login />,
@@ -52,5 +62,9 @@ export const router = createBrowserRouter([
                 ],
             },
         ],
+    },
+    {
+        path: "*",
+        element: <NotFoundPage />,
     },
 ]);

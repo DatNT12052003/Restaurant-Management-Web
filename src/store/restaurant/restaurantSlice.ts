@@ -1,22 +1,35 @@
-// import type { IRestaurantState } from "@/interfaces";
-// import { createSlice } from "@reduxjs/toolkit";
+import type { IRestaurant, IRestaurantState } from "@/interfaces";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
-// const initialState: IRestaurantState = {
-//     currentBranch: JSON.parse(localStorage.getItem("selected_branch") || "null"),
-// };
+const STORAGE_KEY = "selected_branch";
 
-// const restaurantSlice = createSlice({
-//     name: "restaurant",
-//     initialState,
-//     reducers: {
-//         setCurrentBranch: (state, action) => {
-//             state.currentBranch = action.payload;
-//             localStorage.setItem("selected_branch", JSON.stringify(action.payload));
-//         },
-//     },
-//     extraReducers: () => {},
-// });
+const loadBranch = (): IRestaurant | null => {
+    try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+    } catch {
+        return null;
+    }
+};
 
-// export const { setCurrentBranch } = restaurantSlice.actions;
-// const restaurantReducer = restaurantSlice.reducer;
-// export default restaurantReducer;
+const initialState: IRestaurantState = {
+    currentBranch: loadBranch(),
+};
+
+const restaurantSlice = createSlice({
+    name: "restaurant",
+    initialState,
+    reducers: {
+        setCurrentBranch: (state, action: PayloadAction<IRestaurant | null>) => {
+            state.currentBranch = action.payload;
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(action.payload));
+            } catch {
+                // bỏ qua khi trình duyệt chặn localStorage
+            }
+        },
+    },
+});
+
+export const { setCurrentBranch } = restaurantSlice.actions;
+const restaurantReducer = restaurantSlice.reducer;
+export default restaurantReducer;

@@ -1,1 +1,11 @@
-{}
+{
+    "back_home": "Về trang chủ",
+    "unauthorized": {
+        "title": "Không có quyền truy cập",
+        "description": "Bạn không có quyền xem trang này. Hãy liên hệ quản trị viên nếu bạn cho rằng đây là nhầm lẫn."
+    },
+    "not_found": {
+        "title": "Không tìm thấy trang",
+        "description": "Trang bạn tìm không tồn tại hoặc đã được di chuyển."
+    }
+}

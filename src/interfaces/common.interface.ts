@@ -17,6 +17,8 @@ export interface ISidebarMenuItem {
     path: string;
     label: string;
     icon: React.ComponentType<{ className?: string }>;
+    /** Ẩn mục menu nếu người dùng không có quyền này */
+    permission?: string;
 }
 
 export interface ILocalState {

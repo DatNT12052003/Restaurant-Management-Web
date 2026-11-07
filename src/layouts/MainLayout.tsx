@@ -19,6 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useAppDispatch } from "@/hooks";
 import { logoutThunk } from "@/store/auth/authThunk";
+import { setCurrentBranch } from "@/store/restaurant/restaurantSlice";
 import type { IRestaurant, ISidebarMenuItem, IUser } from "@/interfaces";
 
 interface MainLayoutProps {
@@ -57,16 +58,10 @@ const MainLayout = ({
         localStorage.setItem("sidebar_collapsed", String(collapsed));
     }, [collapsed]);
 
+    // Lưu chi nhánh đang chọn vào store (slice tự lưu localStorage)
     useEffect(() => {
-        const restaurant = localStorage.getItem("selected_branch");
-        if (restaurant) {
-            setCurrentRestaurant(JSON.parse(restaurant));
-        }
-    }, []);
-
-    useEffect(() => {
-        localStorage.setItem("selected_branch", JSON.stringify(currentRestaurant));
-    }, [currentRestaurant]);
+        dispatch(setCurrentBranch(currentRestaurant));
+    }, [dispatch, currentRestaurant]);
 
     useEffect(() => {
         setIsMobileOpen(false);
@@ -163,9 +158,9 @@ const MainLayout = ({
         </div>
     );
 
-    const handleLogout = () => {
-        dispatch(logoutThunk());
-        navigate("/login");
+    const handleLogout = async () => {
+        await dispatch(logoutThunk());
+        navigate("/login", { replace: true });
     };
 
     return (

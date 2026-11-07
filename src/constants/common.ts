@@ -20,7 +20,7 @@ export const ROLE = {
     HEAD_CHEF: "head_chef",
     SOUS_CHEF: "sous_chef",
     COMMIS_CHEF: "commis_chef",
-    CLEANER_STAFF: "cleaner_staff",
+    CLEANER_STAFF: "clean_staff",
     GUARD: "guard",
     GUEST: "guest",
 };

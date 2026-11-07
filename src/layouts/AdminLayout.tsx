@@ -11,15 +11,15 @@ import {
     User2,
 } from "lucide-react";
 import type { IRestaurant, ISidebarMenuItem } from "@/interfaces";
-import { useAppDispatch, useAppSelector } from "@/hooks";
+import { useAppDispatch, useAppSelector, usePermission } from "@/hooks";
 import { useEffect, useState } from "react";
 import { getAllRestaurantsThunk } from "@/store/restaurant/restaurantThunk";
 
 const adminMenuItems: ISidebarMenuItem[] = [
     { path: "/admin/dashboard", label: "Tổng quan", icon: LayoutDashboard },
-    { path: "/admin/employees", label: "Nhân sự", icon: Users },
-    { path: "/admin/guest", label: "Khách hàng", icon: User2 },
-    { path: "/admin/tables", label: "Quản lý bàn", icon: Table2 },
+    { path: "/admin/employees", label: "Nhân sự", icon: Users, permission: "employee.view" },
+    { path: "/admin/guest", label: "Khách hàng", icon: User2, permission: "guest.view" },
+    { path: "/admin/tables", label: "Quản lý bàn", icon: Table2, permission: "table.view" },
     { path: "/admin/menu", label: "Thực đơn", icon: MenuIcon },
     { path: "/admin/orders", label: "Đơn hàng", icon: ClipboardList },
     { path: "/admin/inventory", label: "Kho hàng", icon: Package },
@@ -35,9 +35,8 @@ const AdminLayout = () => {
     const [branchList, setBranchList] = useState<IRestaurant[]>([]);
 
     const defaultCollapsed = localStorage.getItem("sidebar_collapsed") === "true";
-    const currentBranch = localStorage.getItem("selected_branch")
-        ? JSON.parse(localStorage.getItem("selected_branch") as string)
-        : null;
+    const currentBranch = useAppSelector((state) => state.restaurant.currentBranch);
+    const can = usePermission();
 
     useEffect(() => {
         const fetchBranches = async () => {
@@ -69,7 +68,7 @@ const AdminLayout = () => {
 
     return (
         <MainLayout
-            mainMenuItems={adminMenuItems}
+            mainMenuItems={adminMenuItems.filter((item) => !item.permission || can(item.permission))}
             user={user}
             roles={roles}
             branches={branchList}
