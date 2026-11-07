@@ -1,7 +1,6 @@
 // components/LanguageSwitcher.tsx
-import React from "react";
 import { useTranslation } from "react-i18next";
-import { Languages, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -18,7 +17,7 @@ const languages = [
 ];
 
 export const LanguageSwitcher = () => {
-    const { i18n, t } = useTranslation();
+    const { i18n } = useTranslation();
     const currentLang = languages.find((lang) => lang.code === i18n.language) || languages[0];
 
     const changeLanguage = (code: string) => {

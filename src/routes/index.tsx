@@ -9,6 +9,7 @@ import ConfirmOTP from "@/pages/public/ConfirmOTP";
 import ResetPassword from "@/pages/public/ResetPassword";
 import SequentialRoute from "./guards/SequentialRoute";
 import HomeRedirect from "./guards/HomeRedirect";
+import { STAFF_ROLES } from "@/constants/roles";
 import { NotFoundPage, UnauthorizedPage } from "@/pages/public/ErrorPage";
 
 export const router = createBrowserRouter([
@@ -52,7 +53,7 @@ export const router = createBrowserRouter([
         element: <AuthGuard />,
         children: [
             {
-                element: <RoleGuard allowedRoles={["admin"]} />,
+                element: <RoleGuard allowedRoles={STAFF_ROLES} />,
                 children: [
                     {
                         path: "/admin",

@@ -6,16 +6,21 @@ export interface IRestaurant {
     name: string;
     status: RestaurantStatusEnum;
     address: string;
-    // created_at: string;
-    // updated_at: string;
-    // deleted_at: string | null;
+    created_at?: string;
+    updated_at?: string;
 }
 
 export interface IGetRestaurants {
-    restaurants: Partial<IRestaurant>[];
+    restaurants: IRestaurant[];
     pagination: IPagination;
 }
 
 export interface IRestaurantState {
     currentBranch: IRestaurant | null;
+}
+
+export interface IRestaurantPayload {
+    name: string;
+    address: string;
+    status?: RestaurantStatusEnum;
 }

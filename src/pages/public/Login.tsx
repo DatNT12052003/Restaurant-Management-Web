@@ -37,15 +37,9 @@ const Login = () => {
     const onSubmit = async (credentials: LoginFormValues) => {
         try {
             const result = await dispatch(loginThunk(credentials)).unwrap();
-            const user = await dispatch(getMeThunk()).unwrap();
-            const roles = user.data?.roles || [];
-            if (roles.includes("admin")) {
-                navigate("/admin/dashboard");
-            } else if (roles.includes("employee")) {
-                navigate("/employee/tasks");
-            } else {
-                navigate("/guest/welcome");
-            }
+            await dispatch(getMeThunk()).unwrap();
+            // HomeRedirect ("/") chọn trang phù hợp theo vai trò
+            navigate("/", { replace: true });
             toast.success(result.message);
         } catch (error: any) {
             toast.error(error.message);
