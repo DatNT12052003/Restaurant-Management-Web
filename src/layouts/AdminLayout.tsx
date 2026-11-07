@@ -2,6 +2,7 @@ import MainLayout from "./MainLayout";
 import {
     BarChart3,
     Building2,
+    ChefHat,
     CalendarClock,
     ClipboardList,
     LayoutDashboard,
@@ -17,6 +18,7 @@ import type { ISidebarMenuItem } from "@/interfaces";
 import { useAppDispatch, useAppSelector, usePermission } from "@/hooks";
 import { useEffect } from "react";
 import { getAllRestaurantsThunk } from "@/store/restaurant/restaurantThunk";
+import { connectSocket, disconnectSocket, subscribeRestaurant } from "@/lib/socket";
 
 const AdminLayout = () => {
     const { t } = useTranslation("admin");
@@ -34,6 +36,21 @@ const AdminLayout = () => {
         }
     }, [dispatch, user]);
 
+    // Realtime (giai đoạn 4): kết nối khi đăng nhập, ngắt khi rời khu admin / đăng xuất
+    const userId = user?.id;
+    useEffect(() => {
+        if (!userId) return;
+        connectSocket();
+        return () => disconnectSocket();
+    }, [userId]);
+
+    // Admin nhận sự kiện của chi nhánh đang chọn; nhân viên tự vào room nhà hàng mình ở backend
+    const isAdmin = roles.includes("admin");
+    const branchId = currentBranch?.id ?? null;
+    useEffect(() => {
+        if (userId && isAdmin) subscribeRestaurant(branchId);
+    }, [userId, isAdmin, branchId]);
+
     // Các mục chưa có `permission` là trang của giai đoạn sau (hiện hiển thị trang 404)
     const menuItems: ISidebarMenuItem[] = [
         { path: "/admin/dashboard", label: t("menu.dashboard"), icon: LayoutDashboard },
@@ -49,7 +66,8 @@ const AdminLayout = () => {
         },
         { path: "/admin/permissions", label: t("menu.permissions"), icon: ShieldCheck, permission: "permission.view" },
         { path: "/admin/menu", label: t("menu.menu"), icon: MenuIcon, permission: ["dish.view", "combo.view"] },
-        { path: "/admin/orders", label: t("menu.orders"), icon: ClipboardList },
+        { path: "/admin/orders", label: t("menu.orders"), icon: ClipboardList, permission: "order.view" },
+        { path: "/admin/kitchen", label: t("menu.kitchen"), icon: ChefHat, permission: "order_item.prepare" },
         { path: "/admin/inventory", label: t("menu.inventory"), icon: Package },
         { path: "/admin/reports", label: t("menu.reports"), icon: BarChart3 },
     ];

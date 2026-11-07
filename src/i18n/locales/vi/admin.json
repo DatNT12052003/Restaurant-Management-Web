@@ -26,7 +26,7 @@
         "tables": "Phòng & bàn",
         "permissions": "Phân quyền",
         "menu": "Thực đơn",
-        "orders": "Đơn hàng",
+        "orders": "Phục vụ",
         "inventory": "Kho hàng",
         "reports": "Báo cáo",
         "title": "Thực đơn",
@@ -86,7 +86,8 @@
         "use_base_price": "Giá gốc",
         "reset_price": "Dùng giá gốc",
         "invalid_price": "Giá phải là số không âm",
-        "reservations": "Đặt bàn"
+        "reservations": "Đặt bàn",
+        "kitchen": "Bếp & pha chế"
     },
     "roles": {
         "admin": "Quản trị viên",
@@ -139,6 +140,21 @@
             "completed": "Hoàn tất",
             "cancelled": "Đã hủy",
             "no_show": "Không đến"
+        },
+        "order": {
+            "pending": "Chờ xác nhận",
+            "confirmed": "Đã mở",
+            "serving": "Đang phục vụ",
+            "completed": "Hoàn tất",
+            "cancelled": "Đã hủy"
+        },
+        "order_item": {
+            "pending": "Chờ bếp",
+            "confirmed": "Bếp đã nhận",
+            "cooking": "Đang làm",
+            "ready": "Đã xong",
+            "served": "Đã phục vụ",
+            "cancelled": "Đã hủy"
         }
     },
     "user": {
@@ -255,7 +271,9 @@
             "permission": "Phân quyền",
             "dish": "Món ăn & thẻ",
             "combo": "Combo",
-            "reservation": "Đặt bàn"
+            "reservation": "Đặt bàn",
+            "order": "Order",
+            "order_item": "Món trong order"
         },
         "actions": {
             "create": "Tạo",
@@ -263,7 +281,10 @@
             "update": "Cập nhật",
             "delete": "Xóa",
             "assign": "Gán quyền",
-            "availability": "Bật/tắt & giá chi nhánh"
+            "availability": "Bật/tắt & giá chi nhánh",
+            "cancel": "Hủy",
+            "prepare": "Chế biến",
+            "serve": "Phục vụ"
         }
     },
     "profile": {
@@ -358,6 +379,98 @@
             "pick_time_first": "Chọn thời gian hợp lệ để xem bàn trống.",
             "no_free_tables": "Không còn bàn trống trong khung giờ này.",
             "tables_hint": "Chỉ hiện bàn còn trống trong khung giờ; viền đứt là bàn được gợi ý."
+        },
+        "order_link": "Order {{code}}"
+    },
+    "order": {
+        "title": "Phục vụ",
+        "description": "Sơ đồ bàn với order đang mở: mở order, gọi món theo đợt, phục vụ, chuyển bàn.",
+        "select_branch_first": "Hãy chọn chi nhánh ở góc trên bên phải.",
+        "tab_floor": "Sơ đồ bàn",
+        "tab_history": "Lịch sử order",
+        "open_orders": "Order đang mở",
+        "minutes": "{{count}} phút",
+        "not_found": "Không tìm thấy order",
+        "code": "Mã order",
+        "opened_at": "Mở lúc",
+        "search_code": "Tìm theo mã order...",
+        "opened_info": "Mở lúc {{time}} · phụ trách: {{name}}",
+        "note": "Ghi chú",
+        "reason": "Lý do",
+        "add_round": "Gọi món",
+        "serve_all": "Phục vụ {{count}} món đã xong",
+        "served_all": "Đã phục vụ {{count}} món",
+        "serve": "Phục vụ",
+        "add_table": "Thêm bàn",
+        "add_table_title": "Ghép thêm bàn",
+        "transfer_table": "Chuyển bàn",
+        "transfer_title": "Chuyển {{name}} sang bàn khác",
+        "release_table": "Trả bàn",
+        "no_free_tables": "Không còn bàn trống.",
+        "complete": "Hoàn tất",
+        "complete_hint": "Còn món chưa phục vụ xong",
+        "complete_title": "Hoàn tất order {{code}}?",
+        "complete_desc": "Tổng tiền {{total}}. Các bàn sẽ chuyển sang trạng thái đang dọn.",
+        "cancel": "Hủy order",
+        "cancel_title": "Hủy order {{code}}?",
+        "cancel_desc": "Chỉ hủy được khi chưa phục vụ món nào. Mọi món còn lại sẽ bị hủy.",
+        "cancel_line": "Hủy món",
+        "cancel_line_title": "Hủy món {{name}}?",
+        "cancel_line_placeholder": "Ví dụ: khách đổi ý, hết nguyên liệu...",
+        "edit_title": "Sửa order {{code}}",
+        "no_rounds": "Chưa gọi món nào.",
+        "round_label": "Đợt {{no}}",
+        "subtotal": "Tạm tính",
+        "discount": "Giảm giá",
+        "total": "Tổng cộng",
+        "open": "Mở order",
+        "open_title": "Mở order cho {{name}}",
+        "from_reservation": "Khách đã đặt bàn này hôm nay:",
+        "extra_tables": "Ghép thêm bàn (không bắt buộc)",
+        "seats_warning": "Số khách nhiều hơn số ghế ({{seats}}); có thể kê thêm ghế hoặc ghép bàn.",
+        "round": {
+            "title": "{{code}} · gọi món đợt {{no}}",
+            "tab_all": "Tất cả",
+            "tab_food": "Món ăn",
+            "tab_drink": "Đồ uống",
+            "tab_combo": "Combo",
+            "search": "Tìm món...",
+            "no_items": "Không có món đang bán.",
+            "combo": "Combo",
+            "for_table": "Cho bàn",
+            "cart": "Món trong đợt ({{count}})",
+            "cart_hint": "Bấm vào món bên trái để thêm.",
+            "line_note": "Ghi chú món",
+            "round_note": "Ghi chú cho cả đợt (không bắt buộc)",
+            "total": "Thành tiền đợt này",
+            "send": "Gửi bếp",
+            "empty_cart": "Chưa chọn món nào"
+        }
+    },
+    "kitchen": {
+        "title": "Bếp & pha chế",
+        "description": "Món cần làm theo thứ tự gửi, cập nhật tức thì khi phục vụ gửi món.",
+        "empty": "Không có món",
+        "reject": "Từ chối món (hết nguyên liệu...)",
+        "reject_title": "Từ chối món {{name}}?",
+        "reject_placeholder": "Ví dụ: hết nguyên liệu",
+        "station": {
+            "kitchen": "Bếp",
+            "bar": "Pha chế",
+            "all": "Tất cả"
+        },
+        "column": {
+            "pending": "Mới gửi",
+            "confirmed": "Đã nhận",
+            "cooking": "Đang làm",
+            "ready": "Chờ phục vụ"
+        },
+        "action": {
+            "confirmed": "Nhận món",
+            "cooking": "Bắt đầu làm",
+            "ready": "Xong",
+            "served": "Đã phục vụ",
+            "cook_now": "Làm luôn"
         }
     }
 }

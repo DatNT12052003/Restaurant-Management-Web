@@ -30,6 +30,8 @@ export interface IReservation {
     cancelled_at: string | null;
     created_by: number | null;
     created_by_name?: string | null;
+    /** Order mở từ reservation khi khách đến (giai đoạn 4) */
+    order?: { id: number; code: string; status: string } | null;
     created_at: string;
     tables: IReservationTable[];
     guest?: { id: number; full_name: string; phone_number: string | null; email: string | null } | null;

@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { CalendarClock, Pencil, Phone, StickyNote, Trash2, UserRound, Users } from "lucide-react";
+import { CalendarClock, ClipboardList, Pencil, Phone, StickyNote, Trash2, UserRound, Users } from "lucide-react";
+import { Link } from "react-router-dom";
 
 import { deleteReservation, updateReservationStatus } from "@/apis";
 import ConfirmDialog from "@/components/common/ConfirmDialog";
@@ -137,6 +138,18 @@ export const ReservationDetailDialog = ({ reservation, onOpenChange, onEdit, onC
                                     <p className="flex items-start gap-2 whitespace-pre-wrap">
                                         <StickyNote className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
                                         {r.note}
+                                    </p>
+                                )}
+                                {r.order && (
+                                    <p className="flex items-center gap-2">
+                                        <ClipboardList className="h-4 w-4 text-muted-foreground" />
+                                        {can("order.view") ? (
+                                            <Link className="font-medium hover:underline" to="/admin/orders">
+                                                {t("reservation.order_link", { code: r.order.code })}
+                                            </Link>
+                                        ) : (
+                                            t("reservation.order_link", { code: r.order.code })
+                                        )}
                                     </p>
                                 )}
                                 {r.cancel_reason && (

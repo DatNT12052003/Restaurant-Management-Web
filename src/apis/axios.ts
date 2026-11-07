@@ -46,6 +46,21 @@ const refreshAccessToken = async (): Promise<string> => {
     return token;
 };
 
+/**
+ * Làm mới access token (dùng chung một request với interceptor) và lưu vào store.
+ * Dùng cho socket khi token hết hạn. Ném lỗi nếu phiên đã hết.
+ */
+export const refreshSession = async (): Promise<string> => {
+    const store = await getStore();
+    const { setAccessToken } = await import("@/store/auth/authSlice");
+    refreshPromise ??= refreshAccessToken().finally(() => {
+        refreshPromise = null;
+    });
+    const token = await refreshPromise;
+    store.dispatch(setAccessToken(token));
+    return token;
+};
+
 axiosInstance.interceptors.response.use(
     (response) => response,
     async (error: AxiosError) => {
