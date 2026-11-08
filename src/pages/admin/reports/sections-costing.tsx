@@ -9,7 +9,7 @@ import { ChartCard, ChartLegend, ChartTooltip, EmptyChart, StatTile } from "@/co
 import { AXIS_PROPS, BAR_RADIUS, GRID_PROPS, SERIES_COLORS, formatCompact, formatPercent, formatPeriod } from "@/components/charts/chart-utils";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useAsyncData } from "@/hooks";
-import type { IProfitTotals, IReportQuery, ReportGroupBy } from "@/interfaces";
+import type { ILaborCost, IProfitTotals, IReportQuery, ReportGroupBy } from "@/interfaces";
 import { getErrorMessage } from "@/lib/api-error";
 import type { IExcelColumn } from "@/lib/excel";
 import { formatMoney, formatQty } from "@/lib/format";
@@ -71,7 +71,12 @@ export const ProfitSection = ({ query, valid }: { query: IReportQuery; valid: bo
     if (loading && !data) return <Loading />;
     if (!data) return null;
     const totals = data.totals;
-    const hasData = totals.sales > 0;
+    const hasData = totals.sales > 0 || totals.labor_cost > 0;
+    const laborColumns: IExcelColumn<ILaborCost>[] = [
+        { header: t("report.profit.labor_cost"), value: (r) => r.labor_cost, type: "money" },
+        { header: t("report.profit.net_profit"), value: (r) => r.net_profit, type: "money" },
+    ];
+    const draftPayrolls = data.payrolls.filter((p) => p.status === "draft").length;
     const series = [
         { key: "cost", label: t("report.profit.cost"), color: SERIES_COLORS[1] },
         { key: "gross_profit", label: t("report.profit.gross_profit"), color: SERIES_COLORS[0] },
@@ -89,7 +94,7 @@ export const ProfitSection = ({ query, valid }: { query: IReportQuery; valid: bo
                     sheets={() => [
                         {
                             name: t("report.profit.by_period"),
-                            columns: [{ header: t("report.period"), value: (r: { period: string }) => r.period }, ...columns],
+                            columns: [{ header: t("report.period"), value: (r: { period: string }) => r.period }, ...columns, ...laborColumns],
                             rows: data.series,
                         },
                         {
@@ -108,7 +113,11 @@ export const ProfitSection = ({ query, valid }: { query: IReportQuery; valid: bo
                         },
                         {
                             name: t("report.profit.by_restaurant"),
-                            columns: [{ header: t("report.restaurant"), value: (r: { restaurant_name: string }) => r.restaurant_name, width: 30 }, ...columns],
+                            columns: [
+                                { header: t("report.restaurant"), value: (r: { restaurant_name: string }) => r.restaurant_name, width: 30 },
+                                ...columns,
+                                ...laborColumns,
+                            ],
                             rows: data.by_restaurant,
                         },
                     ]}
@@ -123,6 +132,20 @@ export const ProfitSection = ({ query, valid }: { query: IReportQuery; valid: bo
                     value={formatPercent(totals.food_cost_rate)}
                     hint={totals.uncosted_sales > 0 ? t("report.profit.uncosted_hint", { amount: formatMoney(totals.uncosted_sales) }) : undefined}
                 />
+            </div>
+            <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+                <StatTile
+                    label={t("report.profit.labor_cost")}
+                    value={formatMoney(totals.labor_cost)}
+                    hint={
+                        !data.payrolls.length
+                            ? t("report.profit.labor_none")
+                            : draftPayrolls
+                              ? t("report.profit.labor_draft", { count: draftPayrolls })
+                              : t("report.profit.labor_hint")
+                    }
+                />
+                <StatTile label={t("report.profit.net_profit")} value={formatMoney(totals.net_profit)} hint={t("report.profit.net_profit_hint")} />
             </div>
 
             <ChartCard title={t("report.profit.title")} description={t("report.profit.chart_hint")}>
@@ -223,7 +246,8 @@ export const ProfitSection = ({ query, valid }: { query: IReportQuery; valid: bo
                                 <TableHead>{t("report.restaurant")}</TableHead>
                                 <TableHead className="text-right">{t("report.profit.sales")}</TableHead>
                                 <TableHead className="text-right">{t("report.profit.gross_profit")}</TableHead>
-                                <TableHead className="text-right">{t("report.profit.food_cost_rate")}</TableHead>
+                                <TableHead className="text-right">{t("report.profit.labor_cost")}</TableHead>
+                                <TableHead className="text-right">{t("report.profit.net_profit")}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -232,10 +256,11 @@ export const ProfitSection = ({ query, valid }: { query: IReportQuery; valid: bo
                                     <TableCell>{r.restaurant_name}</TableCell>
                                     <TableCell className="text-right tabular-nums">{formatMoney(r.sales)}</TableCell>
                                     <TableCell className="text-right tabular-nums">{formatMoney(r.gross_profit)}</TableCell>
-                                    <TableCell className="text-right tabular-nums">{formatPercent(r.food_cost_rate)}</TableCell>
+                                    <TableCell className="text-right tabular-nums">{formatMoney(r.labor_cost)}</TableCell>
+                                    <TableCell className="text-right tabular-nums">{formatMoney(r.net_profit)}</TableCell>
                                 </TableRow>
                             ))}
-                            {!data.by_restaurant.length && <EmptyRow cols={4} />}
+                            {!data.by_restaurant.length && <EmptyRow cols={5} />}
                         </TableBody>
                     </Table>
                 </ChartCard>

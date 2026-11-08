@@ -48,15 +48,17 @@ const PAGES: Record<string, string[]> = {
         "discounts",
         "inventory",
         "purchasing",
+        "workforce",
+        "attendance-kiosk",
         "reports",
         "audit-logs",
         "profile",
     ],
-    manager: ["dashboard", "employees", "tables", "reservations", "accounts", "orders", "cashier", "inventory", "purchasing", "reports", "audit-logs"],
-    cashier: ["dashboard", "orders", "cashier", "reservations"],
-    receptionist: ["dashboard", "reservations", "orders", "guests"],
-    waiter: ["dashboard", "orders", "reservations", "menu"],
-    chef: ["dashboard", "kitchen", "inventory", "menu", "purchasing"],
+    manager: ["dashboard", "employees", "tables", "reservations", "accounts", "orders", "cashier", "inventory", "purchasing", "workforce", "my-work", "reports", "audit-logs"],
+    cashier: ["dashboard", "orders", "cashier", "reservations", "my-work", "attendance-kiosk"],
+    receptionist: ["dashboard", "reservations", "orders", "guests", "my-work"],
+    waiter: ["dashboard", "orders", "reservations", "menu", "my-work"],
+    chef: ["dashboard", "kitchen", "inventory", "menu", "purchasing", "workforce", "my-work"],
 };
 
 for (const [role, pages] of Object.entries(PAGES)) {
@@ -252,4 +254,66 @@ test("giai đoạn 11: bếp trưởng mở tab lô hàng, chuyển kho và phi�
     await page.getByRole("button", { name: "Hủy hàng" }).click();
     await expect(page.getByRole("dialog").getByText("Phiếu hủy hàng")).toBeVisible();
     expect(errors).toEqual([]);
+});
+
+test("giai đoạn 12: quản lý tạo ca mẫu và xếp ca; thu ngân mở màn hình chấm công; phục vụ quét mã vào ca", async ({ browser, playwright }) => {
+    const f = fixture();
+    const session = async (role: string) => {
+        const context = await browser.newContext({ locale: "vi-VN" });
+        const page = await context.newPage();
+        const errors = watchErrors(page);
+        await login(page, f.users[role]);
+        return { page, errors, context };
+    };
+
+    // Quản lý: ca mẫu, rồi xếp một ca cho phục vụ vào thứ Hai của tuần đang xem
+    const manager = await session("manager");
+    await manager.page.goto("/admin/workforce");
+    await manager.page.getByRole("button", { name: "Ca mẫu" }).click();
+    await manager.page.getByRole("button", { name: "Thêm ca mẫu" }).click();
+    await manager.page.locator("#tpl-name").fill("Ca sáng E2E");
+    await manager.page.locator("#tpl-start").fill("08:00");
+    await manager.page.locator("#tpl-end").fill("16:00");
+    await manager.page.getByRole("dialog").getByRole("button", { name: "Lưu" }).click();
+    await expect(manager.page.getByRole("dialog").getByText("Ca sáng E2E")).toBeVisible();
+    await manager.page.keyboard.press("Escape");
+
+    await manager.page.getByRole("button", { name: "Xếp ca" }).click();
+    const form = manager.page.getByRole("dialog");
+    await form.getByRole("combobox").filter({ hasText: "Chọn nhân viên" }).click();
+    await manager.page.getByRole("option", { name: `User ${f.users.waiter}` }).click();
+    await form.getByRole("heading", { name: "Xếp ca" }).click();
+    await form.getByRole("checkbox").first().click();
+    const created = manager.page.waitForResponse((r) => r.request().method() === "POST" && r.url().endsWith("/hr/shifts"));
+    await form.getByRole("button", { name: "Tạo 1 ca" }).click();
+    expect((await created).status()).toBe(201);
+    await expect(manager.page.getByRole("button", { name: /08:00–16:00/ }).first()).toBeVisible();
+
+    // Thu ngân mở màn hình chấm công: mã QR hiện ra
+    const cashier = await session("cashier");
+    await cashier.page.goto("/admin/attendance-kiosk");
+    await expect(cashier.page.getByTestId("attendance-qr")).toBeVisible();
+
+    // Mã trong QR (lấy qua API như màn hình chấm công) -> phục vụ mở đường dẫn chấm công
+    const apiContext = await playwright.request.newContext({ baseURL: "http://localhost:3100/api/" });
+    const auth = await apiContext.post("auth/login", { data: { username: f.users.cashier, password: f.password } });
+    const accessToken = (await auth.json()).data.access_token;
+    const qr = await apiContext.get("hr/attendance/qr", { headers: { Authorization: `Bearer ${accessToken}` } });
+    const token = (await qr.json()).data.token as string;
+    await apiContext.dispose();
+
+    const waiter = await session("waiter");
+    await waiter.page.goto(`/admin/clock?t=${encodeURIComponent(token)}`);
+    await expect(waiter.page.getByText(/Đã vào ca lúc/)).toBeVisible();
+    await waiter.page.goto("/admin/my-work");
+    await expect(waiter.page.getByText(/Đang trong ca từ/)).toBeVisible();
+
+    // Quản lý thấy lượt chấm công đang mở
+    await manager.page.getByRole("tab", { name: "Chấm công" }).click();
+    await expect(manager.page.getByRole("row", { name: new RegExp(`User ${f.users.waiter}.*đang trong ca`) })).toBeVisible();
+
+    for (const s of [manager, cashier, waiter]) {
+        expect(s.errors).toEqual([]);
+        await s.context.close();
+    }
 });

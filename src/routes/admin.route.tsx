@@ -17,6 +17,10 @@ import Purchasing from "@/pages/admin/purchasing/Purchasing";
 import Reports from "@/pages/admin/reports/Reports";
 import AuditLogs from "@/pages/admin/AuditLogs";
 import Accounts from "@/pages/admin/Accounts";
+import MyWork from "@/pages/admin/my-work/MyWork";
+import ClockPage from "@/pages/admin/my-work/ClockPage";
+import Workforce from "@/pages/admin/workforce/Workforce";
+import AttendanceKiosk from "@/pages/admin/workforce/AttendanceKiosk";
 import RequirePermission from "./guards/RequirePermission";
 
 export const adminRoutes: RouteObject[] = [
@@ -151,6 +155,38 @@ export const adminRoutes: RouteObject[] = [
         element: (
             <RequirePermission permission="audit_log.view">
                 <AuditLogs />
+            </RequirePermission>
+        ),
+    },
+    {
+        path: "my-work",
+        element: (
+            <RequirePermission permission={"hr.self"}>
+                <MyWork />
+            </RequirePermission>
+        ),
+    },
+    {
+        path: "clock",
+        element: (
+            <RequirePermission permission={"hr.self"}>
+                <ClockPage />
+            </RequirePermission>
+        ),
+    },
+    {
+        path: "workforce",
+        element: (
+            <RequirePermission permission={["shift.view", "attendance.view", "leave.approve", "staff_review.manage", "payroll.view"]}>
+                <Workforce />
+            </RequirePermission>
+        ),
+    },
+    {
+        path: "attendance-kiosk",
+        element: (
+            <RequirePermission permission={"attendance.kiosk"}>
+                <AttendanceKiosk />
             </RequirePermission>
         ),
     },
