@@ -47,15 +47,16 @@ const PAGES: Record<string, string[]> = {
         "cashier",
         "discounts",
         "inventory",
+        "purchasing",
         "reports",
         "audit-logs",
         "profile",
     ],
-    manager: ["dashboard", "employees", "tables", "reservations", "accounts", "orders", "cashier", "inventory", "reports", "audit-logs"],
+    manager: ["dashboard", "employees", "tables", "reservations", "accounts", "orders", "cashier", "inventory", "purchasing", "reports", "audit-logs"],
     cashier: ["dashboard", "orders", "cashier", "reservations"],
     receptionist: ["dashboard", "reservations", "orders", "guests"],
     waiter: ["dashboard", "orders", "reservations", "menu"],
-    chef: ["dashboard", "kitchen", "inventory", "menu"],
+    chef: ["dashboard", "kitchen", "inventory", "menu", "purchasing"],
 };
 
 for (const [role, pages] of Object.entries(PAGES)) {
@@ -189,5 +190,66 @@ test("giai đoạn 10: quản lý xem tab Lợi nhuận, Hao hụt và xuất Ex
     const download = page.waitForEvent("download");
     await page.getByRole("button", { name: "Xuất Excel" }).click();
     expect((await download).suggestedFilename()).toMatch(/^doanh-thu_.*\.xlsx$/);
+    expect(errors).toEqual([]);
+});
+
+test("giai đoạn 11: quản lý thêm nhà cung cấp, đặt hàng, nhận hàng và trả công nợ", async ({ page }) => {
+    const errors = watchErrors(page);
+    await login(page, fixture().users.manager);
+    await page.goto("/admin/purchasing");
+
+    // Nhà cung cấp
+    await page.getByRole("tab", { name: "Nhà cung cấp" }).click();
+    await page.getByRole("button", { name: "Thêm nhà cung cấp" }).click();
+    await page.locator("#sp-name").fill("NCC Thịt Sạch E2E");
+    await page.locator("#sp-terms").fill("10");
+    await page.getByRole("dialog").getByRole("button", { name: "Lưu" }).click();
+    await expect(page.getByRole("cell", { name: /NCC Thịt Sạch E2E/ })).toBeVisible();
+
+    // Lập đơn và gửi
+    await page.getByRole("tab", { name: "Đơn đặt hàng" }).click();
+    await page.getByRole("button", { name: "Lập đơn" }).click();
+    const form = page.getByRole("dialog");
+    await form.getByRole("combobox", { name: "Nhà cung cấp" }).click();
+    await page.getByRole("option", { name: "NCC Thịt Sạch E2E" }).click();
+    await form.getByRole("combobox").filter({ hasText: "Chọn nguyên liệu" }).click();
+    await page.getByRole("option", { name: /Thịt bò/ }).click();
+    await form.locator('input[type="number"]').nth(1).fill("5");
+    await form.locator('input[type="number"]').nth(2).fill("200000");
+    await form.getByRole("button", { name: "Lưu và gửi" }).click();
+
+    // Chi tiết đơn mở sau khi lưu: nhận đủ hàng
+    const detail = page.getByRole("dialog");
+    await expect(detail.getByText("Đã gửi")).toBeVisible();
+    await detail.getByRole("button", { name: "Nhận hàng" }).click();
+    const received = page.waitForResponse((r) => r.request().method() === "POST" && r.url().includes("/receive"));
+    await detail.getByRole("button", { name: "Xác nhận nhận hàng" }).click();
+    expect((await received).status()).toBe(200);
+    await expect(detail.getByText("Đã nhận đủ")).toBeVisible();
+    await page.keyboard.press("Escape");
+
+    // Công nợ: trả hết khoản vừa phát sinh
+    await page.getByRole("tab", { name: "Công nợ" }).click();
+    await page.getByRole("row", { name: /NCC Thịt Sạch E2E/ }).click();
+    const paid = page.waitForResponse((r) => r.request().method() === "POST" && r.url().includes("/payments"));
+    await page.getByRole("dialog").getByRole("button", { name: /Ghi nhận trả/ }).click();
+    expect((await paid).status()).toBe(200);
+    await expect(page.getByRole("dialog").getByText("1.000.000 ₫").first()).toBeVisible();
+    expect(errors).toEqual([]);
+});
+
+test("giai đoạn 11: bếp trưởng mở tab lô hàng, chuyển kho và phiếu hủy hàng", async ({ page }) => {
+    const errors = watchErrors(page);
+    await login(page, fixture().users.chef);
+    await page.goto("/admin/inventory");
+    await page.getByRole("tab", { name: "Lô & hạn dùng" }).click();
+    await expect(page.getByText("Lô còn hàng")).toBeVisible();
+    await page.getByRole("tab", { name: "Chuyển kho" }).click();
+    await page.getByRole("button", { name: "Chuyển kho" }).click();
+    await expect(page.getByRole("dialog").getByText("Chi nhánh nhận *")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await page.getByRole("tab", { name: "Tồn kho" }).click();
+    await page.getByRole("button", { name: "Hủy hàng" }).click();
+    await expect(page.getByRole("dialog").getByText("Phiếu hủy hàng")).toBeVisible();
     expect(errors).toEqual([]);
 });

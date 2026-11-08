@@ -13,6 +13,7 @@ import Kitchen from "@/pages/admin/kitchen/Kitchen";
 import Cashier from "@/pages/admin/cashier/Cashier";
 import Discounts from "@/pages/admin/Discounts";
 import Inventory from "@/pages/admin/inventory/Inventory";
+import Purchasing from "@/pages/admin/purchasing/Purchasing";
 import Reports from "@/pages/admin/reports/Reports";
 import AuditLogs from "@/pages/admin/AuditLogs";
 import Accounts from "@/pages/admin/Accounts";
@@ -86,6 +87,14 @@ export const adminRoutes: RouteObject[] = [
         element: (
             <RequirePermission permission="inventory.view">
                 <Inventory />
+            </RequirePermission>
+        ),
+    },
+    {
+        path: "purchasing",
+        element: (
+            <RequirePermission permission={["purchase.view", "supplier.view", "payable.view"]}>
+                <Purchasing />
             </RequirePermission>
         ),
     },

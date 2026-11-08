@@ -13,3 +13,4 @@ export * from "./inventoryApi";
 export * from "./reportApi";
 export * from "./accountApi";
 export * from "./recipeApi";
+export * from "./purchasingApi";

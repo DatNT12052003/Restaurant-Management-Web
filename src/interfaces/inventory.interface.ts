@@ -1,8 +1,8 @@
 import type { IPagination } from "./common.interface";
 
 export type IngredientStatusEnum = "active" | "inactive";
-export type InventoryReceiptTypeEnum = "import" | "export" | "adjust";
-export type InventoryTransactionTypeEnum = "import" | "export" | "adjust" | "consume";
+export type InventoryReceiptTypeEnum = "import" | "export" | "adjust" | "dispose";
+export type InventoryTransactionTypeEnum = "import" | "export" | "adjust" | "consume" | "dispose" | "transfer_out" | "transfer_in";
 
 export interface IIngredient {
     id: number;
@@ -10,6 +10,9 @@ export interface IIngredient {
     unit: string;
     description: string | null;
     status: IngredientStatusEnum;
+    /** Giai đoạn 11: theo dõi lô và hạn dùng */
+    track_expiry: boolean;
+    shelf_life_days: number | null;
 }
 
 export interface IIngredientPayload {
@@ -17,6 +20,8 @@ export interface IIngredientPayload {
     unit?: string;
     description?: string | null;
     status?: IngredientStatusEnum;
+    track_expiry?: boolean;
+    shelf_life_days?: number | string | null;
 }
 
 export interface IStockItem {
@@ -24,6 +29,8 @@ export interface IStockItem {
     name: string;
     unit: string;
     status: IngredientStatusEnum;
+    track_expiry: boolean;
+    shelf_life_days: number | null;
     quantity: string;
     min_quantity: string;
     avg_unit_cost: string;
@@ -64,6 +71,9 @@ export interface IInventoryReceipt {
     reason: string | null;
     note: string | null;
     total_value: string;
+    supplier_id?: number | null;
+    purchase_order_id?: number | null;
+    purchase_order_code?: string | null;
     created_by_name?: string | null;
     line_count?: number;
     created_at: string;
@@ -84,7 +94,38 @@ export interface IReceiptPayload {
     restaurant_id?: number;
     type: InventoryReceiptTypeEnum;
     supplier?: string | null;
+    supplier_id?: number | null;
     reason?: string | null;
     note?: string | null;
-    lines: { ingredient_id: number; quantity: number; unit_price?: number; note?: string | null }[];
+    lines: {
+        ingredient_id: number;
+        quantity: number;
+        unit_price?: number;
+        note?: string | null;
+        expiry_date?: string | null;
+        lot_code?: string | null;
+        lot_id?: number | null;
+    }[];
+}
+
+/** Lô hàng còn lại theo hạn dùng */
+export interface IInventoryLot {
+    id: number;
+    ingredient_id: number;
+    ingredient_name: string;
+    unit: string;
+    lot_code: string | null;
+    expiry_date: string;
+    initial_quantity: string;
+    quantity: string;
+    receipt_code: string | null;
+    transfer_id: number | null;
+    days_left: number;
+    value: string;
+}
+
+export interface ILots {
+    restaurant_id: number;
+    lots: IInventoryLot[];
+    summary: { expiring: number; expired: number; warning_days: number };
 }
