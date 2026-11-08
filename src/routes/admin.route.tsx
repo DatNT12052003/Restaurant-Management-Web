@@ -12,6 +12,7 @@ import Orders from "@/pages/admin/orders/Orders";
 import Kitchen from "@/pages/admin/kitchen/Kitchen";
 import Cashier from "@/pages/admin/cashier/Cashier";
 import Discounts from "@/pages/admin/Discounts";
+import Inventory from "@/pages/admin/inventory/Inventory";
 import RequirePermission from "./guards/RequirePermission";
 
 export const adminRoutes: RouteObject[] = [
@@ -74,6 +75,14 @@ export const adminRoutes: RouteObject[] = [
         element: (
             <RequirePermission permission="discount.view">
                 <Discounts />
+            </RequirePermission>
+        ),
+    },
+    {
+        path: "inventory",
+        element: (
+            <RequirePermission permission="inventory.view">
+                <Inventory />
             </RequirePermission>
         ),
     },

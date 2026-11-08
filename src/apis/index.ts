@@ -9,3 +9,4 @@ export * from "./imageApi";
 export * from "./reservationApi";
 export * from "./orderApi";
 export * from "./paymentApi";
+export * from "./inventoryApi";

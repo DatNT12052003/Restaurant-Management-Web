@@ -9,7 +9,8 @@ export type RealtimeEvent =
     | "order_item:status_changed"
     | "table:status_changed"
     | "reservation:changed"
-    | "payment:changed";
+    | "payment:changed"
+    | "inventory:changed";
 
 /**
  * Gọi `handler` khi nhận một trong `events` (gộp các sự kiện dồn dập trong `delayMs`), và khi socket kết nối lại
