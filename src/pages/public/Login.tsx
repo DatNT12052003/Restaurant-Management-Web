@@ -16,6 +16,7 @@ import { useAppDispatch } from "@/hooks";
 import { getMeThunk, loginThunk } from "@/store/auth/authThunk";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/api-error";
 
 const Login = () => {
     const { t } = useTranslation();
@@ -41,8 +42,8 @@ const Login = () => {
             // HomeRedirect ("/") chọn trang phù hợp theo vai trò
             navigate("/", { replace: true });
             toast.success(result.message);
-        } catch (error: any) {
-            toast.error(error.message);
+        } catch (error) {
+            toast.error(getErrorMessage(error));
         }
     };
 

@@ -1,6 +1,7 @@
 import { getEmployeesByRestaurantId } from "@/apis";
 import type { IGetQuery } from "@/interfaces";
 import { createAsyncThunk } from "@reduxjs/toolkit";
+import { toRejectPayload } from "@/lib/api-error";
 
 export const getEmployeesByRestaurantIdThunk = createAsyncThunk(
     "user/getEmployeesByRestaurantId",
@@ -8,8 +9,8 @@ export const getEmployeesByRestaurantIdThunk = createAsyncThunk(
         try {
             const response = await getEmployeesByRestaurantId(query, restaurant_id);
             return response;
-        } catch (error: any) {
-            return rejectWithValue(error.response.data);
+        } catch (error) {
+            return rejectWithValue(toRejectPayload(error));
         }
     },
 );

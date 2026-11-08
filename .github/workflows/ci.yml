@@ -1,0 +1,69 @@
+name: CI
+
+on:
+    pull_request:
+    push:
+        branches: [develop, main]
+
+jobs:
+    lint-build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 24
+                  cache: npm
+            - run: npm ci
+            - run: npm run lint
+            - run: npm run build
+
+    e2e:
+        runs-on: ubuntu-latest
+        services:
+            postgres:
+                image: postgres:18
+                env:
+                    POSTGRES_USER: postgres
+                    POSTGRES_PASSWORD: postgres
+                    POSTGRES_DB: postgres
+                ports: ["5432:5432"]
+                options: >-
+                    --health-cmd "pg_isready -U postgres"
+                    --health-interval 5s
+                    --health-timeout 5s
+                    --health-retries 10
+        env:
+            DB_HOST: localhost
+            DB_PORT: 5432
+            DB_USER: postgres
+            DB_PASSWORD: postgres
+            DB_NAME: restaurant_management_test
+            BACKEND_DIR: ${{ github.workspace }}/backend
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  path: web
+            - name: Checkout backend (nhánh cùng tên nếu có, không thì develop)
+              run: |
+                  BRANCH="${{ github.head_ref || github.ref_name }}"
+                  REPO=https://github.com/DatNT12052003/Restaurant-Management-Back-End.git
+                  if git ls-remote --exit-code --heads "$REPO" "$BRANCH" > /dev/null; then REF="$BRANCH"; else REF=develop; fi
+                  echo "Backend ref: $REF"
+                  git clone --depth 1 --branch "$REF" "$REPO" backend
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 24
+            - run: npm ci
+              working-directory: backend
+            - run: npm ci
+              working-directory: web
+            - run: npx playwright install --with-deps chromium
+              working-directory: web
+            - run: npm run test:e2e
+              working-directory: web
+            - uses: actions/upload-artifact@v4
+              if: failure()
+              with:
+                  name: playwright-results
+                  path: web/test-results

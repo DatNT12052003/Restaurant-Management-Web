@@ -97,8 +97,15 @@ const Body = ({ orderId, freeTables, onChanged }: { orderId: number; freeTables:
         }
     };
 
-    if (loading && !order) return <p className="p-6 text-muted-foreground">{t("common.loading")}</p>;
-    if (!order) return <p className="p-6 text-muted-foreground">{t("order.not_found")}</p>;
+    // Panel luôn cần tiêu đề cho trình đọc màn hình, kể cả lúc đang tải
+    if (!order) {
+        const text = loading ? t("common.loading") : t("order.not_found");
+        return (
+            <SheetHeader>
+                <SheetTitle className="font-normal text-muted-foreground">{text}</SheetTitle>
+            </SheetHeader>
+        );
+    }
 
     const isOpen = OPEN_ORDER_STATUSES.includes(order.status);
     const canEdit = isOpen && can("order.update");

@@ -1,4 +1,5 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
+import { setSessionHint } from "@/lib/session-hint";
 
 const axiosInstance = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
@@ -90,6 +91,7 @@ axiosInstance.interceptors.response.use(
             return axiosInstance(originalRequest);
         } catch {
             // Refresh thất bại -> phiên hết hạn; AuthGuard sẽ đưa người dùng về /login
+            setSessionHint(false);
             store.dispatch(clearAuth());
             return Promise.reject(error);
         }

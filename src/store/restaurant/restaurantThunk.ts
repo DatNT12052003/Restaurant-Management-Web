@@ -2,6 +2,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 
 import { getAllRestaurants, getRestaurants } from "@/apis";
 import type { IGetRestaurants, IResponse, IRestaurant } from "@/interfaces";
+import { toRejectPayload } from "@/lib/api-error";
 
 export const getRestaurantsThunk = createAsyncThunk<IResponse<IGetRestaurants>>(
     "restaurant/getRestaurants",
@@ -9,8 +10,8 @@ export const getRestaurantsThunk = createAsyncThunk<IResponse<IGetRestaurants>>(
         try {
             const response = await getRestaurants();
             return response;
-        } catch (error: any) {
-            return rejectWithValue(error.response?.data ?? { message: error.message });
+        } catch (error) {
+            return rejectWithValue(toRejectPayload(error));
         }
     },
 );
@@ -21,8 +22,8 @@ export const getAllRestaurantsThunk = createAsyncThunk<IResponse<IRestaurant[]>>
         try {
             const response = await getAllRestaurants();
             return response;
-        } catch (error: any) {
-            return rejectWithValue(error.response?.data ?? { message: error.message });
+        } catch (error) {
+            return rejectWithValue(toRejectPayload(error));
         }
     },
 );

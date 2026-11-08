@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/api-error";
 import { ArrowLeft, RotateCw, ShieldCheck } from "lucide-react";
 import loginBg from "@/assets/images/login-bg.png";
 
@@ -27,7 +28,8 @@ const ConfirmOTP = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isResending, setIsResending] = useState(false);
     const [countdown, setCountdown] = useState(300);
-    const [canResend, setCanResend] = useState(false);
+    // Hết đếm ngược thì cho gửi lại mã
+    const canResend = countdown === 0;
 
     const {
         control,
@@ -40,13 +42,10 @@ const ConfirmOTP = () => {
     });
 
     useEffect(() => {
-        if (countdown > 0 && !canResend) {
-            const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
-            return () => clearTimeout(timer);
-        } else if (countdown === 0 && !canResend) {
-            setCanResend(true);
-        }
-    }, [countdown, canResend]);
+        if (countdown <= 0) return;
+        const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+        return () => clearTimeout(timer);
+    }, [countdown]);
 
     const handleVerifyOTP = async (data: OtpFormValues) => {
         try {
@@ -58,8 +57,8 @@ const ConfirmOTP = () => {
             navigate("/reset-password", {
                 state: { reset_password_token: result.data?.reset_password_token, from: "/confirm-otp" },
             });
-        } catch (error: any) {
-            toast.error(error.message);
+        } catch (error) {
+            toast.error(getErrorMessage(error));
         } finally {
             setIsLoading(false);
         }
@@ -72,9 +71,8 @@ const ConfirmOTP = () => {
             toast.success(result.message);
             setCountdown(300);
             reset({ code: "" });
-            setCanResend(false);
-        } catch (error: any) {
-            toast.error(error.message);
+        } catch (error) {
+            toast.error(getErrorMessage(error));
         } finally {
             setIsResending(false);
         }

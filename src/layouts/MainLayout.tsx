@@ -14,7 +14,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useAppDispatch } from "@/hooks";
@@ -43,7 +43,15 @@ const MainLayout = ({
     profilePath,
 }: MainLayoutProps) => {
     const dispatch = useAppDispatch();
-    const [collapsed, setCollapsed] = useState(defaultCollapsed);
+    // Trạng thái thu gọn sidebar lưu ở localStorage (đọc một lần khi khởi tạo)
+    const [collapsed, setCollapsed] = useState(() => {
+        try {
+            const saved = localStorage.getItem("sidebar_collapsed");
+            return saved === null ? defaultCollapsed : saved === "true";
+        } catch {
+            return defaultCollapsed;
+        }
+    });
     // Chi nhánh đang chọn nằm trong Redux store (slice restaurant tự lưu localStorage)
     const currentRestaurant = currentBranch ?? null;
     const setCurrentRestaurant = (branch: IRestaurant) => dispatch(setCurrentBranch(branch));
@@ -53,21 +61,22 @@ const MainLayout = ({
     const location = useLocation();
 
     useEffect(() => {
-        const saved = localStorage.getItem("sidebar_collapsed");
-        if (saved !== null) {
-            setCollapsed(saved === "true");
+        try {
+            localStorage.setItem("sidebar_collapsed", String(collapsed));
+        } catch {
+            // Trình duyệt chặn localStorage: bỏ qua
         }
-    }, []);
-
-    useEffect(() => {
-        localStorage.setItem("sidebar_collapsed", String(collapsed));
     }, [collapsed]);
 
-    useEffect(() => {
+    // Đổi trang thì đóng menu trên điện thoại (cập nhật state trong lúc render khi pathname đổi)
+    const [lastPath, setLastPath] = useState(location.pathname);
+    if (lastPath !== location.pathname) {
+        setLastPath(location.pathname);
         setIsMobileOpen(false);
-    }, [location.pathname]);
+    }
 
-    const SidebarContent = () => (
+    // Hàm trả JSX (không phải component) để không tạo component mới mỗi lần render
+    const renderSidebar = () => (
         <div className="flex h-full flex-col bg-sidebar-background border-r border-sidebar-border">
             <div className={cn("flex h-16 items-center px-4", collapsed ? "justify-center" : "justify-between")}>
                 <div className="flex items-center gap-2 overflow-hidden">
@@ -172,7 +181,7 @@ const MainLayout = ({
                     collapsed ? "w-16" : "w-64",
                 )}
             >
-                <SidebarContent />
+                {renderSidebar()}
             </aside>
 
             {/* Nội dung chính - flex-1 tự động co giãn theo sidebar */}
@@ -186,7 +195,9 @@ const MainLayout = ({
                                 </Button>
                             </SheetTrigger>
                             <SheetContent side="left" className="p-0 w-64">
-                                <SidebarContent />
+                                {/* Tiêu đề ẩn cho trình đọc màn hình */}
+                                <SheetTitle className="sr-only">Menu</SheetTitle>
+                                {renderSidebar()}
                             </SheetContent>
                         </Sheet>
                         <h1 className="text-xl font-semibold">

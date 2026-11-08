@@ -30,7 +30,7 @@ const authSlice = createSlice({
         // Xóa phiên đăng nhập phía client (giữ isInitialized)
         clearAuth: (state) => ({ ...initialState, isInitialized: state.isInitialized }),
     },
-    extraReducers: (builder: any) => {
+    extraReducers: (builder) => {
         builder
             .addCase(loginThunk.pending, (state: IAuthState) => {
                 state.loading = true;

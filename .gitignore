@@ -25,3 +25,8 @@ dist-ssr
 
 ########
 .env
+
+# Playwright
+e2e/.fixture.json
+test-results/
+playwright-report/
