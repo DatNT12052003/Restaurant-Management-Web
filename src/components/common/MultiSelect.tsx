@@ -52,7 +52,7 @@ export function MultiSelect({
         }
     };
 
-    const handleRemove = (e: React.MouseEvent<HTMLButtonElement>, removedValue: string) => {
+    const handleRemove = (e: React.MouseEvent<HTMLElement>, removedValue: string) => {
         e.stopPropagation();
 
         onChange(value.filter((item) => item !== removedValue));
@@ -73,13 +73,23 @@ export function MultiSelect({
                                 <Badge key={option.value} variant="secondary" className="flex items-center gap-1">
                                     {option.label}
 
-                                    <button
-                                        type="button"
+                                    {/* Không dùng <button>: nằm trong nút mở danh sách, button lồng button là HTML không hợp lệ */}
+                                    <span
+                                        role="button"
+                                        tabIndex={0}
+                                        aria-label={`× ${option.label}`}
                                         onClick={(e) => handleRemove(e, option.value)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter" || e.key === " ") {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                onChange(value.filter((item) => item !== option.value));
+                                            }
+                                        }}
                                         className="rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
                                     >
                                         <X className="h-3 w-3" />
-                                    </button>
+                                    </span>
                                 </Badge>
                             ))
                         ) : (
