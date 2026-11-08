@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { Pencil, Plus, Search, Trash2 } from "lucide-react";
+import { History, Pencil, Plus, Search, Trash2 } from "lucide-react";
 
 import { createGuest, deleteGuest, getGuests, updateGuest } from "@/apis";
 import ConfirmDialog from "@/components/common/ConfirmDialog";
@@ -22,6 +22,7 @@ import type { GuestStatusEnum } from "@/enum";
 import { useAsyncData, useDebounce, usePermission } from "@/hooks";
 import type { IGetQuery, IPagination, IProfileFields, IUserWithAccount } from "@/interfaces";
 import { getErrorMessage } from "@/lib/api-error";
+import GuestHistoryDialog from "./GuestHistoryDialog";
 
 const PAGE_SIZE = 10;
 
@@ -44,6 +45,8 @@ const GuestManagement = () => {
 
     const [form, setForm] = useState<IGuestForm | null>(null);
     const [editing, setEditing] = useState<IUserWithAccount | null>(null);
+    const [historyOf, setHistoryOf] = useState<IUserWithAccount | null>(null);
+    const canHistory = can("reservation.view") || can("order.view");
     const [saving, setSaving] = useState(false);
     const [deleting, setDeleting] = useState<IUserWithAccount | null>(null);
 
@@ -208,6 +211,17 @@ const GuestManagement = () => {
                                             </Badge>
                                         </TableCell>
                                         <TableCell className="text-right whitespace-nowrap">
+                                            {canHistory && (
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    onClick={() => setHistoryOf(g)}
+                                                    aria-label={t("guest.history")}
+                                                    title={t("guest.history")}
+                                                >
+                                                    <History className="h-4 w-4" />
+                                                </Button>
+                                            )}
                                             {can("guest.update") && (
                                                 <Button
                                                     variant="ghost"
@@ -311,6 +325,8 @@ const GuestManagement = () => {
                     )}
                 </DialogContent>
             </Dialog>
+
+            <GuestHistoryDialog guest={historyOf} onOpenChange={(v) => !v && setHistoryOf(null)} />
 
             <ConfirmDialog
                 open={!!deleting}

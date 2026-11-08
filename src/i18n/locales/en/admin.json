@@ -91,7 +91,8 @@
         "cashier": "Cashier",
         "discounts": "Discounts",
         "audit_logs": "Audit log",
-        "accounts": "Accounts"
+        "accounts": "Accounts",
+        "search_more_hint": "Showing the first {{count}} results; keep typing to narrow down."
     },
     "roles": {
         "admin": "Administrator",
@@ -150,7 +151,8 @@
             "confirmed": "Opened",
             "serving": "Serving",
             "completed": "Completed",
-            "cancelled": "Cancelled"
+            "cancelled": "Cancelled",
+            "merged": "Merged"
         },
         "order_item": {
             "pending": "Waiting",
@@ -206,7 +208,10 @@
         "fee_hint": "Applies to orders opened after saving; open orders keep their current rates.",
         "open_time": "Opening time",
         "close_time": "Closing time",
-        "hours_hint": "Used for table occupancy. A closing time earlier than the opening time means it stays open past midnight."
+        "hours_hint": "Used for table occupancy. A closing time earlier than the opening time means it stays open past midnight.",
+        "hold_minutes": "Hold tables before the booking (minutes)",
+        "no_show_minutes": "Mark as no-show after (minutes late)",
+        "reservation_timing_hint": "Tables switch to Reserved before the booking time; if guests are later than this, the booking becomes No-show and the tables are released. Enter 0 to turn off."
     },
     "room": {
         "title": "Rooms & tables",
@@ -223,7 +228,9 @@
         "no_rooms": "This branch has no rooms yet.",
         "max_tables_hint": "Private rooms can have at most {{max}} tables.",
         "delete_title": "Delete room",
-        "delete_desc": "Delete room \"{{name}}\" and all of its tables?"
+        "delete_desc": "Delete room \"{{name}}\" and all of its tables?",
+        "deactivate_title": "Deactivate a room with reservations?",
+        "deactivate_anyway": "Deactivate anyway"
     },
     "table": {
         "add_table": "Add table",
@@ -268,7 +275,13 @@
         "guest_status": "Customer type",
         "search_placeholder": "Search by name, email, phone, username...",
         "delete_title": "Delete customer",
-        "delete_desc": "Delete customer \"{{name}}\"?"
+        "delete_desc": "Delete customer \"{{name}}\"?",
+        "history": "History",
+        "history_title": "History of {{name}}",
+        "history_reservations": "Reservations",
+        "history_orders": "Orders",
+        "history_branch": "Branch",
+        "history_spent_page": "Completed orders on this page: {{amount}}"
     },
     "permission": {
         "title": "Permissions",
@@ -343,7 +356,10 @@
         "hint": "Up to {{max}} images per upload, {{size}} MB each. The first image becomes the cover.",
         "too_many": "Select at most {{max}} images at a time",
         "too_large": "Each image must be at most {{size}} MB",
-        "save_first": "Save first, then you can add images."
+        "save_first": "Save first, then you can add images.",
+        "move_left": "Move earlier",
+        "move_right": "Move later",
+        "sort_hint": "Drag images to reorder them."
     },
     "reservation": {
         "title": "Reservations",
@@ -481,7 +497,29 @@
             "send": "Send to kitchen",
             "empty_cart": "No items selected"
         },
-        "unpaid_hint": "Not fully paid; the order completes automatically once the cashier collects payment"
+        "unpaid_hint": "Not fully paid; the order completes automatically once the cashier collects payment",
+        "merge": "Merge",
+        "merge_title": "Merge order {{code}} into another order",
+        "merge_desc": "All items, tables and guests of this order move to the selected order. This order's discount code is removed.",
+        "merge_hint": "Merge into another order (two tables paying together)",
+        "no_other_orders": "There are no other open orders",
+        "split": "Split items",
+        "split_title": "Split items of order {{code}}",
+        "split_desc": "Choose the items and quantities to move, then choose the receiving order (a new order or an open one).",
+        "split_hint": "Move items to a new order or another order",
+        "split_items": "Items to move",
+        "split_less": "Fewer {{name}}",
+        "split_more": "More {{name}}",
+        "split_all": "All",
+        "split_none": "None",
+        "split_value": "Value moved: {{amount}}",
+        "split_to_new": "New order",
+        "split_to_existing": "Open order",
+        "split_own_table": "Table of this order",
+        "split_keep_one_table": "This order must keep at least one table",
+        "has_payments_hint": "The order has payments or pending transactions: it cannot be merged or split",
+        "merged_into": "This order was merged into {{code}}",
+        "open_target": "Open order"
     },
     "kitchen": {
         "title": "Kitchen & bar",
@@ -507,7 +545,12 @@
             "ready": "Done",
             "served": "Served",
             "cook_now": "Cook now"
-        }
+        },
+        "alerts_on": "New-item alerts on",
+        "alerts_off": "Alert new items",
+        "alerts_hint": "Play a sound and show a browser notification when new items arrive for the current station",
+        "alert_new_round": "New items: order {{code}}, round {{no}}",
+        "accept_all": "Accept all"
     },
     "cashier": {
         "title": "Cashier",
@@ -570,7 +613,8 @@
         "summary": {
             "collected": "Collected",
             "refunded": "Refunded",
-            "net": "Net"
+            "net": "Net",
+            "tips": "Tips"
         },
         "invoice": {
             "title": "INVOICE",
@@ -580,7 +624,12 @@
             "qty": "Qty",
             "amount": "Amount",
             "thanks": "Thank you, see you again!"
-        }
+        },
+        "tip": "Tip (not part of the bill)",
+        "tip_hint": "The tip goes to the staff member in charge of the order: {{name}}",
+        "tip_line": "Tip {{amount}} · {{name}}",
+        "tip_received": "Tips (outside the bill)",
+        "collect_with_tip": "Collect {{amount}} + tip {{tip}}"
     },
     "discount": {
         "title": "Discounts",
@@ -693,7 +742,8 @@
             "total_export": "Value issued (at cost)",
             "total_adjust": "Difference value (at cost)",
             "submit": "Create document"
-        }
+        },
+        "low_stock_badge": "{{count}} ingredients low on stock"
     },
     "report": {
         "title": "Reports",
@@ -732,7 +782,8 @@
             "revenue": "Revenue",
             "top": "Best sellers",
             "occupancy": "Table occupancy",
-            "inventory": "Stock purchases"
+            "inventory": "Stock purchases",
+            "tips": "Tips"
         },
         "kpi": {
             "net_revenue": "Net revenue",
@@ -811,6 +862,17 @@
             "no_supplier": "No supplier recorded",
             "receipt_count": "Slips",
             "value": "Value"
+        },
+        "tips": {
+            "title": "Tips over time",
+            "total": "Total tips",
+            "not_revenue": "Recorded separately, not counted as revenue",
+            "payments": "Payments with tips",
+            "staff_count": "Staff receiving tips",
+            "by_staff": "By staff member",
+            "staff": "Staff member",
+            "orders": "Orders",
+            "unassigned": "Not assigned"
         }
     },
     "audit": {

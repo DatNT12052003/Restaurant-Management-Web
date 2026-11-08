@@ -91,7 +91,8 @@
         "cashier": "Thu ngân",
         "discounts": "Mã giảm giá",
         "audit_logs": "Nhật ký hoạt động",
-        "accounts": "Tài khoản"
+        "accounts": "Tài khoản",
+        "search_more_hint": "Chỉ hiện {{count}} kết quả đầu; gõ thêm để thu hẹp."
     },
     "roles": {
         "admin": "Quản trị viên",
@@ -150,7 +151,8 @@
             "confirmed": "Đã mở",
             "serving": "Đang phục vụ",
             "completed": "Hoàn tất",
-            "cancelled": "Đã hủy"
+            "cancelled": "Đã hủy",
+            "merged": "Đã gộp"
         },
         "order_item": {
             "pending": "Chờ bếp",
@@ -206,7 +208,10 @@
         "fee_hint": "Áp cho order mở sau khi lưu; order đang mở giữ tỷ lệ cũ.",
         "open_time": "Giờ mở cửa",
         "close_time": "Giờ đóng cửa",
-        "hours_hint": "Dùng để tính tỷ lệ lấp đầy bàn. Giờ đóng cửa sớm hơn giờ mở cửa nghĩa là mở qua đêm."
+        "hours_hint": "Dùng để tính tỷ lệ lấp đầy bàn. Giờ đóng cửa sớm hơn giờ mở cửa nghĩa là mở qua đêm.",
+        "hold_minutes": "Giữ bàn trước giờ hẹn (phút)",
+        "no_show_minutes": "Tự đánh dấu không đến sau (phút trễ)",
+        "reservation_timing_hint": "Bàn tự chuyển sang Đã đặt trước giờ hẹn; khách trễ quá số phút thì đặt bàn chuyển Không đến và bàn được trả. Nhập 0 để tắt."
     },
     "room": {
         "title": "Phòng & bàn",
@@ -223,7 +228,9 @@
         "no_rooms": "Chi nhánh chưa có phòng nào.",
         "max_tables_hint": "Phòng riêng tối đa {{max}} bàn.",
         "delete_title": "Xóa phòng",
-        "delete_desc": "Xóa phòng \"{{name}}\" cùng toàn bộ bàn trong phòng?"
+        "delete_desc": "Xóa phòng \"{{name}}\" cùng toàn bộ bàn trong phòng?",
+        "deactivate_title": "Tạm khóa phòng còn lịch đặt?",
+        "deactivate_anyway": "Vẫn tạm khóa"
     },
     "table": {
         "add_table": "Thêm bàn",
@@ -268,7 +275,13 @@
         "guest_status": "Loại khách",
         "search_placeholder": "Tìm theo tên, email, SĐT, tên đăng nhập...",
         "delete_title": "Xóa khách hàng",
-        "delete_desc": "Xóa khách hàng \"{{name}}\"?"
+        "delete_desc": "Xóa khách hàng \"{{name}}\"?",
+        "history": "Lịch sử",
+        "history_title": "Lịch sử của {{name}}",
+        "history_reservations": "Đặt bàn",
+        "history_orders": "Order",
+        "history_branch": "Chi nhánh",
+        "history_spent_page": "Tổng order hoàn tất trên trang này: {{amount}}"
     },
     "permission": {
         "title": "Phân quyền",
@@ -343,7 +356,10 @@
         "hint": "Tối đa {{max}} ảnh mỗi lần, mỗi ảnh {{size}} MB. Ảnh đầu tiên được dùng làm ảnh đại diện.",
         "too_many": "Chỉ chọn tối đa {{max}} ảnh mỗi lần",
         "too_large": "Mỗi ảnh tối đa {{size}} MB",
-        "save_first": "Lưu trước, sau đó có thể thêm ảnh."
+        "save_first": "Lưu trước, sau đó có thể thêm ảnh.",
+        "move_left": "Chuyển lên trước",
+        "move_right": "Chuyển ra sau",
+        "sort_hint": "Kéo thả ảnh để sắp xếp."
     },
     "reservation": {
         "title": "Đặt bàn",
@@ -481,7 +497,29 @@
             "send": "Gửi bếp",
             "empty_cart": "Chưa chọn món nào"
         },
-        "unpaid_hint": "Chưa thu đủ tiền; thu ngân thanh toán xong order sẽ tự hoàn tất"
+        "unpaid_hint": "Chưa thu đủ tiền; thu ngân thanh toán xong order sẽ tự hoàn tất",
+        "merge": "Gộp order",
+        "merge_title": "Gộp order {{code}} vào order khác",
+        "merge_desc": "Mọi món, bàn và số khách của order này chuyển sang order được chọn. Mã giảm giá của order này bị gỡ.",
+        "merge_hint": "Gộp vào order khác (khách hai bàn thanh toán chung)",
+        "no_other_orders": "Không có order đang mở nào khác",
+        "split": "Tách món",
+        "split_title": "Tách món của order {{code}}",
+        "split_desc": "Chọn món và số lượng cần chuyển, rồi chọn order nhận (order mới hoặc order đang mở).",
+        "split_hint": "Tách món sang order mới hoặc order khác",
+        "split_items": "Món cần chuyển",
+        "split_less": "Bớt {{name}}",
+        "split_more": "Thêm {{name}}",
+        "split_all": "Tất cả",
+        "split_none": "Bỏ",
+        "split_value": "Giá trị chuyển đi: {{amount}}",
+        "split_to_new": "Order mới",
+        "split_to_existing": "Order đang mở",
+        "split_own_table": "Bàn của order này",
+        "split_keep_one_table": "Order hiện tại phải giữ lại ít nhất một bàn",
+        "has_payments_hint": "Order đã thu tiền hoặc có giao dịch chờ: không gộp / tách được",
+        "merged_into": "Order này đã được gộp vào {{code}}",
+        "open_target": "Mở order"
     },
     "kitchen": {
         "title": "Bếp & pha chế",
@@ -507,7 +545,12 @@
             "ready": "Xong",
             "served": "Đã phục vụ",
             "cook_now": "Làm luôn"
-        }
+        },
+        "alerts_on": "Đang bật báo món",
+        "alerts_off": "Báo món mới",
+        "alerts_hint": "Phát âm thanh và hiện thông báo trình duyệt khi có món mới cho khu đang xem",
+        "alert_new_round": "Món mới: order {{code}}, đợt {{no}}",
+        "accept_all": "Nhận tất cả"
     },
     "cashier": {
         "title": "Thu ngân",
@@ -570,7 +613,8 @@
         "summary": {
             "collected": "Đã thu",
             "refunded": "Đã hoàn",
-            "net": "Thực thu"
+            "net": "Thực thu",
+            "tips": "Tiền tip"
         },
         "invoice": {
             "title": "HÓA ĐƠN THANH TOÁN",
@@ -580,7 +624,12 @@
             "qty": "SL",
             "amount": "T.Tiền",
             "thanks": "Cảm ơn quý khách, hẹn gặp lại!"
-        }
+        },
+        "tip": "Tiền tip (không tính vào hóa đơn)",
+        "tip_hint": "Tip được ghi cho nhân viên phụ trách order: {{name}}",
+        "tip_line": "Tip {{amount}} · {{name}}",
+        "tip_received": "Tiền tip (ngoài hóa đơn)",
+        "collect_with_tip": "Thu {{amount}} + tip {{tip}}"
     },
     "discount": {
         "title": "Mã giảm giá",
@@ -693,7 +742,8 @@
             "total_export": "Giá trị xuất (theo giá vốn)",
             "total_adjust": "Giá trị chênh lệch (theo giá vốn)",
             "submit": "Lập phiếu"
-        }
+        },
+        "low_stock_badge": "{{count}} nguyên liệu tồn thấp"
     },
     "report": {
         "title": "Báo cáo",
@@ -732,7 +782,8 @@
             "revenue": "Doanh thu",
             "top": "Món bán chạy",
             "occupancy": "Lấp đầy bàn",
-            "inventory": "Nhập kho"
+            "inventory": "Nhập kho",
+            "tips": "Tiền tip"
         },
         "kpi": {
             "net_revenue": "Thực thu",
@@ -811,6 +862,17 @@
             "no_supplier": "Không ghi nhà cung cấp",
             "receipt_count": "Số phiếu",
             "value": "Giá trị"
+        },
+        "tips": {
+            "title": "Tiền tip theo thời gian",
+            "total": "Tổng tip",
+            "not_revenue": "Ghi riêng, không tính vào doanh thu",
+            "payments": "Lượt thanh toán có tip",
+            "staff_count": "Nhân viên nhận tip",
+            "by_staff": "Theo nhân viên",
+            "staff": "Nhân viên",
+            "orders": "Số order",
+            "unassigned": "Chưa gắn nhân viên"
         }
     },
     "audit": {

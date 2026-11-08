@@ -241,12 +241,12 @@ const PaymentHistory = ({ restaurantId, onInvoice }: { restaurantId?: number; on
             </div>
 
             {data && (
-                <div className="grid gap-2 sm:grid-cols-3">
-                    {(["collected", "refunded", "net"] as const).map((k) => (
+                <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+                    {(["collected", "refunded", "net", "tips"] as const).map((k) => (
                         <Card key={k}>
                             <CardContent className="py-4">
                                 <p className="text-xs text-muted-foreground">{t(`cashier.summary.${k}`)}</p>
-                                <p className="text-xl font-semibold">{formatMoney(data.summary[k])}</p>
+                                <p className="text-xl font-semibold">{formatMoney(data.summary[k] ?? 0)}</p>
                             </CardContent>
                         </Card>
                     ))}

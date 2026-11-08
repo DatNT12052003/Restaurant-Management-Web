@@ -20,6 +20,10 @@ export interface ISidebarMenuItem {
     icon: React.ComponentType<{ className?: string }>;
     /** Ẩn mục menu nếu người dùng không có quyền này (mảng: có ít nhất một quyền) */
     permission?: string | string[];
+    /** Số hiển thị cạnh mục menu (ví dụ số nguyên liệu tồn thấp); 0 / undefined thì ẩn */
+    badge?: number;
+    /** Mô tả của số trên cho trình đọc màn hình */
+    badgeLabel?: string;
 }
 
 export interface ILocalState {

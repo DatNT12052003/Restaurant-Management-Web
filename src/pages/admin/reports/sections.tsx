@@ -4,7 +4,14 @@ import { toast } from "sonner";
 import { AlertTriangle, CalendarClock, ClipboardList, Table2, Wallet } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
-import { getInventoryReport, getOccupancyReport, getReportOverview, getRevenueReport, getTopItemsReport } from "@/apis";
+import {
+    getInventoryReport,
+    getOccupancyReport,
+    getReportOverview,
+    getRevenueReport,
+    getTipsReport,
+    getTopItemsReport,
+} from "@/apis";
 import { ChartCard, ChartLegend, ChartTooltip, EmptyChart, StatTile } from "@/components/charts/ChartKit";
 import {
     AXIS_PROPS,
@@ -588,6 +595,71 @@ export const InventorySection = ({ query, valid }: { query: IReportQuery; valid:
                     </Table>
                 </ChartCard>
             </div>
+        </div>
+    );
+};
+
+/** Tiền tip theo kỳ và theo nhân viên nhận (ghi riêng, không tính vào doanh thu) */
+export const TipsSection = ({ query, valid }: { query: IReportQuery; valid: boolean }) => {
+    const { t, i18n } = useTranslation("admin");
+    const { data, loading } = useReport(getTipsReport, query, valid);
+    const groupBy = (query.group_by ?? "day") as ReportGroupBy;
+
+    if (loading && !data) return <Loading />;
+    if (!data) return null;
+    const hasData = data.total > 0;
+    const payments = data.by_staff.reduce((s, x) => s + x.payments, 0);
+
+    return (
+        <div className="grid gap-4">
+            <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
+                <StatTile label={t("report.tips.total")} value={formatMoney(data.total)} hint={t("report.tips.not_revenue")} />
+                <StatTile label={t("report.tips.payments")} value={String(payments)} />
+                <StatTile label={t("report.tips.staff_count")} value={String(data.by_staff.filter((s) => s.staff_id).length)} />
+            </div>
+
+            <ChartCard title={t("report.tips.title")}>
+                {!hasData ? (
+                    <EmptyChart text={t("report.no_data")} height={CHART_HEIGHT} />
+                ) : (
+                    <ResponsiveContainer width="100%" height={CHART_HEIGHT}>
+                        <BarChart data={data.series} barCategoryGap="20%">
+                            <CartesianGrid {...GRID_PROPS} />
+                            <XAxis dataKey="period" {...AXIS_PROPS} tickFormatter={(v) => formatPeriod(v, groupBy)} minTickGap={12} />
+                            <YAxis {...AXIS_PROPS} width={56} tickFormatter={(v) => formatCompact(v, i18n.language)} />
+                            <Tooltip
+                                cursor={{ fill: "var(--muted)", opacity: 0.6 }}
+                                content={<ChartTooltip labelFormatter={(l) => formatPeriod(l, groupBy)} valueFormatter={(v) => formatMoney(v)} />}
+                            />
+                            <Bar dataKey="tip_total" name={t("report.tips.total")} fill={SERIES_COLORS[0]} radius={BAR_RADIUS} maxBarSize={24} />
+                        </BarChart>
+                    </ResponsiveContainer>
+                )}
+            </ChartCard>
+
+            <ChartCard title={t("report.tips.by_staff")}>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>{t("report.tips.staff")}</TableHead>
+                            <TableHead className="text-right">{t("report.tips.orders")}</TableHead>
+                            <TableHead className="text-right">{t("report.tips.payments")}</TableHead>
+                            <TableHead className="text-right">{t("report.tips.total")}</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {data.by_staff.map((s) => (
+                            <TableRow key={s.staff_id ?? "none"}>
+                                <TableCell>{s.staff_id ? s.full_name || `#${s.staff_id}` : t("report.tips.unassigned")}</TableCell>
+                                <TableCell className="text-right tabular-nums">{s.orders}</TableCell>
+                                <TableCell className="text-right tabular-nums">{s.payments}</TableCell>
+                                <TableCell className="text-right tabular-nums">{formatMoney(s.tip_total)}</TableCell>
+                            </TableRow>
+                        ))}
+                        {!data.by_staff.length && <EmptyRow cols={4} />}
+                    </TableBody>
+                </Table>
+            </ChartCard>
         </div>
     );
 };

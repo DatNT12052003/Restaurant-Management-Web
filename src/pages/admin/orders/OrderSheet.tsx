@@ -1,17 +1,32 @@
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { ArrowRightLeft, Ban, CheckCheck, CircleCheck, Pencil, Plus, Users, UtensilsCrossed, X } from "lucide-react";
+import {
+    ArrowRightLeft,
+    Ban,
+    CheckCheck,
+    CircleCheck,
+    Combine,
+    Pencil,
+    Plus,
+    Split,
+    Users,
+    UtensilsCrossed,
+    X,
+} from "lucide-react";
 
 import {
     addOrderTables,
     cancelOrder,
     completeOrder,
     getOrder,
+    mergeOrder,
     releaseOrderTable,
+    splitOrder,
     transferOrderTable,
     updateOrder,
     updateOrderLineStatus,
+    updateOrderLinesStatus,
 } from "@/apis";
 import ConfirmDialog from "@/components/common/ConfirmDialog";
 import ReasonDialog from "@/components/common/ReasonDialog";
@@ -25,12 +40,13 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { Textarea } from "@/components/ui/textarea";
 import { ITEM_STATUS_STYLE, OPEN_ORDER_STATUSES, ORDER_STATUS_STYLE, canMoveLine } from "@/constants/order";
 import { useAsyncData, usePermission, useRealtime } from "@/hooks";
-import type { IOrderDetail, IOrderLine } from "@/interfaces";
+import type { IOrder, IOrderDetail, IOrderLine } from "@/interfaces";
 import { getErrorMessage } from "@/lib/api-error";
 import { formatDateTime, formatTime } from "@/lib/datetime";
 import { formatMoney } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import RoundDialog from "./RoundDialog";
+import { MergeOrderDialog, SplitOrderDialog } from "./MergeSplitDialogs";
 
 /** Bàn có thể ghép / chuyển tới (không thuộc order mở nào, phòng đang hoạt động) */
 export interface IFreeTable {
@@ -43,22 +59,32 @@ export interface IFreeTable {
 interface OrderSheetProps {
     orderId: number | null;
     freeTables: IFreeTable[];
+    /** Order đang mở của chi nhánh (chọn order đích khi gộp / tách) */
+    openOrders: IOrder[];
     onOpenChange: (open: boolean) => void;
     /** Gọi sau mỗi thay đổi để trang cha tải lại sơ đồ */
     onChanged: () => void;
+    /** Chuyển panel sang order khác (sau khi gộp, hoặc mở order đã gộp vào) */
+    onSelectOrder: (id: number) => void;
 }
 
-export const OrderSheet = ({ orderId, freeTables, onOpenChange, onChanged }: OrderSheetProps) => (
+export const OrderSheet = ({ orderId, onOpenChange, ...rest }: OrderSheetProps) => (
     <Sheet open={!!orderId} onOpenChange={onOpenChange}>
         <SheetContent className="w-full gap-0 overflow-y-auto data-[side=right]:w-full data-[side=right]:sm:max-w-2xl">
-            {orderId && <Body key={orderId} orderId={orderId} freeTables={freeTables} onChanged={onChanged} />}
+            {orderId && <Body key={orderId} orderId={orderId} {...rest} />}
         </SheetContent>
     </Sheet>
 );
 
 type TableDialog = { mode: "add" } | { mode: "transfer"; from: number } | null;
 
-const Body = ({ orderId, freeTables, onChanged }: { orderId: number; freeTables: IFreeTable[]; onChanged: () => void }) => {
+const Body = ({
+    orderId,
+    freeTables,
+    openOrders,
+    onChanged,
+    onSelectOrder,
+}: Omit<OrderSheetProps, "orderId" | "onOpenChange"> & { orderId: number }) => {
     const { t, i18n } = useTranslation("admin");
     const can = usePermission();
 
@@ -80,6 +106,8 @@ const Body = ({ orderId, freeTables, onChanged }: { orderId: number; freeTables:
     const [cancelLine, setCancelLine] = useState<IOrderLine | null>(null);
     const [cancelOpen, setCancelOpen] = useState(false);
     const [completeOpen, setCompleteOpen] = useState(false);
+    const [mergeOpen, setMergeOpen] = useState(false);
+    const [splitOpen, setSplitOpen] = useState(false);
 
     /** Chạy thao tác, báo kết quả, tải lại; ném lỗi tiếp để dialog không tự đóng */
     const run = async (action: () => Promise<{ message: string }>, silent = false) => {
@@ -114,20 +142,17 @@ const Body = ({ orderId, freeTables, onChanged }: { orderId: number; freeTables:
     const unfinished = lines.filter((l) => ["pending", "confirmed", "cooking", "ready"].includes(l.status)).length;
     // Giai đoạn 5: hoàn tất cần thu đủ tiền (thường do thu ngân, order tự hoàn tất khi thu đủ)
     const unpaid = Number(order.total) - Number(order.paid_amount ?? 0) > 0;
+    // Gộp / tách chỉ khi order chưa thu tiền và không có giao dịch chờ
+    const hasPayments = Number(order.paid_amount ?? 0) !== 0 || Number(order.pending_amount ?? 0) > 0;
+    const others = openOrders.filter((o) => o.id !== order.id);
+    const hasLines = lines.some((l) => l.status !== "cancelled");
 
-    const serveAllReady = async () => {
-        setBusy(true);
-        try {
-            for (const l of readyLines) await updateOrderLineStatus(l.kind, l.id, "served");
-            toast.success(t("order.served_all", { count: readyLines.length }));
-        } catch (error) {
-            toast.error(getErrorMessage(error));
-        } finally {
-            setBusy(false);
-            reload();
-            onChanged();
-        }
-    };
+    // Một request cho mọi món đã xong (tất cả cùng thành công hoặc cùng thất bại)
+    const serveAllReady = () =>
+        run(async () => {
+            await updateOrderLinesStatus({ status: "served", lines: readyLines.map((l) => ({ kind: l.kind, id: l.id })) });
+            return { message: t("order.served_all", { count: readyLines.reduce((s, l) => s + l.quantity, 0) }) };
+        }).catch(() => undefined);
 
     return (
         <>
@@ -181,6 +206,14 @@ const Body = ({ orderId, freeTables, onChanged }: { orderId: number; freeTables:
                     {order.guest && ` · ${t("reservation.linked_guest", { name: order.guest.full_name })}`}
                 </p>
                 {order.note && <p className="whitespace-pre-wrap text-sm">{order.note}</p>}
+                {order.status === "merged" && order.merged_into_order_id && (
+                    <p className="flex flex-wrap items-center gap-2 rounded-md bg-violet-50 px-3 py-2 text-sm dark:bg-violet-950/40">
+                        {t("order.merged_into", { code: order.merged_into_code })}
+                        <Button size="sm" variant="outline" className="h-7" onClick={() => onSelectOrder(order.merged_into_order_id!)}>
+                            {t("order.open_target")}
+                        </Button>
+                    </p>
+                )}
                 {order.cancel_reason && (
                     <p className="rounded-md bg-muted px-3 py-2 text-sm">
                         {t("order.reason")}: {order.cancel_reason}
@@ -212,6 +245,26 @@ const Body = ({ orderId, freeTables, onChanged }: { orderId: number; freeTables:
                             <Button size="sm" variant="outline" onClick={() => setEditOpen(true)} disabled={busy}>
                                 <Pencil className="h-4 w-4" />
                                 {t("common.edit")}
+                            </Button>
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => setMergeOpen(true)}
+                                disabled={busy || hasPayments}
+                                title={hasPayments ? t("order.has_payments_hint") : t("order.merge_hint")}
+                            >
+                                <Combine className="h-4 w-4" />
+                                {t("order.merge")}
+                            </Button>
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => setSplitOpen(true)}
+                                disabled={busy || hasPayments || !hasLines}
+                                title={hasPayments ? t("order.has_payments_hint") : t("order.split_hint")}
+                            >
+                                <Split className="h-4 w-4" />
+                                {t("order.split")}
                             </Button>
                             <Button size="sm" variant="outline" onClick={() => setCompleteOpen(true)} disabled={busy || unfinished > 0 || unpaid} title={unfinished > 0 ? t("order.complete_hint") : unpaid ? t("order.unpaid_hint") : undefined}>
                                 <CircleCheck className="h-4 w-4" />
@@ -298,6 +351,12 @@ const Body = ({ orderId, freeTables, onChanged }: { orderId: number; freeTables:
                     <span>{t("order.total")}</span>
                     <span>{formatMoney(order.total)}</span>
                 </div>
+                {Number(order.tip_amount ?? 0) > 0 && (
+                    <div className="flex justify-between text-muted-foreground">
+                        <span>{t("cashier.tip_received")}</span>
+                        <span>{formatMoney(order.tip_amount)}</span>
+                    </div>
+                )}
                 {Number(order.paid_amount ?? 0) > 0 && (
                     <>
                         <div className="flex justify-between text-emerald-700 dark:text-emerald-300">
@@ -326,6 +385,25 @@ const Body = ({ orderId, freeTables, onChanged }: { orderId: number; freeTables:
                             : addOrderTables(order.id, ids),
                     )
                 }
+            />
+
+            <MergeOrderDialog
+                open={mergeOpen}
+                order={order}
+                candidates={others}
+                onOpenChange={setMergeOpen}
+                onSubmit={async (targetId) => {
+                    await run(() => mergeOrder(order.id, targetId));
+                    onSelectOrder(targetId);
+                }}
+            />
+            <SplitOrderDialog
+                open={splitOpen}
+                order={order}
+                candidates={others}
+                freeTables={freeTables}
+                onOpenChange={setSplitOpen}
+                onSubmit={(payload) => run(() => splitOrder(order.id, payload))}
             />
 
             <EditOrderDialog

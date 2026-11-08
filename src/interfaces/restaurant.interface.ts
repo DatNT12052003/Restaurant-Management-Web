@@ -12,6 +12,9 @@ export interface IRestaurant {
     /** Giờ mở / đóng cửa ("HH:mm:ss"), dùng tính tỷ lệ lấp đầy bàn */
     open_time?: string;
     close_time?: string;
+    /** Giữ bàn trước giờ hẹn / tự đánh dấu không đến sau số phút trễ (0 = tắt) */
+    reservation_hold_minutes?: number;
+    no_show_after_minutes?: number;
     created_at?: string;
     updated_at?: string;
 }
@@ -33,4 +36,6 @@ export interface IRestaurantPayload {
     tax_percent?: number | string;
     open_time?: string;
     close_time?: string;
+    reservation_hold_minutes?: number | string;
+    no_show_after_minutes?: number | string;
 }

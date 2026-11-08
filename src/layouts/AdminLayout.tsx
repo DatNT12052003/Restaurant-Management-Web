@@ -19,8 +19,9 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { ISidebarMenuItem } from "@/interfaces";
-import { useAppDispatch, useAppSelector, usePermission } from "@/hooks";
-import { useEffect } from "react";
+import { useAppDispatch, useAppSelector, useAsyncData, usePermission, useRealtime } from "@/hooks";
+import { getStock } from "@/apis";
+import { useCallback, useEffect } from "react";
 import { getAllRestaurantsThunk } from "@/store/restaurant/restaurantThunk";
 import { connectSocket, disconnectSocket, subscribeRestaurant } from "@/lib/socket";
 
@@ -55,6 +56,19 @@ const AdminLayout = () => {
         if (userId && isAdmin) subscribeRestaurant(branchId);
     }, [userId, isAdmin, branchId]);
 
+    // Huy hiệu tồn thấp: số nguyên liệu chạm ngưỡng tối thiểu ở chi nhánh, cập nhật khi có phiếu kho
+    const canInventory = can("inventory.view");
+    const lowStockFetcher = useCallback(async () => {
+        if (!userId || !canInventory || (isAdmin && !branchId)) return 0;
+        try {
+            return (await getStock({ low_only: true }, isAdmin ? branchId : undefined)).data?.summary.low_count ?? 0;
+        } catch {
+            return 0;
+        }
+    }, [userId, canInventory, isAdmin, branchId]);
+    const { data: lowStock = 0, reload: reloadLowStock } = useAsyncData(lowStockFetcher);
+    useRealtime(["inventory:changed"], reloadLowStock, 1000);
+
     const menuItems: ISidebarMenuItem[] = [
         { path: "/admin/dashboard", label: t("menu.dashboard"), icon: LayoutDashboard },
         { path: "/admin/restaurants", label: t("menu.restaurants"), icon: Building2, permission: "restaurant.view" },
@@ -74,7 +88,14 @@ const AdminLayout = () => {
         { path: "/admin/kitchen", label: t("menu.kitchen"), icon: ChefHat, permission: "order_item.prepare" },
         { path: "/admin/cashier", label: t("menu.cashier"), icon: Wallet, permission: "payment.view" },
         { path: "/admin/discounts", label: t("menu.discounts"), icon: TicketPercent, permission: "discount.view" },
-        { path: "/admin/inventory", label: t("menu.inventory"), icon: Package, permission: "inventory.view" },
+        {
+            path: "/admin/inventory",
+            label: t("menu.inventory"),
+            icon: Package,
+            permission: "inventory.view",
+            badge: lowStock,
+            badgeLabel: t("inventory.low_stock_badge", { count: lowStock }),
+        },
         { path: "/admin/reports", label: t("menu.reports"), icon: BarChart3, permission: "report.view" },
         { path: "/admin/audit-logs", label: t("menu.audit_logs"), icon: History, permission: "audit_log.view" },
     ];

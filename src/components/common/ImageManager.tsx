@@ -1,9 +1,9 @@
 import { useCallback, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { ImagePlus, Star, Trash2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, GripVertical, ImagePlus, Star, Trash2 } from "lucide-react";
 
-import { deleteImage, getImages, setPrimaryImage, uploadImages } from "@/apis";
+import { deleteImage, getImages, reorderImages, setPrimaryImage, uploadImages } from "@/apis";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { ImageEntityEnum } from "@/enum";
@@ -58,6 +58,38 @@ export const ImageManager = ({ entityType, entityId, canEdit, onChange }: ImageM
         } finally {
             setBusy(false);
         }
+    };
+
+    // ---- Sắp xếp: kéo thả (chuột) hoặc nút trái / phải (bàn phím, màn hình cảm ứng) ----
+    const [dragId, setDragId] = useState<number | null>(null);
+    const [overId, setOverId] = useState<number | null>(null);
+    const canSort = canEdit && images.length > 1;
+
+    /** Đưa ảnh `fromId` tới vị trí `toIndex`; hiển thị ngay, lỗi thì quay lại thứ tự cũ */
+    const moveTo = async (fromId: number, toIndex: number) => {
+        const from = images.findIndex((i) => i.id === fromId);
+        if (from < 0 || toIndex < 0 || toIndex >= images.length || from === toIndex) return;
+        const previous = images;
+        const next = [...images];
+        const [moved] = next.splice(from, 1);
+        next.splice(toIndex, 0, moved);
+        setLatest(next);
+        setBusy(true);
+        try {
+            const res = await reorderImages(entityType, entityId, next.map((i) => i.id));
+            setLatest(res.data || next);
+            onChange?.(res.data || next);
+        } catch (error) {
+            setLatest(previous);
+            toast.error(getErrorMessage(error));
+        } finally {
+            setBusy(false);
+        }
+    };
+
+    const endDrag = () => {
+        setDragId(null);
+        setOverId(null);
     };
 
     const handleFiles = async (fileList: FileList | null) => {
@@ -116,20 +148,70 @@ export const ImageManager = ({ entityType, entityId, canEdit, onChange }: ImageM
                 </p>
             ) : (
                 <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
-                    {images.map((img) => (
+                    {images.map((img, index) => (
                         <div
                             key={img.id}
+                            draggable={canSort && !busy}
+                            onDragStart={(e) => {
+                                setDragId(img.id);
+                                e.dataTransfer.effectAllowed = "move";
+                            }}
+                            onDragOver={(e) => {
+                                if (dragId === null) return;
+                                e.preventDefault();
+                                if (overId !== img.id) setOverId(img.id);
+                            }}
+                            onDrop={(e) => {
+                                e.preventDefault();
+                                if (dragId !== null) void moveTo(dragId, index);
+                                endDrag();
+                            }}
+                            onDragEnd={endDrag}
                             className={cn(
                                 "group relative aspect-square overflow-hidden rounded-md border",
                                 img.is_primary && "ring-2 ring-primary",
+                                canSort && "cursor-grab active:cursor-grabbing",
+                                dragId === img.id && "opacity-40",
+                                overId === img.id && dragId !== img.id && "ring-2 ring-sky-500",
                             )}
                         >
                             <img src={img.url} alt="" className="h-full w-full object-cover" loading="lazy" />
                             {img.is_primary && (
                                 <Badge className="absolute left-1 top-1 text-[10px]">{t("image.primary")}</Badge>
                             )}
+                            {canSort && (
+                                <GripVertical className="absolute right-1 top-1 h-4 w-4 text-white drop-shadow" aria-hidden />
+                            )}
                             {canEdit && (
                                 <div className="absolute inset-x-0 bottom-0 flex justify-end gap-1 bg-black/50 p-1 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
+                                    {canSort && (
+                                        <>
+                                            <Button
+                                                type="button"
+                                                size="icon"
+                                                variant="secondary"
+                                                className="mr-auto h-7 w-7"
+                                                disabled={busy || index === 0}
+                                                onClick={() => moveTo(img.id, index - 1)}
+                                                aria-label={t("image.move_left")}
+                                                title={t("image.move_left")}
+                                            >
+                                                <ChevronLeft className="h-3.5 w-3.5" />
+                                            </Button>
+                                            <Button
+                                                type="button"
+                                                size="icon"
+                                                variant="secondary"
+                                                className="h-7 w-7"
+                                                disabled={busy || index === images.length - 1}
+                                                onClick={() => moveTo(img.id, index + 1)}
+                                                aria-label={t("image.move_right")}
+                                                title={t("image.move_right")}
+                                            >
+                                                <ChevronRight className="h-3.5 w-3.5" />
+                                            </Button>
+                                        </>
+                                    )}
                                     {!img.is_primary && (
                                         <Button
                                             type="button"
@@ -163,7 +245,10 @@ export const ImageManager = ({ entityType, entityId, canEdit, onChange }: ImageM
                 </div>
             )}
             {canEdit && (
-                <p className="text-xs text-muted-foreground">{t("image.hint", { max: MAX_FILES, size: MAX_SIZE_MB })}</p>
+                <p className="text-xs text-muted-foreground">
+                    {t("image.hint", { max: MAX_FILES, size: MAX_SIZE_MB })}
+                    {canSort && ` ${t("image.sort_hint")}`}
+                </p>
             )}
         </div>
     );

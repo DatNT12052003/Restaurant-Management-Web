@@ -23,5 +23,9 @@ export const uploadImages = (
 export const setPrimaryImage = (id: number): Promise<IResponse<IImage[]>> =>
     unwrap(api.patch(`/images/${id}/primary`));
 
+/** Lưu thứ tự mới (toàn bộ ảnh của đối tượng); trả về danh sách ảnh theo thứ tự mới */
+export const reorderImages = (entityType: ImageEntityEnum, entityId: number, imageIds: number[]): Promise<IResponse<IImage[]>> =>
+    unwrap(api.put("/images/order", { entity_type: entityType, entity_id: entityId, image_ids: imageIds }));
+
 /** Trả về danh sách ảnh còn lại của đối tượng */
 export const deleteImage = (id: number): Promise<IResponse<IImage[]>> => unwrap(api.delete(`/images/${id}`));

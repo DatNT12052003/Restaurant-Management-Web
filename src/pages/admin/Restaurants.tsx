@@ -24,7 +24,7 @@ import { getErrorMessage } from "@/lib/api-error";
 import { getAllRestaurantsThunk } from "@/store/restaurant/restaurantThunk";
 
 const PAGE_SIZE = 10;
-const EMPTY_FORM: IRestaurantPayload = { name: "", address: "", status: "unblocked", service_fee_percent: 0, tax_percent: 0, open_time: "08:00", close_time: "22:00" };
+const EMPTY_FORM: IRestaurantPayload = { name: "", address: "", status: "unblocked", service_fee_percent: 0, tax_percent: 0, open_time: "08:00", close_time: "22:00", reservation_hold_minutes: 30, no_show_after_minutes: 15 };
 
 const Restaurants = () => {
     const { t } = useTranslation("admin");
@@ -72,6 +72,8 @@ const Restaurants = () => {
             tax_percent: Number(restaurant.tax_percent ?? 0),
             open_time: restaurant.open_time?.slice(0, 5) ?? "08:00",
             close_time: restaurant.close_time?.slice(0, 5) ?? "22:00",
+            reservation_hold_minutes: restaurant.reservation_hold_minutes ?? 30,
+            no_show_after_minutes: restaurant.no_show_after_minutes ?? 15,
         });
         setFormOpen(true);
     };
@@ -323,6 +325,33 @@ const Restaurants = () => {
                                     />
                                 </div>
                                 <p className="col-span-2 text-xs text-muted-foreground">{t("restaurant.hours_hint")}</p>
+                            </div>
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="grid gap-2">
+                                    <Label htmlFor="r-hold">{t("restaurant.hold_minutes")}</Label>
+                                    <Input
+                                        id="r-hold"
+                                        type="number"
+                                        min={0}
+                                        max={240}
+                                        step={1}
+                                        value={form.reservation_hold_minutes ?? 30}
+                                        onChange={(e) => setForm({ ...form, reservation_hold_minutes: e.target.value })}
+                                    />
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="r-noshow">{t("restaurant.no_show_minutes")}</Label>
+                                    <Input
+                                        id="r-noshow"
+                                        type="number"
+                                        min={0}
+                                        max={240}
+                                        step={1}
+                                        value={form.no_show_after_minutes ?? 15}
+                                        onChange={(e) => setForm({ ...form, no_show_after_minutes: e.target.value })}
+                                    />
+                                </div>
+                                <p className="col-span-2 text-xs text-muted-foreground">{t("restaurant.reservation_timing_hint")}</p>
                             </div>
                         </div>
                         <DialogFooter>
