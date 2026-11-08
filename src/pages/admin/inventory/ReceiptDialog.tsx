@@ -1,9 +1,11 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Plus, Search, Trash2 } from "lucide-react";
 
-import { createReceipt } from "@/apis";
+import { createReceipt, getLots, getSuppliers } from "@/apis";
+import { useAsyncData, usePermission } from "@/hooks";
+import { addDays, toDateInput } from "@/lib/datetime";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -41,10 +43,18 @@ interface Line {
     ingredient_id?: number;
     quantity: string;
     unit_price: string;
+    /** Nhập nguyên liệu theo dõi hạn dùng */
+    expiry_date: string;
+    lot_code: string;
+    /** Hủy hàng: hủy đúng lô này ("" = theo FEFO) */
+    lot_id: string;
 }
 
 let lineKey = 0;
-const emptyLine = (): Line => ({ key: ++lineKey, quantity: "", unit_price: "" });
+const emptyLine = (): Line => ({ key: ++lineKey, quantity: "", unit_price: "", expiry_date: "", lot_code: "", lot_id: "" });
+
+/** Phiếu trừ kho (xuất / hủy): chỉ nguyên liệu còn tồn, không vượt tồn */
+const isOutgoing = (type: InventoryReceiptTypeEnum) => type === "export" || type === "dispose";
 
 const Body = ({
     type,
@@ -61,8 +71,23 @@ const Body = ({
     onClose: () => void;
 }) => {
     const { t } = useTranslation("admin");
+    const can = usePermission();
     const [lines, setLines] = useState<Line[]>([emptyLine()]);
     const [supplier, setSupplier] = useState("");
+    // Giai đoạn 11: nhà cung cấp trong danh mục ("" = nhập tay tên)
+    const [supplierId, setSupplierId] = useState("");
+    const canSuppliers = type === "import" && can("supplier.view");
+    const suppliersFetcher = useCallback(
+        async () => (canSuppliers ? (await getSuppliers({ status: "active" })).data || [] : []),
+        [canSuppliers],
+    );
+    const { data: suppliers = [] } = useAsyncData(suppliersFetcher);
+    // Hủy hàng: các lô còn hàng để chọn đúng lô
+    const lotsFetcher = useCallback(
+        async () => (type === "dispose" ? (await getLots({}, restaurantId)).data?.lots || [] : []),
+        [type, restaurantId],
+    );
+    const { data: lots = [] } = useAsyncData(lotsFetcher);
     const [reason, setReason] = useState("");
     const [note, setNote] = useState("");
     // Kiểm kê: số thực tế theo từng nguyên liệu ("" = không kiểm)
@@ -77,12 +102,18 @@ const Body = ({
     );
 
     const patch = (key: number, change: Partial<Line>) => setLines((ls) => ls.map((l) => (l.key === key ? { ...l, ...change } : l)));
+    /** Chọn nguyên liệu: gợi ý hạn dùng = hôm nay + số ngày bảo quản */
+    const pick = (key: number, id: number) => {
+        const item = byId.get(id);
+        const expiry = item?.track_expiry && item.shelf_life_days ? toDateInput(addDays(new Date(), item.shelf_life_days)) : "";
+        patch(key, { ingredient_id: id, expiry_date: expiry, lot_id: "" });
+    };
     const used = new Set(lines.map((l) => l.ingredient_id).filter(Boolean));
 
     const total =
         type === "import"
             ? lines.reduce((s, l) => s + (Number(l.quantity) || 0) * (Number(l.unit_price) || 0), 0)
-            : type === "export"
+            : isOutgoing(type)
               ? lines.reduce((s, l) => s + (Number(l.quantity) || 0) * Number(byId.get(l.ingredient_id!)?.avg_unit_cost ?? 0), 0)
               : Object.entries(counts).reduce((s, [id, v]) => {
                     const item = byId.get(Number(id));
@@ -103,11 +134,18 @@ const Body = ({
                 .map((l) => ({
                     ingredient_id: l.ingredient_id!,
                     quantity: Number(l.quantity),
-                    ...(type === "import" ? { unit_price: Number(l.unit_price) || 0 } : {}),
+                    ...(type === "import"
+                        ? { unit_price: Number(l.unit_price) || 0, expiry_date: l.expiry_date || null, lot_code: l.lot_code.trim() || null }
+                        : {}),
+                    ...(type === "dispose" && l.lot_id ? { lot_id: Number(l.lot_id) } : {}),
                 }));
         }
         if (payloadLines.length === 0) return toast.error(t("inventory.receipt.lines_required"));
-        if (type === "export") {
+        if (type === "import") {
+            const missing = payloadLines.find((l) => byId.get(l.ingredient_id)?.track_expiry && !l.expiry_date);
+            if (missing) return toast.error(t("inventory.receipt.expiry_required", { name: byId.get(missing.ingredient_id)?.name }));
+        }
+        if (isOutgoing(type)) {
             const over = payloadLines.find((l) => l.quantity > Number(byId.get(l.ingredient_id)?.quantity ?? 0));
             if (over) return toast.error(t("inventory.receipt.over_stock", { name: byId.get(over.ingredient_id)?.name }));
         }
@@ -116,7 +154,8 @@ const Body = ({
             const res = await createReceipt({
                 restaurant_id: restaurantId,
                 type,
-                supplier: type === "import" ? supplier.trim() || null : null,
+                supplier: type === "import" && !supplierId ? supplier.trim() || null : null,
+                supplier_id: type === "import" && supplierId ? Number(supplierId) : null,
                 reason: reason.trim() || null,
                 note: note.trim() || null,
                 lines: payloadLines,
@@ -197,12 +236,15 @@ const Body = ({
                     <div className="grid gap-2">
                         {lines.map((l) => {
                             const item = l.ingredient_id ? byId.get(l.ingredient_id) : undefined;
-                            const over = type === "export" && item && Number(l.quantity) > Number(item.quantity);
+                            const over = isOutgoing(type) && item && Number(l.quantity) > Number(item.quantity);
+                            const tracked = !!item?.track_expiry;
+                            const itemLots = lots.filter((x) => x.ingredient_id === l.ingredient_id);
                             return (
-                                <div key={l.key} className="grid grid-cols-[1fr_110px_auto] items-end gap-2 sm:grid-cols-[1fr_110px_140px_auto]">
+                                <div key={l.key} className="grid gap-2 rounded-md border p-2 sm:border-0 sm:p-0">
+                                <div className="grid grid-cols-[1fr_110px_auto] items-end gap-2 sm:grid-cols-[1fr_110px_140px_auto]">
                                     <div className="grid gap-1">
                                         <Label className="text-xs">{t("inventory.ingredient")}</Label>
-                                        <Select value={l.ingredient_id ? String(l.ingredient_id) : ""} onValueChange={(v) => patch(l.key, { ingredient_id: Number(v) })}>
+                                        <Select value={l.ingredient_id ? String(l.ingredient_id) : ""} onValueChange={(v) => pick(l.key, Number(v))}>
                                             <SelectTrigger className="w-full">
                                                 <SelectValue placeholder={t("inventory.receipt.pick_ingredient")} />
                                             </SelectTrigger>
@@ -248,6 +290,43 @@ const Body = ({
                                         <Trash2 className="h-4 w-4 text-destructive" />
                                     </Button>
                                 </div>
+                                {type === "import" && tracked && (
+                                    <div className="grid grid-cols-2 gap-2 sm:grid-cols-[160px_1fr]">
+                                        <div className="grid gap-1">
+                                            <Label className="text-xs">{t("inventory.lot.expiry")} *</Label>
+                                            <Input
+                                                type="date"
+                                                required
+                                                value={l.expiry_date}
+                                                onChange={(e) => patch(l.key, { expiry_date: e.target.value })}
+                                            />
+                                        </div>
+                                        <div className="grid gap-1">
+                                            <Label className="text-xs">{t("inventory.lot.code")}</Label>
+                                            <Input maxLength={60} value={l.lot_code} onChange={(e) => patch(l.key, { lot_code: e.target.value })} />
+                                        </div>
+                                    </div>
+                                )}
+                                {type === "dispose" && tracked && itemLots.length > 0 && (
+                                    <div className="grid gap-1">
+                                        <Label className="text-xs">{t("inventory.lot.pick")}</Label>
+                                        <Select value={l.lot_id || "fefo"} onValueChange={(v) => patch(l.key, { lot_id: v === "fefo" ? "" : v })}>
+                                            <SelectTrigger className="w-full">
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="fefo">{t("inventory.lot.fefo")}</SelectItem>
+                                                {itemLots.map((x) => (
+                                                    <SelectItem key={x.id} value={String(x.id)}>
+                                                        {x.expiry_date}
+                                                        {x.lot_code ? ` · ${x.lot_code}` : ""} · {formatQty(x.quantity)} {x.unit}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                )}
+                                </div>
                             );
                         })}
                         <Button type="button" variant="outline" size="sm" className="justify-self-start" onClick={() => setLines((ls) => [...ls, emptyLine()])}>
@@ -260,7 +339,24 @@ const Body = ({
                 {type === "import" && (
                     <div className="grid gap-1.5">
                         <Label htmlFor="rc-supplier">{t("inventory.supplier")}</Label>
-                        <Input id="rc-supplier" maxLength={255} value={supplier} onChange={(e) => setSupplier(e.target.value)} />
+                        {suppliers.length > 0 && (
+                            <Select value={supplierId || "manual"} onValueChange={(v) => setSupplierId(v === "manual" ? "" : v)}>
+                                <SelectTrigger className="w-full" aria-label={t("inventory.supplier")}>
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="manual">{t("inventory.receipt.supplier_manual")}</SelectItem>
+                                    {suppliers.map((s) => (
+                                        <SelectItem key={s.id} value={String(s.id)}>
+                                            {s.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        )}
+                        {!supplierId && (
+                            <Input id="rc-supplier" maxLength={255} value={supplier} onChange={(e) => setSupplier(e.target.value)} />
+                        )}
                     </div>
                 )}
                 {type !== "import" && (

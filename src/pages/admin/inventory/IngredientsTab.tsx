@@ -8,6 +8,7 @@ import ConfirmDialog from "@/components/common/ConfirmDialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -89,7 +90,15 @@ const IngredientsTab = ({ canCreate, canUpdate, canDelete }: { canCreate: boolea
                             ) : (
                                 data!.map((i) => (
                                     <TableRow key={i.id}>
-                                        <TableCell className="font-medium">{i.name}</TableCell>
+                                        <TableCell className="font-medium">
+                                            {i.name}
+                                            {i.track_expiry && (
+                                                <Badge variant="outline" className="ml-2" title={t("inventory.track_expiry_hint")}>
+                                                    {t("inventory.track_expiry_badge")}
+                                                    {i.shelf_life_days ? ` · ${t("inventory.shelf_life_short", { count: i.shelf_life_days })}` : ""}
+                                                </Badge>
+                                            )}
+                                        </TableCell>
                                         <TableCell>{i.unit}</TableCell>
                                         <TableCell className="max-w-72 truncate text-sm text-muted-foreground">{i.description || "—"}</TableCell>
                                         <TableCell>
@@ -154,13 +163,22 @@ const IngredientForm = ({ ingredient, onClose, onSaved }: { ingredient: IIngredi
     const [unit, setUnit] = useState(ingredient?.unit ?? "kg");
     const [description, setDescription] = useState(ingredient?.description ?? "");
     const [status, setStatus] = useState<IngredientStatusEnum>(ingredient?.status ?? "active");
+    const [trackExpiry, setTrackExpiry] = useState(ingredient?.track_expiry ?? false);
+    const [shelfLife, setShelfLife] = useState(ingredient?.shelf_life_days ? String(ingredient.shelf_life_days) : "");
     const [busy, setBusy] = useState(false);
 
     const submit = async (e: React.FormEvent) => {
         e.preventDefault();
         setBusy(true);
         try {
-            const payload = { name: name.trim(), unit: unit.trim(), description: description.trim() || null, status };
+            const payload = {
+                name: name.trim(),
+                unit: unit.trim(),
+                description: description.trim() || null,
+                status,
+                track_expiry: trackExpiry,
+                shelf_life_days: trackExpiry && shelfLife ? Number(shelfLife) : null,
+            };
             const res = ingredient ? await updateIngredient(ingredient.id, payload) : await createIngredient(payload);
             toast.success(res.message);
             onSaved();
@@ -203,6 +221,19 @@ const IngredientForm = ({ ingredient, onClose, onSaved }: { ingredient: IIngredi
                             <SelectItem value="inactive">{t("status.ingredient.inactive")}</SelectItem>
                         </SelectContent>
                     </Select>
+                </div>
+                <div className="grid gap-1.5">
+                    <label className="flex items-center gap-2 text-sm">
+                        <Checkbox checked={trackExpiry} onCheckedChange={(v) => setTrackExpiry(v === true)} />
+                        {t("inventory.track_expiry")}
+                    </label>
+                    <p className="text-xs text-muted-foreground">{t("inventory.track_expiry_hint")}</p>
+                    {trackExpiry && (
+                        <div className="grid gap-1.5 sm:w-48">
+                            <Label htmlFor="ing-shelf">{t("inventory.shelf_life")}</Label>
+                            <Input id="ing-shelf" type="number" min={1} max={3650} value={shelfLife} onChange={(e) => setShelfLife(e.target.value)} />
+                        </div>
+                    )}
                 </div>
                 <div className="grid gap-1.5">
                     <Label htmlFor="ing-desc">{t("inventory.description_field")}</Label>

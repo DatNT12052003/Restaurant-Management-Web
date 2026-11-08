@@ -8,6 +8,7 @@ import type {
     IReceiptPayload,
     IResponse,
     IStock,
+    ILots,
     InventoryReceiptTypeEnum,
     InventoryTransactionTypeEnum,
 } from "@/interfaces";
@@ -28,6 +29,13 @@ export const updateIngredient = (id: number, payload: IIngredientPayload): Promi
     unwrap(api.patch(`/ingredients/${id}`, payload));
 
 export const deleteIngredient = (id: number): Promise<IResponse<{ id: number }>> => unwrap(api.delete(`/ingredients/${id}`));
+
+// ---- Lô hàng (giai đoạn 11) ----
+
+export const getLots = (
+    params: { ingredient_id?: number; expiring_days?: number } = {},
+    restaurantId?: number | null,
+): Promise<IResponse<ILots>> => unwrap(api.get("/inventory/lots", { params: { ...params, ...scope(restaurantId) } }));
 
 // ---- Tồn kho ----
 

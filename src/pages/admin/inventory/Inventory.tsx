@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { AlertTriangle, ArrowDownToLine, ArrowUpFromLine, ClipboardCheck, Pencil, Search } from "lucide-react";
+import { AlertTriangle, ArrowDownToLine, ArrowUpFromLine, ClipboardCheck, Pencil, Search, Trash2 } from "lucide-react";
 
 import { getInventoryTransactions, getReceipt, getReceipts, getStock, setMinQuantity } from "@/apis";
 import DataPagination from "@/components/common/DataPagination";
@@ -24,12 +24,17 @@ import { formatMoney, formatQty } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import IngredientsTab from "./IngredientsTab";
 import ReceiptDialog from "./ReceiptDialog";
+import LotsTab from "./LotsTab";
+import TransfersTab from "./TransfersTab";
 
 const TYPE_STYLE: Record<string, string> = {
     import: "border-emerald-300 bg-emerald-100 text-emerald-900 dark:bg-emerald-900/40 dark:text-emerald-100",
     export: "border-amber-300 bg-amber-100 text-amber-900 dark:bg-amber-900/40 dark:text-amber-100",
     adjust: "border-blue-300 bg-blue-100 text-blue-900 dark:bg-blue-900/40 dark:text-blue-100",
     consume: "border-zinc-300 bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-200",
+    dispose: "border-red-300 bg-red-100 text-red-900 dark:bg-red-900/40 dark:text-red-100",
+    transfer_out: "border-violet-300 bg-violet-100 text-violet-900 dark:bg-violet-900/40 dark:text-violet-100",
+    transfer_in: "border-sky-300 bg-sky-100 text-sky-900 dark:bg-sky-900/40 dark:text-sky-100",
 };
 
 /** Kho nguyên liệu theo nhà hàng (đặc tả 4.5): tồn kho, nhập / xuất / kiểm kê, lịch sử, danh mục */
@@ -59,8 +64,10 @@ const Inventory = () => {
         <div>
             <PageHeader title={t("inventory.title")} description={t("inventory.description")} />
             <Tabs defaultValue="stock">
-                <TabsList className="mb-4">
+                <TabsList className="mb-4 h-auto flex-wrap">
                     <TabsTrigger value="stock">{t("inventory.tab_stock")}</TabsTrigger>
+                    <TabsTrigger value="lots">{t("inventory.tab_lots")}</TabsTrigger>
+                    <TabsTrigger value="transfers">{t("inventory.tab_transfers")}</TabsTrigger>
                     <TabsTrigger value="receipts">{t("inventory.tab_receipts")}</TabsTrigger>
                     <TabsTrigger value="history">{t("inventory.tab_history")}</TabsTrigger>
                     <TabsTrigger value="ingredients">{t("inventory.tab_ingredients")}</TabsTrigger>
@@ -74,6 +81,12 @@ const Inventory = () => {
                             setVersion((v) => v + 1);
                         }}
                     />
+                </TabsContent>
+                <TabsContent value="lots">
+                    <LotsTab restaurantId={restaurantId} />
+                </TabsContent>
+                <TabsContent value="transfers">
+                    <TransfersTab restaurantId={restaurantId} />
                 </TabsContent>
                 <TabsContent value="receipts">
                     <ReceiptsTab key={version} restaurantId={restaurantId} onSelect={setReceiptOf} />
@@ -171,6 +184,12 @@ const StockTab = ({ restaurantId, onSaved }: { restaurantId?: number; onSaved: (
                         <Button variant="outline" onClick={() => setReceiptType("export")}>
                             <ArrowUpFromLine className="h-4 w-4" />
                             {t("inventory.action.export")}
+                        </Button>
+                    )}
+                    {can("inventory.dispose") && (
+                        <Button variant="outline" onClick={() => setReceiptType("dispose")}>
+                            <Trash2 className="h-4 w-4" />
+                            {t("inventory.action.dispose")}
                         </Button>
                     )}
                     {can("inventory.adjust") && (
@@ -380,7 +399,7 @@ const ReceiptsTab = ({ restaurantId, onSelect }: { restaurantId?: number; onSele
                     </SelectTrigger>
                     <SelectContent>
                         <SelectItem value="all">{t("inventory.all_types")}</SelectItem>
-                        {(["import", "export", "adjust"] as const).map((tp) => (
+                        {(["import", "export", "adjust", "dispose"] as const).map((tp) => (
                             <SelectItem key={tp} value={tp}>
                                 {t(`inventory.type.${tp}`)}
                             </SelectItem>
@@ -602,6 +621,11 @@ const ReceiptDetail = ({ id }: { id: number }) => {
                 {r.supplier && (
                     <p>
                         {t("inventory.supplier")}: {r.supplier}
+                    </p>
+                )}
+                {r.purchase_order_code && (
+                    <p>
+                        {t("purchasing.order.from_order", { code: r.purchase_order_code })}
                     </p>
                 )}
                 {r.reason && (
