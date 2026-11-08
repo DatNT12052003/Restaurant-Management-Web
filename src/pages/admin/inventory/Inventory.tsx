@@ -117,7 +117,7 @@ const StockTab = ({ restaurantId, onSaved }: { restaurantId?: number; onSaved: (
             (i) =>
                 (!lowOnly || i.is_low) &&
                 (!q || i.name.toLowerCase().includes(q)) &&
-                (i.status === "active" || Number(i.quantity) > 0),
+                (i.status === "active" || Number(i.quantity) !== 0),
         );
     }, [data, lowOnly, search]);
 
@@ -224,7 +224,14 @@ const StockTab = ({ restaurantId, onSaved }: { restaurantId?: number; onSaved: (
                                                 </Badge>
                                             )}
                                         </TableCell>
-                                        <TableCell className={cn("text-right font-semibold", i.is_low && "text-amber-700")}>
+                                        <TableCell
+                                            className={cn(
+                                                "text-right font-semibold",
+                                                i.is_low && "text-amber-700",
+                                                Number(i.quantity) < 0 && "text-destructive",
+                                            )}
+                                            title={Number(i.quantity) < 0 ? t("inventory.negative_hint") : undefined}
+                                        >
                                             {formatQty(i.quantity)} <span className="text-xs font-normal text-muted-foreground">{i.unit}</span>
                                         </TableCell>
                                         <TableCell className="text-right">
@@ -533,7 +540,9 @@ const HistoryTab = ({ restaurantId, onSelectReceipt }: { restaurantId?: number; 
                                             </TableCell>
                                             <TableCell className="text-right">{formatQty(tx.quantity_after)}</TableCell>
                                             <TableCell className="text-right">{formatMoney(tx.unit_price)}</TableCell>
-                                            <TableCell className="max-w-48 truncate text-xs">{tx.reason || "—"}</TableCell>
+                                            <TableCell className="max-w-48 truncate text-xs">
+                                                {tx.reason || (tx.type === "consume" ? t("inventory.consume_reason") : "—")}
+                                            </TableCell>
                                             <TableCell>
                                                 {tx.receipt_id ? (
                                                     <button type="button" className="font-mono text-xs hover:underline" onClick={() => onSelectReceipt(tx.receipt_id!)}>

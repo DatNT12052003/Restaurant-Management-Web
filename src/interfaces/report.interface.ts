@@ -3,6 +3,9 @@ import type { IPagination } from "./common.interface";
 export type ReportGroupBy = "day" | "week" | "month";
 
 /** Tham số chung của báo cáo: ngày "YYYY-MM-DD" (giờ Việt Nam, gồm cả hai đầu) */
+/** Doanh thu theo thời điểm thanh toán (mặc định) hoặc theo thời điểm hoàn tất order */
+export type RevenueBasis = "paid" | "completed";
+
 export interface IReportQuery {
     from: string;
     to: string;
@@ -10,6 +13,7 @@ export interface IReportQuery {
     group_by?: ReportGroupBy;
     limit?: number;
     category?: "food" | "drink";
+    basis?: RevenueBasis;
 }
 
 export interface IReportTotals {
@@ -81,6 +85,8 @@ export interface IOccupancyGroup {
     table_count: number;
     occupied_hours: number;
     available_hours: number;
+    /** Giờ-bàn có khách ngoài giờ mở cửa hoặc vào ngày nghỉ */
+    outside_hours: number;
     sessions: number;
     occupancy_rate: number | null;
     turnover: number | null;
@@ -88,10 +94,47 @@ export interface IOccupancyGroup {
 
 export interface IOccupancyReport {
     days: number;
+    closed_days: number;
     summary: IOccupancyGroup;
     by_restaurant: (IOccupancyGroup & { restaurant_id: number; restaurant_name: string; open_time: string; close_time: string })[];
     by_room: (IOccupancyGroup & { room_id: number; room_name: string; restaurant_id: number })[];
     by_hour: { hour: number; occupied_hours: number; avg_occupancy: number | null }[];
+}
+
+export interface IProfitTotals {
+    sales: number;
+    cost: number;
+    gross_profit: number;
+    food_cost_rate: number | null;
+    uncosted_sales: number;
+    quantity: number;
+}
+
+export interface IProfitReport {
+    group_by: ReportGroupBy;
+    totals: IProfitTotals;
+    series: (IProfitTotals & { period: string })[];
+    by_item: (IProfitTotals & { kind: string; item_id: number; name: string; category: string; missing_cost: boolean })[];
+    by_category: (IProfitTotals & { category: string })[];
+    by_restaurant: (IProfitTotals & { restaurant_id: number; restaurant_name: string })[];
+}
+
+export interface IVarianceRow {
+    ingredient_id: number;
+    name: string;
+    unit: string;
+    consumed: number;
+    consumed_value: number;
+    exported: number;
+    exported_value: number;
+    adjusted: number;
+    adjusted_value: number;
+    loss_rate: number | null;
+}
+
+export interface IVarianceReport {
+    totals: { consumed_value: number; exported_value: number; adjusted_value: number; loss_value: number };
+    items: IVarianceRow[];
 }
 
 export interface ITipsReport {

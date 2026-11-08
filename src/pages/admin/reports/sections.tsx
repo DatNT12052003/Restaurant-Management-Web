@@ -28,7 +28,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAppSelector, useAsyncData, useRealtime } from "@/hooks";
-import type { IReportQuery, ReportGroupBy } from "@/interfaces";
+import type { IReportQuery, ReportGroupBy, RevenueBasis } from "@/interfaces";
+import ExportExcelButton from "./ExportExcelButton";
 import { getErrorMessage } from "@/lib/api-error";
 import { formatMoney, formatQty } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -136,7 +137,10 @@ export const OverviewTiles = ({ query, valid }: { query: IReportQuery; valid: bo
 
 export const RevenueSection = ({ query, valid, compact = false }: { query: IReportQuery; valid: boolean; compact?: boolean }) => {
     const { t, i18n } = useTranslation("admin");
-    const { data, loading } = useReport(getRevenueReport, query, valid);
+    // Giai đoạn 10: doanh thu theo thời điểm thanh toán (mặc định) hoặc thời điểm hoàn tất order
+    const [basis, setBasis] = useState<RevenueBasis>("paid");
+    const revenueQuery = useMemo(() => (compact ? query : { ...query, basis }), [query, basis, compact]);
+    const { data, loading } = useReport(getRevenueReport, revenueQuery, valid);
     const colorOf = useRestaurantColors();
     const groupBy = (query.group_by ?? "day") as ReportGroupBy;
     // Xem cả chuỗi và có > 1 nhà hàng: cột chồng theo nhà hàng
@@ -209,6 +213,59 @@ export const RevenueSection = ({ query, valid, compact = false }: { query: IRepo
 
     return (
         <div className="grid gap-4">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                    <Select value={basis} onValueChange={(v) => setBasis(v as RevenueBasis)}>
+                        <SelectTrigger className="w-64" aria-label={t("report.revenue.basis")}>
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="paid">{t("report.revenue.basis_paid")}</SelectItem>
+                            <SelectItem value="completed">{t("report.revenue.basis_completed")}</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <span className="text-xs text-muted-foreground">{t(`report.revenue.basis_${basis}_hint`)}</span>
+                </div>
+                <ExportExcelButton
+                    title={`${t("report.tab.revenue")} (${t(`report.revenue.basis_${basis}`)})`}
+                    fileKey="doanh-thu"
+                    query={query}
+                    disabled={!data}
+                    sheets={() => [
+                        {
+                            name: t("report.revenue.table"),
+                            columns: [
+                                { header: t("report.period"), value: (p: NonNullable<typeof data>["series"][number]) => p.period },
+                                { header: t("report.revenue.collected"), value: (p: NonNullable<typeof data>["series"][number]) => p.collected, type: "money" },
+                                { header: t("report.revenue.refunded"), value: (p: NonNullable<typeof data>["series"][number]) => p.refunded, type: "money" },
+                                { header: t("report.revenue.net"), value: (p: NonNullable<typeof data>["series"][number]) => p.net, type: "money" },
+                                { header: t("report.revenue.orders"), value: (p: NonNullable<typeof data>["series"][number]) => p.orders, type: "number" },
+                                { header: t("report.revenue.guests"), value: (p: NonNullable<typeof data>["series"][number]) => p.guests, type: "number" },
+                            ],
+                            rows: data?.series ?? [],
+                        },
+                        {
+                            name: t("report.revenue.by_restaurant"),
+                            columns: [
+                                { header: t("report.restaurant"), value: (r: { restaurant_name: string }) => r.restaurant_name, width: 30 },
+                                { header: t("report.revenue.net"), value: (r: { net: number }) => r.net, type: "money" },
+                                { header: t("report.revenue.orders"), value: (r: { orders: number }) => r.orders, type: "number" },
+                            ],
+                            rows: data?.by_restaurant ?? [],
+                        },
+                        {
+                            name: t("report.revenue.by_method"),
+                            columns: [
+                                { header: t("report.revenue.method"), value: (m: { method: string }) => t(`cashier.method.${m.method}`) },
+                                { header: t("report.revenue.collected"), value: (m: { collected: number }) => m.collected, type: "money" },
+                                { header: t("report.revenue.refunded"), value: (m: { refunded: number }) => m.refunded, type: "money" },
+                                { header: t("report.revenue.net"), value: (m: { net: number }) => m.net, type: "money" },
+                            ],
+                            rows: data?.by_method ?? [],
+                        },
+                    ]}
+                />
+            </div>
             {trend}
             <div className="grid gap-4 lg:grid-cols-2">
                 <ChartCard title={t("report.revenue.by_method")}>
@@ -379,14 +436,33 @@ export const TopItemsSection = ({ query, valid, compact = false }: { query: IRep
         );
     }
 
+    const topColumns = [
+        { header: t("report.top.name"), value: (i: { name: string }) => i.name, width: 30 },
+        { header: t("report.top.quantity"), value: (i: { quantity: number }) => i.quantity, type: "number" as const },
+        { header: t("report.top.orders"), value: (i: { order_count: number }) => i.order_count, type: "number" as const },
+        { header: t("report.top.revenue"), value: (i: { revenue: number }) => i.revenue, type: "money" as const },
+    ];
+
     return (
         <Tabs defaultValue="dishes">
-            <TabsList className="mb-3">
-                <TabsTrigger value="dishes">{t("report.top.dishes")}</TabsTrigger>
-                <TabsTrigger value="combos" disabled={category !== "all"}>
-                    {t("report.top.combos")}
-                </TabsTrigger>
-            </TabsList>
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                <TabsList>
+                    <TabsTrigger value="dishes">{t("report.top.dishes")}</TabsTrigger>
+                    <TabsTrigger value="combos" disabled={category !== "all"}>
+                        {t("report.top.combos")}
+                    </TabsTrigger>
+                </TabsList>
+                <ExportExcelButton
+                    title={t("report.tab.top")}
+                    fileKey="mon-ban-chay"
+                    query={query}
+                    disabled={!data}
+                    sheets={() => [
+                        { name: t("report.top.dishes"), columns: topColumns, rows: data?.dishes ?? [] },
+                        { name: t("report.top.combos"), columns: topColumns, rows: data?.combos ?? [] },
+                    ]}
+                />
+            </div>
             <TabsContent value="dishes" className="grid gap-4 lg:grid-cols-2">
                 <ChartCard title={t("report.top.title")} description={t("report.top.by_quantity")} actions={filter}>
                     {chart(data?.dishes ?? [])}
@@ -420,6 +496,38 @@ export const OccupancySection = ({ query, valid }: { query: IReportQuery; valid:
 
     return (
         <div className="grid gap-4">
+            <div className="flex justify-end">
+                <ExportExcelButton
+                    title={t("report.tab.occupancy")}
+                    fileKey="lap-day-ban"
+                    query={query}
+                    sheets={() => [
+                        {
+                            name: t("report.occupancy.by_room"),
+                            columns: [
+                                { header: t("report.restaurant"), value: (r: (typeof data.by_room)[number]) => restaurantName(r.restaurant_id), width: 26 },
+                                { header: t("report.occupancy.room"), value: (r: (typeof data.by_room)[number]) => r.room_name, width: 20 },
+                                { header: t("report.occupancy.table_count"), value: (r: (typeof data.by_room)[number]) => r.table_count, type: "number" },
+                                { header: t("report.occupancy.sessions"), value: (r: (typeof data.by_room)[number]) => r.sessions, type: "number" },
+                                { header: t("report.occupancy.occupied_hours"), value: (r: (typeof data.by_room)[number]) => r.occupied_hours, type: "quantity" },
+                                { header: t("report.occupancy.available_hours"), value: (r: (typeof data.by_room)[number]) => r.available_hours, type: "quantity" },
+                                { header: t("report.occupancy.outside_hours"), value: (r: (typeof data.by_room)[number]) => r.outside_hours, type: "quantity" },
+                                { header: t("report.occupancy.rate"), value: (r: (typeof data.by_room)[number]) => r.occupancy_rate, type: "percent" },
+                            ],
+                            rows: data.by_room,
+                        },
+                        {
+                            name: t("report.occupancy.by_hour"),
+                            columns: [
+                                { header: t("report.occupancy.hour"), value: (h: (typeof data.by_hour)[number]) => `${String(h.hour).padStart(2, "0")}:00` },
+                                { header: t("report.occupancy.occupied_hours"), value: (h: (typeof data.by_hour)[number]) => h.occupied_hours, type: "quantity" },
+                                { header: t("report.occupancy.avg"), value: (h: (typeof data.by_hour)[number]) => h.avg_occupancy, type: "percent" },
+                            ],
+                            rows: data.by_hour,
+                        },
+                    ]}
+                />
+            </div>
             <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
                 <StatTile label={t("report.occupancy.rate")} value={formatPercent(s.occupancy_rate)} hint={t("report.occupancy.rate_hint")} />
                 <StatTile
@@ -427,7 +535,15 @@ export const OccupancySection = ({ query, valid }: { query: IReportQuery; valid:
                     value={formatQty(s.occupied_hours)}
                     hint={t("report.occupancy.of_available", { hours: formatQty(s.available_hours) })}
                 />
-                <StatTile label={t("report.occupancy.sessions")} value={String(s.sessions)} hint={t("report.occupancy.days", { count: data.days })} />
+                <StatTile
+                    label={t("report.occupancy.sessions")}
+                    value={String(s.sessions)}
+                    hint={
+                        data.closed_days > 0
+                            ? t("report.occupancy.days_closed", { count: data.days, closed: data.closed_days })
+                            : t("report.occupancy.days", { count: data.days })
+                    }
+                />
                 <StatTile label={t("report.occupancy.turnover")} value={s.turnover === null ? "—" : formatQty(s.turnover)} hint={t("report.occupancy.tables", { count: s.table_count })} />
             </div>
 
@@ -490,6 +606,11 @@ export const OccupancySection = ({ query, valid }: { query: IReportQuery; valid:
                         .map((r) => t("report.occupancy.hours_of", { name: r.restaurant_name, open: r.open_time, close: r.close_time }))
                         .join(" · ")}
                 </p>
+                {s.outside_hours > 0 && (
+                    <p className="mt-1 text-xs text-muted-foreground">
+                        {t("report.occupancy.outside_note", { hours: formatQty(s.outside_hours) })}
+                    </p>
+                )}
             </ChartCard>
         </div>
     );
@@ -514,6 +635,45 @@ export const InventorySection = ({ query, valid }: { query: IReportQuery; valid:
 
     return (
         <div className="grid gap-4">
+            <div className="flex justify-end">
+                <ExportExcelButton
+                    title={t("report.tab.inventory")}
+                    fileKey="nhap-kho"
+                    query={query}
+                    sheets={() => [
+                        {
+                            name: t("report.inventory.title"),
+                            columns: [
+                                { header: t("report.period"), value: (p: (typeof data.series)[number]) => p.period },
+                                { header: t("report.inventory.import"), value: (p: (typeof data.series)[number]) => p.import_value, type: "money" },
+                                { header: t("report.inventory.export"), value: (p: (typeof data.series)[number]) => p.export_value, type: "money" },
+                                { header: t("report.inventory.adjust_value"), value: (p: (typeof data.series)[number]) => p.adjust_value, type: "money" },
+                                { header: t("report.inventory.receipt_count"), value: (p: (typeof data.series)[number]) => p.receipts, type: "number" },
+                            ],
+                            rows: data.series,
+                        },
+                        {
+                            name: t("report.inventory.top_ingredients"),
+                            columns: [
+                                { header: t("inventory.ingredient"), value: (i: (typeof data.top_ingredients)[number]) => i.name, width: 28 },
+                                { header: t("inventory.unit"), value: (i: (typeof data.top_ingredients)[number]) => i.unit },
+                                { header: t("inventory.quantity"), value: (i: (typeof data.top_ingredients)[number]) => i.quantity, type: "quantity" },
+                                { header: t("report.inventory.value"), value: (i: (typeof data.top_ingredients)[number]) => i.value, type: "money" },
+                            ],
+                            rows: data.top_ingredients,
+                        },
+                        {
+                            name: t("report.inventory.by_supplier"),
+                            columns: [
+                                { header: t("report.inventory.supplier"), value: (x: (typeof data.by_supplier)[number]) => x.supplier ?? "—", width: 28 },
+                                { header: t("report.inventory.receipt_count"), value: (x: (typeof data.by_supplier)[number]) => x.receipts, type: "number" },
+                                { header: t("report.inventory.value"), value: (x: (typeof data.by_supplier)[number]) => x.value, type: "money" },
+                            ],
+                            rows: data.by_supplier,
+                        },
+                    ]}
+                />
+            </div>
             <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
                 <StatTile label={t("report.inventory.import_value")} value={formatMoney(data.totals.import_value)} hint={t("report.inventory.receipts", { count: data.totals.import_receipts })} />
                 <StatTile label={t("report.inventory.export_value")} value={formatMoney(data.totals.export_value)} />
@@ -612,6 +772,34 @@ export const TipsSection = ({ query, valid }: { query: IReportQuery; valid: bool
 
     return (
         <div className="grid gap-4">
+            <div className="flex justify-end">
+                <ExportExcelButton
+                    title={t("report.tab.tips")}
+                    fileKey="tien-tip"
+                    query={query}
+                    disabled={!hasData}
+                    sheets={() => [
+                        {
+                            name: t("report.tips.by_staff"),
+                            columns: [
+                                { header: t("report.tips.staff"), value: (s: (typeof data.by_staff)[number]) => s.full_name ?? t("report.tips.unassigned"), width: 28 },
+                                { header: t("report.tips.orders"), value: (s: (typeof data.by_staff)[number]) => s.orders, type: "number" },
+                                { header: t("report.tips.payments"), value: (s: (typeof data.by_staff)[number]) => s.payments, type: "number" },
+                                { header: t("report.tips.total"), value: (s: (typeof data.by_staff)[number]) => s.tip_total, type: "money" },
+                            ],
+                            rows: data.by_staff,
+                        },
+                        {
+                            name: t("report.tips.title"),
+                            columns: [
+                                { header: t("report.period"), value: (p: (typeof data.series)[number]) => p.period },
+                                { header: t("report.tips.total"), value: (p: (typeof data.series)[number]) => p.tip_total, type: "money" },
+                            ],
+                            rows: data.series,
+                        },
+                    ]}
+                />
+            </div>
             <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
                 <StatTile label={t("report.tips.total")} value={formatMoney(data.total)} hint={t("report.tips.not_revenue")} />
                 <StatTile label={t("report.tips.payments")} value={String(payments)} />

@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { ImageOff, Pencil, Plus, Search, Trash2 } from "lucide-react";
+import { ImageOff, Pencil, Plus, Scale, Search, Trash2 } from "lucide-react";
 
 import { createDish, deleteDish, getDishes, getTags, updateDish } from "@/apis";
 import ConfirmDialog from "@/components/common/ConfirmDialog";
@@ -22,6 +22,7 @@ import type { IDish, IGetQuery } from "@/interfaces";
 import { getErrorMessage } from "@/lib/api-error";
 import { formatMoney } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import RecipeDialog from "./RecipeDialog";
 
 const PAGE_SIZE = 12;
 
@@ -51,6 +52,7 @@ const DishesTab = () => {
     const [editing, setEditing] = useState<IDish | null>(null);
     const [saving, setSaving] = useState(false);
     const [deleting, setDeleting] = useState<IDish | null>(null);
+    const [recipeOf, setRecipeOf] = useState<IDish | null>(null);
 
     const tagsFetcher = useCallback(() => getTags().then((r) => r.data || []), []);
     const { data: tags = [] } = useAsyncData(tagsFetcher);
@@ -227,8 +229,19 @@ const DishesTab = () => {
                                         </Badge>
                                     ))}
                                 </div>
-                                {(can("dish.update") || can("dish.delete")) && (
+                                {(can("dish.update") || can("dish.delete") || can("recipe.view")) && (
                                     <div className="flex justify-end gap-1">
+                                        {can("recipe.view") && (
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => setRecipeOf(dish)}
+                                                aria-label={t("recipe.open")}
+                                                title={t("recipe.open")}
+                                            >
+                                                <Scale className="h-4 w-4" />
+                                            </Button>
+                                        )}
                                         {can("dish.update") && (
                                             <Button
                                                 variant="ghost"
@@ -363,6 +376,8 @@ const DishesTab = () => {
                     )}
                 </DialogContent>
             </Dialog>
+
+            <RecipeDialog dish={recipeOf} onOpenChange={(v) => !v && setRecipeOf(null)} />
 
             <ConfirmDialog
                 open={!!deleting}

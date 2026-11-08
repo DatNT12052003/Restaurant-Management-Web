@@ -26,6 +26,24 @@
     .no-print {
         display: none !important;
     }
+    /* Báo cáo in ra giấy / lưu PDF (giai đoạn 10): in toàn bộ nội dung tab đang xem */
+    .print-report,
+    .print-report * {
+        visibility: visible;
+    }
+    .print-report {
+        position: absolute;
+        inset: 0 auto auto 0;
+        width: 100%;
+        padding: 0;
+        background: #fff;
+    }
+    .print-report .print-only {
+        display: block !important;
+    }
+}
+.print-only {
+    display: none;
 }
 /* 
 :root {

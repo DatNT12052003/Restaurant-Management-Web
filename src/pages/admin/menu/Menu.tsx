@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAppSelector, usePermission } from "@/hooks";
 import BranchMenuTab from "./BranchMenuTab";
 import CombosTab from "./CombosTab";
+import CostsTab from "./CostsTab";
 import DishesTab from "./DishesTab";
 import TagsTab from "./TagsTab";
 
@@ -26,6 +27,7 @@ const Menu = () => {
                     : t("menu.tab_branch"),
             content: <BranchMenuTab />,
         },
+        can("recipe.view") && { value: "costs", label: t("recipe.tab"), content: <CostsTab /> },
     ].filter(Boolean) as { value: string; label: string; content: React.ReactNode }[];
 
     return (
