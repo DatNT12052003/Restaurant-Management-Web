@@ -119,8 +119,10 @@ const Orders = () => {
             <OrderSheet
                 orderId={sheetOrderId}
                 freeTables={freeTables}
+                openOrders={floor?.orders || []}
                 onOpenChange={(v) => !v && setSheetOrderId(null)}
                 onChanged={reload}
+                onSelectOrder={setSheetOrderId}
             />
             <OpenOrderDialog
                 table={openFor}

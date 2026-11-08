@@ -3,7 +3,8 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { ImageOff, Pencil, Plus, Search, Trash2, X } from "lucide-react";
 
-import { createCombo, deleteCombo, getCombos, getDishes, updateCombo } from "@/apis";
+import { createCombo, deleteCombo, getCombos, updateCombo } from "@/apis";
+import DishSearchPicker from "@/components/common/DishSearchPicker";
 import ConfirmDialog from "@/components/common/ConfirmDialog";
 import DataPagination from "@/components/common/DataPagination";
 import ImageManager from "@/components/common/ImageManager";
@@ -47,7 +48,6 @@ const CombosTab = () => {
     const [editing, setEditing] = useState<ICombo | null>(null);
     const [saving, setSaving] = useState(false);
     const [deleting, setDeleting] = useState<ICombo | null>(null);
-    const [pickDish, setPickDish] = useState("");
 
     const fetcher = useCallback(() => {
         const query: IGetQuery = { currentPage: page, limit: PAGE_SIZE, orderBy: [{ field: "name" }] };
@@ -61,13 +61,9 @@ const CombosTab = () => {
     const combos = data?.data?.combos || [];
     const pagination = data?.data?.pagination || null;
 
-    // Danh sách món để chọn vào combo (tối đa 100 món)
-    const dishesFetcher = useCallback(
-        () => getDishes({ limit: 100, orderBy: [{ field: "name" }] }).then((r) => r.data?.dishes || []),
-        [],
-    );
-    const { data: allDishes = [] } = useAsyncData(dishesFetcher);
-    const dishById = useMemo(() => new Map(allDishes.map((d) => [d.id, d])), [allDishes]);
+    // Tên và giá của các món đã chọn: lấy từ combo đang sửa và từ ô tìm món (tìm ở server, không giới hạn số món)
+    const [picked, setPicked] = useState<Record<number, { name: string; price: string }>>({});
+    const dishById = useMemo(() => new Map(Object.entries(picked).map(([id, d]) => [Number(id), d])), [picked]);
 
     const itemsTotal = (form?.items || []).reduce(
         (sum, i) => sum + Number(dishById.get(i.dish_id)?.price || 0) * i.quantity,
@@ -88,6 +84,10 @@ const CombosTab = () => {
             description: combo.description || "",
             items: combo.items.map((i) => ({ dish_id: i.dish_id, quantity: i.quantity })),
         });
+        setPicked((prev) => ({
+            ...prev,
+            ...Object.fromEntries(combo.items.map((i) => [i.dish_id, { name: i.name ?? `#${i.dish_id}`, price: i.price ?? "0" }])),
+        }));
     };
 
     const addItem = (dishId: string) => {
@@ -100,7 +100,6 @@ const CombosTab = () => {
                 ? form.items.map((i) => (i.dish_id === id ? { ...i, quantity: i.quantity + 1 } : i))
                 : [...form.items, { dish_id: id, quantity: 1 }],
         });
-        setPickDish("");
     };
 
     const submit = async (e: React.FormEvent) => {
@@ -280,19 +279,13 @@ const CombosTab = () => {
 
                                 <div className="grid gap-2 sm:col-span-2">
                                     <Label>{t("menu.combo_items")} *</Label>
-                                    <Select value={pickDish} onValueChange={addItem}>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder={t("menu.add_dish_to_combo")} />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {allDishes.map((d) => (
-                                                <SelectItem key={d.id} value={String(d.id)}>
-                                                    {d.name} · {formatMoney(d.price)}
-                                                    {d.status === "discontinued" ? ` (${t("menu.status.discontinued")})` : ""}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
+                                    <DishSearchPicker
+                                        placeholder={t("menu.add_dish_to_combo")}
+                                        onPick={(d) => {
+                                            setPicked((prev) => ({ ...prev, [d.id]: { name: d.name, price: d.price } }));
+                                            addItem(String(d.id));
+                                        }}
+                                    />
                                     {form.items.length > 0 && (
                                         <div className="grid gap-2 rounded-md border p-2">
                                             {form.items.map((item) => {

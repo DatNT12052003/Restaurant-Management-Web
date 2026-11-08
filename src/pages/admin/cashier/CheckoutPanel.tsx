@@ -169,7 +169,13 @@ export const CheckoutPanel = ({ orderId, unfinished, onPrint }: CheckoutPanelPro
 
             {/* Thu tiền */}
             {open && can("payment.create") && due > 0 && (
-                <PaymentForm key={`${orderId}-${due}`} due={due} busy={busy} onSubmit={(payload) => run(() => createPayment(orderId, payload))} />
+                <PaymentForm
+                    key={`${orderId}-${due}`}
+                    due={due}
+                    busy={busy}
+                    staffName={invoice.order.staff_name}
+                    onSubmit={(payload) => run(() => createPayment(orderId, payload))}
+                />
             )}
 
             {/* Các giao dịch */}
@@ -194,6 +200,11 @@ export const CheckoutPanel = ({ orderId, unfinished, onPrint }: CheckoutPanelPro
                                         {p.reference && ` · ${p.reference}`} · {formatTime(p.paid_at ?? p.created_at)}
                                         {p.cashier_name && ` · ${p.cashier_name}`}
                                     </span>
+                                    {Number(p.tip_amount ?? 0) > 0 && (
+                                        <span className="text-xs text-emerald-700 dark:text-emerald-300">
+                                            {t("cashier.tip_line", { amount: formatMoney(p.tip_amount), name: p.tip_staff_name || "—" })}
+                                        </span>
+                                    )}
                                     {p.note && <span className="w-full text-xs italic text-muted-foreground">{p.note}</span>}
                                     <div className="ml-auto flex items-center gap-1">
                                         <Badge variant="outline" className={PAYMENT_STATUS_STYLE[p.status]}>
@@ -252,10 +263,13 @@ const pendingSum = (invoice: IInvoice) =>
 const PaymentForm = ({
     due,
     busy,
+    staffName,
     onSubmit,
 }: {
     due: number;
     busy: boolean;
+    /** Nhân viên phụ trách order (nhận tip) */
+    staffName: string | null;
     onSubmit: (payload: Parameters<typeof createPayment>[1]) => Promise<boolean>;
 }) => {
     const { t } = useTranslation("admin");
@@ -264,11 +278,15 @@ const PaymentForm = ({
     const [received, setReceived] = useState("");
     const [reference, setReference] = useState("");
     const [pending, setPending] = useState(false);
+    const [tip, setTip] = useState("");
 
     const value = Number(amount) || 0;
+    const tipValue = Math.max(0, Number(tip) || 0);
     const receivedValue = Number(received) || 0;
-    const change = method === "cash" && received ? receivedValue - value : 0;
-    const invalid = value <= 0 || value > due || (method === "cash" && !!received && receivedValue < value);
+    // Tiền mặt: khách đưa phải đủ cả tiền thanh toán và tip
+    const change = method === "cash" && received ? receivedValue - value - tipValue : 0;
+    const invalid =
+        value <= 0 || value > due || Number(tip) < 0 || (method === "cash" && !!received && receivedValue < value + tipValue);
 
     const submit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -279,6 +297,7 @@ const PaymentForm = ({
             received_amount: method === "cash" && received ? receivedValue : null,
             reference: method !== "cash" ? reference.trim() || null : null,
             confirm: method === "cash" ? true : !pending,
+            tip_amount: tipValue > 0 ? tipValue : undefined,
         });
     };
 
@@ -306,12 +325,17 @@ const PaymentForm = ({
                         {value > due && <p className="text-xs text-destructive">{t("cashier.amount_too_high")}</p>}
                         {value < due && value > 0 && <p className="text-xs text-muted-foreground">{t("cashier.split_hint", { rest: formatMoney(due - value) })}</p>}
                     </div>
+                    <div className="grid gap-1.5">
+                        <Label htmlFor="pay-tip">{t("cashier.tip")}</Label>
+                        <Input id="pay-tip" type="number" min={0} step={1000} placeholder="0" value={tip} onChange={(e) => setTip(e.target.value)} />
+                        <p className="text-xs text-muted-foreground">{t("cashier.tip_hint", { name: staffName || "—" })}</p>
+                    </div>
                     {method === "cash" ? (
                         <div className="grid gap-1.5">
                             <Label htmlFor="pay-received">{t("cashier.received")}</Label>
                             <Input id="pay-received" type="number" min={0} value={received} onChange={(e) => setReceived(e.target.value)} />
                             <div className="flex flex-wrap gap-1.5">
-                                {cashSuggestions(value).map((s) => (
+                                {cashSuggestions(value + tipValue).map((s) => (
                                     <Button key={s} type="button" size="sm" variant="secondary" className="h-7" onClick={() => setReceived(String(s))}>
                                         {formatMoney(s)}
                                     </Button>
@@ -334,7 +358,11 @@ const PaymentForm = ({
                         </div>
                     )}
                     <Button type="submit" disabled={busy || invalid}>
-                        {busy ? t("common.processing") : t("cashier.collect", { amount: formatMoney(value) })}
+                        {busy
+                            ? t("common.processing")
+                            : tipValue > 0
+                              ? t("cashier.collect_with_tip", { amount: formatMoney(value), tip: formatMoney(tipValue) })
+                              : t("cashier.collect", { amount: formatMoney(value) })}
                     </Button>
                 </form>
             </CardContent>

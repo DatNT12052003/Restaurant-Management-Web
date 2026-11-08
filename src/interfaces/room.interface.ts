@@ -25,6 +25,8 @@ export interface IRoomPayload {
     status?: UsageStatusEnum;
     is_active?: boolean;
     restaurant_id?: number;
+    /** Vẫn tạm khóa phòng dù còn lịch đặt bàn sắp tới (sau khi người dùng xác nhận cảnh báo) */
+    force?: boolean;
 }
 
 export interface ITable {

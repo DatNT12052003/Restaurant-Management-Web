@@ -98,6 +98,7 @@ export const InvoiceView = ({ invoice }: { invoice: IInvoice }) => {
                         </div>
                     ))}
                     {row(t("cashier.paid"), formatMoney(invoice.paid))}
+                    {(invoice.tip_total ?? 0) > 0 && row(t("cashier.tip_received"), formatMoney(invoice.tip_total))}
                     {invoice.remaining !== 0 &&
                         row(invoice.remaining > 0 ? t("cashier.remaining") : t("cashier.overpaid"), formatMoney(Math.abs(invoice.remaining)))}
                 </div>

@@ -9,6 +9,7 @@ import type {
     IReportQuery,
     IResponse,
     IRevenueReport,
+    ITipsReport,
     ITopItemsReport,
 } from "@/interfaces";
 import api from "./axios";
@@ -30,6 +31,9 @@ export const getOccupancyReport = (params: IReportQuery): Promise<IResponse<IOcc
 
 export const getInventoryReport = (params: IReportQuery): Promise<IResponse<IInventoryReport>> =>
     unwrap(api.get("/reports/inventory", { params }));
+
+export const getTipsReport = (params: IReportQuery): Promise<IResponse<ITipsReport>> =>
+    unwrap(api.get("/reports/tips", { params }));
 
 // ---- Nhật ký hoạt động (chỉ đọc) ----
 

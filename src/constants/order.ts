@@ -1,6 +1,6 @@
 import type { OrderItemStatusEnum, OrderStatusEnum } from "@/enum";
 
-export const ORDER_STATUSES: OrderStatusEnum[] = ["pending", "confirmed", "serving", "completed", "cancelled"];
+export const ORDER_STATUSES: OrderStatusEnum[] = ["pending", "confirmed", "serving", "completed", "cancelled", "merged"];
 export const OPEN_ORDER_STATUSES: OrderStatusEnum[] = ["pending", "confirmed", "serving"];
 
 export const ORDER_STATUS_STYLE: Record<OrderStatusEnum, string> = {
@@ -9,6 +9,7 @@ export const ORDER_STATUS_STYLE: Record<OrderStatusEnum, string> = {
     serving: "bg-rose-100 text-rose-900 border-rose-300 dark:bg-rose-900/40 dark:text-rose-100",
     completed: "bg-emerald-100 text-emerald-900 border-emerald-300 dark:bg-emerald-900/40 dark:text-emerald-100",
     cancelled: "bg-muted text-muted-foreground border-border",
+    merged: "bg-violet-100 text-violet-900 border-violet-300 dark:bg-violet-900/40 dark:text-violet-100",
 };
 
 /** Các cột trên màn hình bếp, theo thứ tự */

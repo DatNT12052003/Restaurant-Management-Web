@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import { isAxiosError } from "axios";
 import { Images, Lock, MoreVertical, Pencil, Plus, Trash2, Users } from "lucide-react";
 
 import { createRoom, createTable, deleteRoom, deleteTable, getAllRooms, getAllTables, updateRoom, updateTable } from "@/apis";
@@ -54,6 +55,7 @@ const RoomsTables = () => {
     const [deletingRoom, setDeletingRoom] = useState<IRoom | null>(null);
     const [deletingTable, setDeletingTable] = useState<ITable | null>(null);
     const [imagesOf, setImagesOf] = useState<IRoom | null>(null);
+    const [forceRoom, setForceRoom] = useState<{ id: number; payload: IRoomPayload; message: string } | null>(null);
 
     const fetcher = useCallback(async (): Promise<{ rooms: IRoom[]; tables: ITable[] }> => {
         if (needBranch) return { rooms: [], tables: [] };
@@ -112,14 +114,30 @@ const RoomsTables = () => {
         setEditingRoom(room);
         setRoomForm({ name: room.name, type: room.type, description: room.description || "", is_active: room.is_active });
     };
-    const submitRoom = (e: React.FormEvent) => {
+    const submitRoom = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!roomForm) return;
         const payload = editingRoom ? roomForm : { ...roomForm, restaurant_id: restaurantId };
-        run(
-            () => (editingRoom ? updateRoom(editingRoom.id, payload) : createRoom(payload)),
-            () => setRoomForm(null),
-        ).catch(() => undefined);
+        if (!editingRoom) {
+            run(() => createRoom(payload), () => setRoomForm(null)).catch(() => undefined);
+            return;
+        }
+        // Tạm khóa phòng còn lịch đặt bàn: backend trả 409, hỏi lại người dùng rồi gửi kèm `force`
+        setSaving(true);
+        try {
+            const res = await updateRoom(editingRoom.id, payload);
+            toast.success(res.message);
+            setRoomForm(null);
+            reload();
+        } catch (error) {
+            if (isAxiosError(error) && error.response?.status === 409) {
+                setForceRoom({ id: editingRoom.id, payload, message: getErrorMessage(error) });
+            } else {
+                toast.error(getErrorMessage(error));
+            }
+        } finally {
+            setSaving(false);
+        }
     };
 
     // ---- Bàn ----
@@ -516,6 +534,19 @@ const RoomsTables = () => {
                 </DialogContent>
             </Dialog>
 
+            <ConfirmDialog
+                open={!!forceRoom}
+                onOpenChange={(v) => !v && setForceRoom(null)}
+                title={t("room.deactivate_title")}
+                description={forceRoom?.message ?? ""}
+                confirmLabel={t("room.deactivate_anyway")}
+                onConfirm={() =>
+                    run(
+                        () => updateRoom(forceRoom!.id, { ...forceRoom!.payload, force: true }),
+                        () => setRoomForm(null),
+                    )
+                }
+            />
             <ConfirmDialog
                 open={!!deletingRoom}
                 onOpenChange={(v) => !v && setDeletingRoom(null)}

@@ -128,8 +128,22 @@ const MainLayout = ({
                                 )}
                                 title={collapsed ? item.label : undefined}
                             >
-                                <item.icon className="h-5 w-5 shrink-0" />
-                                {!collapsed && <span>{item.label}</span>}
+                                <span className="relative">
+                                    <item.icon className="h-5 w-5 shrink-0" />
+                                    {collapsed && !!item.badge && (
+                                        <span className="absolute -right-1.5 -top-1.5 h-2.5 w-2.5 rounded-full bg-amber-500" aria-hidden />
+                                    )}
+                                </span>
+                                {!collapsed && <span className="flex-1">{item.label}</span>}
+                                {!collapsed && !!item.badge && (
+                                    <span
+                                        className="rounded-full bg-amber-500 px-1.5 py-0.5 text-xs font-semibold leading-none text-white"
+                                        title={item.badgeLabel}
+                                    >
+                                        {item.badge > 99 ? "99+" : item.badge}
+                                    </span>
+                                )}
+                                {!!item.badge && <span className="sr-only">{item.badgeLabel}</span>}
                             </NavLink>
                         );
                     })}

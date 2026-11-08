@@ -1,9 +1,9 @@
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { Clock, X } from "lucide-react";
+import { Bell, BellOff, CheckCheck, Clock, X } from "lucide-react";
 
-import { getKitchenQueue, updateOrderLineStatus } from "@/apis";
+import { getKitchenQueue, updateOrderLineStatus, updateOrderLinesStatus } from "@/apis";
 import PageHeader from "@/components/common/PageHeader";
 import ReasonDialog from "@/components/common/ReasonDialog";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +12,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ITEM_STATUS_STYLE, KITCHEN_COLUMNS, KITCHEN_WARN_MINUTES, canMoveLine } from "@/constants/order";
 import type { KitchenStationEnum, OrderItemStatusEnum } from "@/enum";
-import { useAppSelector, useAsyncData, useNow, usePermission, useRealtime } from "@/hooks";
+import { useAppSelector, useAsyncData, useKitchenAlerts, useNow, usePermission, useRealtime } from "@/hooks";
 import type { IKitchenLine } from "@/interfaces";
 import { getErrorMessage } from "@/lib/api-error";
 import { cn } from "@/lib/utils";
@@ -56,6 +56,27 @@ const Kitchen = () => {
     const { data, loading, reload } = useAsyncData(fetcher);
     useRealtime(["order:round_sent", "order_item:status_changed", "order:updated"], reload);
 
+    const describe = useCallback(
+        (d: { code: string; round_no: number }) => t("kitchen.alert_new_round", { code: d.code.split("-").pop(), no: d.round_no }),
+        [t],
+    );
+    const alerts = useKitchenAlerts(station, describe, (d) => toast.info(describe(d)));
+    const [bulkBusy, setBulkBusy] = useState(false);
+
+    /** Nhận tất cả món đang ở cột "Mới gửi" của khu đang xem (một request) */
+    const acceptAll = async (lines: IKitchenLine[]) => {
+        setBulkBusy(true);
+        try {
+            await updateOrderLinesStatus({ status: "confirmed", lines: lines.map((l) => ({ kind: l.kind, id: l.id })) });
+            reload();
+        } catch (error) {
+            toast.error(getErrorMessage(error));
+            reload();
+        } finally {
+            setBulkBusy(false);
+        }
+    };
+
     const columns = useMemo(
         () => KITCHEN_COLUMNS.map((status) => ({ status, lines: (data || []).filter((l) => l.status === status) })),
         [data],
@@ -91,13 +112,25 @@ const Kitchen = () => {
                 title={t("kitchen.title")}
                 description={t("kitchen.description")}
                 actions={
-                    <Tabs value={station} onValueChange={(v) => setStation(v as StationTab)}>
-                        <TabsList>
-                            <TabsTrigger value="kitchen">{t("kitchen.station.kitchen")}</TabsTrigger>
-                            <TabsTrigger value="bar">{t("kitchen.station.bar")}</TabsTrigger>
-                            <TabsTrigger value="all">{t("kitchen.station.all")}</TabsTrigger>
-                        </TabsList>
-                    </Tabs>
+                    <div className="flex flex-wrap items-center gap-2">
+                        <Button
+                            variant={alerts.enabled ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => void alerts.toggle()}
+                            aria-pressed={alerts.enabled}
+                            title={t("kitchen.alerts_hint")}
+                        >
+                            {alerts.enabled ? <Bell className="h-4 w-4" /> : <BellOff className="h-4 w-4" />}
+                            {alerts.enabled ? t("kitchen.alerts_on") : t("kitchen.alerts_off")}
+                        </Button>
+                        <Tabs value={station} onValueChange={(v) => setStation(v as StationTab)}>
+                            <TabsList>
+                                <TabsTrigger value="kitchen">{t("kitchen.station.kitchen")}</TabsTrigger>
+                                <TabsTrigger value="bar">{t("kitchen.station.bar")}</TabsTrigger>
+                                <TabsTrigger value="all">{t("kitchen.station.all")}</TabsTrigger>
+                            </TabsList>
+                        </Tabs>
+                    </div>
                 }
             />
 
@@ -109,9 +142,23 @@ const Kitchen = () => {
                         <div key={status} className="flex flex-col rounded-lg border bg-muted/30">
                             <div className="flex items-center justify-between border-b px-3 py-2">
                                 <span className="font-semibold">{t(`kitchen.column.${status}`)}</span>
-                                <Badge variant="outline" className={ITEM_STATUS_STYLE[status]}>
-                                    {lines.reduce((s, l) => s + l.quantity, 0)}
-                                </Badge>
+                                <div className="flex items-center gap-1.5">
+                                    {status === "pending" && lines.length > 1 && canMoveLine(can, "pending", "confirmed") && (
+                                        <Button
+                                            size="sm"
+                                            variant="ghost"
+                                            className="h-6 px-2 text-xs"
+                                            disabled={bulkBusy}
+                                            onClick={() => acceptAll(lines)}
+                                        >
+                                            <CheckCheck className="h-3.5 w-3.5" />
+                                            {t("kitchen.accept_all")}
+                                        </Button>
+                                    )}
+                                    <Badge variant="outline" className={ITEM_STATUS_STYLE[status]}>
+                                        {lines.reduce((s, l) => s + l.quantity, 0)}
+                                    </Badge>
+                                </div>
                             </div>
                             <div className="grid content-start gap-2 p-2">
                                 {lines.length === 0 && (

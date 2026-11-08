@@ -3,7 +3,7 @@ import PageHeader from "@/components/common/PageHeader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ReportFilters from "./ReportFilters";
 import { useReportFilters } from "./useReportFilters";
-import { InventorySection, OccupancySection, RevenueSection, TopItemsSection } from "./sections";
+import { InventorySection, OccupancySection, RevenueSection, TipsSection, TopItemsSection } from "./sections";
 
 /** Báo cáo chi tiết (đặc tả mục 9): doanh thu, món bán chạy, lấp đầy bàn, nhập kho */
 const Reports = () => {
@@ -21,6 +21,7 @@ const Reports = () => {
                     <TabsTrigger value="top">{t("report.tab.top")}</TabsTrigger>
                     <TabsTrigger value="occupancy">{t("report.tab.occupancy")}</TabsTrigger>
                     <TabsTrigger value="inventory">{t("report.tab.inventory")}</TabsTrigger>
+                    <TabsTrigger value="tips">{t("report.tab.tips")}</TabsTrigger>
                 </TabsList>
                 <TabsContent value="revenue">
                     <RevenueSection {...props} />
@@ -33,6 +34,9 @@ const Reports = () => {
                 </TabsContent>
                 <TabsContent value="inventory">
                     <InventorySection {...props} />
+                </TabsContent>
+                <TabsContent value="tips">
+                    <TipsSection {...props} />
                 </TabsContent>
             </Tabs>
         </div>

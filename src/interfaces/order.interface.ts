@@ -71,6 +71,10 @@ export interface IOrder {
     paid_amount?: string;
     pending_amount?: string;
     discount?: { id: number; code: string; name: string; type: string; value: string; min_order_value: string; amount: string } | null;
+    /** Giai đoạn 9: đã gộp vào order nào; tổng tip đã nhận (ngoài hóa đơn) */
+    merged_into_order_id?: number | null;
+    merged_into_code?: string | null;
+    tip_amount?: string;
 }
 
 export interface IOrderDetail extends IOrder {
@@ -98,6 +102,29 @@ export interface IRoundPayload {
     note?: string | null;
     items?: { dish_id: number; quantity: number; note?: string | null }[];
     combos?: { combo_id: number; quantity: number; note?: string | null }[];
+}
+
+export interface ILineRef {
+    kind: OrderLineKind;
+    id: number;
+}
+
+/** Đổi trạng thái nhiều dòng (`lines`) hoặc cả một đợt gọi món (`round_id`, lọc `station`) */
+export interface IBatchLineStatusPayload {
+    status: OrderItemStatusEnum;
+    cancel_reason?: string | null;
+    lines?: ILineRef[];
+    round_id?: number;
+    station?: KitchenStationEnum;
+}
+
+/** Tách món sang order có sẵn (`target_order_id`) hoặc order mới trên `table_ids` */
+export interface ISplitOrderPayload {
+    lines: (ILineRef & { quantity: number })[];
+    target_order_id?: number;
+    table_ids?: number[];
+    guest_count?: number;
+    note?: string | null;
 }
 
 /** Một dòng trên màn hình bếp / pha chế */

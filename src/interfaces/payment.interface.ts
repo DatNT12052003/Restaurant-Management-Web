@@ -68,12 +68,16 @@ export interface IPayment {
     refunded_amount?: string;
     paid_at: string | null;
     created_at: string;
+    /** Tiền tip kèm lần thanh toán (ngoài số tiền hóa đơn) */
+    tip_amount?: string;
+    tip_staff_id?: number | null;
+    tip_staff_name?: string | null;
 }
 
 export interface IGetPayments {
     payments: IPayment[];
     pagination: IPagination;
-    summary: { collected: string; refunded: string; net: string };
+    summary: { collected: string; refunded: string; net: string; tips?: string };
 }
 
 export interface IPaymentPayload {
@@ -84,6 +88,9 @@ export interface IPaymentPayload {
     note?: string | null;
     /** false = giao dịch chờ xác nhận (thẻ / chuyển khoản) */
     confirm?: boolean;
+    /** Tiền tip (không tính vào hóa đơn); mặc định ghi cho nhân viên phụ trách order */
+    tip_amount?: number;
+    tip_staff_id?: number | null;
 }
 
 export interface IInvoice {
@@ -112,4 +119,6 @@ export interface IInvoice {
     paid: number;
     /** Còn phải thu (âm = thu thừa) */
     remaining: number;
+    /** Tổng tip đã nhận */
+    tip_total?: number;
 }

@@ -1,5 +1,7 @@
 import type { KitchenStationEnum, OrderItemStatusEnum } from "@/enum";
 import type {
+    IBatchLineStatusPayload,
+    ISplitOrderPayload,
     IGetOrders,
     IGetQuery,
     IKitchenLine,
@@ -60,6 +62,21 @@ export const completeOrder = (id: number): Promise<IResponse<IOrderDetail>> =>
 
 export const cancelOrder = (id: number, cancelReason?: string | null): Promise<IResponse<IOrderDetail>> =>
     unwrap(api.post(`/orders/${id}/cancel`, { cancel_reason: cancelReason || null }));
+
+/** Đổi trạng thái nhiều món một lần (tất cả cùng thành công hoặc cùng thất bại) */
+export const updateOrderLinesStatus = (
+    payload: IBatchLineStatusPayload,
+): Promise<IResponse<{ status: OrderItemStatusEnum; lines: { kind: OrderLineKind; id: number; order_id: number }[] }>> =>
+    unwrap(api.patch("/orders/lines/status", payload));
+
+/** Gộp order `id` vào `targetOrderId`; trả về order đích */
+export const mergeOrder = (id: number, targetOrderId: number): Promise<IResponse<IOrderDetail>> =>
+    unwrap(api.post(`/orders/${id}/merge`, { target_order_id: targetOrderId }));
+
+export const splitOrder = (
+    id: number,
+    payload: ISplitOrderPayload,
+): Promise<IResponse<{ source: IOrderDetail; target: IOrderDetail }>> => unwrap(api.post(`/orders/${id}/split`, payload));
 
 export const updateOrderLineStatus = (
     kind: OrderLineKind,
