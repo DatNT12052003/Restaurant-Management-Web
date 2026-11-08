@@ -11,3 +11,4 @@ export * from "./order.interface";
 export * from "./payment.interface";
 export * from "./inventory.interface";
 export * from "./report.interface";
+export * from "./recipe.interface";

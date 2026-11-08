@@ -16,7 +16,8 @@
         "previous": "Trang trước",
         "next": "Trang sau",
         "select_branch_first": "Hãy chọn chi nhánh ở góc trên bên phải để quản lý phòng và bàn.",
-        "close": "Đóng"
+        "close": "Đóng",
+        "add": "Thêm"
     },
     "menu": {
         "dashboard": "Tổng quan",
@@ -211,7 +212,13 @@
         "hours_hint": "Dùng để tính tỷ lệ lấp đầy bàn. Giờ đóng cửa sớm hơn giờ mở cửa nghĩa là mở qua đêm.",
         "hold_minutes": "Giữ bàn trước giờ hẹn (phút)",
         "no_show_minutes": "Tự đánh dấu không đến sau (phút trễ)",
-        "reservation_timing_hint": "Bàn tự chuyển sang Đã đặt trước giờ hẹn; khách trễ quá số phút thì đặt bàn chuyển Không đến và bàn được trả. Nhập 0 để tắt."
+        "reservation_timing_hint": "Bàn tự chuyển sang Đã đặt trước giờ hẹn; khách trễ quá số phút thì đặt bàn chuyển Không đến và bàn được trả. Nhập 0 để tắt.",
+        "closed_days": "Ngày nghỉ",
+        "closed_days_title": "Ngày nghỉ: {{name}}",
+        "closed_days_desc": "Ngày nghỉ không tính vào giờ mở cửa khi tính tỷ lệ lấp đầy bàn.",
+        "closed_day": "Ngày",
+        "closed_note": "Ghi chú",
+        "no_closed_days": "Chưa có ngày nghỉ nào"
     },
     "room": {
         "title": "Phòng & bàn",
@@ -743,7 +750,9 @@
             "total_adjust": "Giá trị chênh lệch (theo giá vốn)",
             "submit": "Lập phiếu"
         },
-        "low_stock_badge": "{{count}} nguyên liệu tồn thấp"
+        "low_stock_badge": "{{count}} nguyên liệu tồn thấp",
+        "negative_hint": "Tồn âm: món đã được phục vụ khi kho không đủ; hãy nhập kho hoặc kiểm kê",
+        "consume_reason": "Phục vụ món (theo định lượng)"
     },
     "report": {
         "title": "Báo cáo",
@@ -783,7 +792,9 @@
             "top": "Món bán chạy",
             "occupancy": "Lấp đầy bàn",
             "inventory": "Nhập kho",
-            "tips": "Tiền tip"
+            "tips": "Tiền tip",
+            "profit": "Lợi nhuận",
+            "variance": "Hao hụt"
         },
         "kpi": {
             "net_revenue": "Thực thu",
@@ -816,7 +827,13 @@
             "guests": "Khách",
             "by_method": "Theo phương thức thanh toán",
             "by_restaurant": "Theo nhà hàng",
-            "table": "Bảng số liệu theo kỳ"
+            "table": "Bảng số liệu theo kỳ",
+            "basis": "Cơ sở doanh thu",
+            "basis_paid": "Theo thời điểm thanh toán",
+            "basis_completed": "Theo thời điểm hoàn tất order",
+            "basis_paid_hint": "Tiền vào ngày nào tính ngày đó (khớp sổ quỹ).",
+            "basis_completed_hint": "Mọi khoản thu của order tính vào ngày order hoàn tất (khớp số order).",
+            "method": "Phương thức"
         },
         "top": {
             "title": "Món bán chạy",
@@ -831,7 +848,7 @@
         },
         "occupancy": {
             "rate": "Tỷ lệ lấp đầy",
-            "rate_hint": "giờ-bàn có khách / giờ mở cửa",
+            "rate_hint": "giờ-bàn có khách trong giờ mở cửa / giờ mở cửa (trừ ngày nghỉ)",
             "occupied_hours": "Giờ-bàn có khách",
             "of_available": "trên {{hours}} giờ-bàn mở cửa",
             "sessions": "Lượt ngồi bàn",
@@ -844,7 +861,12 @@
             "by_room": "Theo phòng",
             "room": "Phòng",
             "table_count": "Số bàn",
-            "hours_of": "{{name}}: {{open}}–{{close}}"
+            "hours_of": "{{name}}: {{open}}–{{close}}",
+            "available_hours": "Giờ-bàn mở cửa",
+            "outside_hours": "Giờ-bàn ngoài giờ",
+            "hour": "Giờ",
+            "days_closed": "{{count}} ngày, nghỉ {{closed}} ngày",
+            "outside_note": "{{hours}} giờ-bàn có khách ngoài giờ mở cửa hoặc vào ngày nghỉ (không tính vào tỷ lệ lấp đầy)."
         },
         "inventory": {
             "title": "Giá trị nhập / xuất kho theo kỳ",
@@ -873,6 +895,47 @@
             "staff": "Nhân viên",
             "orders": "Số order",
             "unassigned": "Chưa gắn nhân viên"
+        },
+        "export": {
+            "excel": "Xuất Excel",
+            "print": "In / Lưu PDF",
+            "range": "Từ {{from}} đến {{to}}",
+            "scope": "Phạm vi: {{name}}",
+            "scope_chain": "Cả chuỗi",
+            "failed": "Xuất file thất bại"
+        },
+        "profit": {
+            "title": "Giá vốn và lãi gộp theo thời gian",
+            "chart_hint": "Cột chồng: giá vốn + lãi gộp = doanh số món đã phục vụ",
+            "sales": "Doanh số món",
+            "sales_hint": "Giá lúc gọi × số lượng, chưa trừ giảm giá, chưa gồm phí / thuế",
+            "cost": "Giá vốn",
+            "gross_profit": "Lãi gộp",
+            "food_cost_rate": "Tỷ lệ giá vốn",
+            "uncosted_sales": "Doanh số chưa có giá vốn",
+            "uncosted_hint": "{{amount}} doanh số từ món chưa có định lượng (không tính vào tỷ lệ)",
+            "quantity": "Số lượng",
+            "item": "Món / combo",
+            "by_period": "Theo kỳ",
+            "by_item": "Theo món (lãi gộp cao nhất)",
+            "by_item_hint": "Tối đa 50 món; biểu tượng cảnh báo = có phần bán khi chưa có định lượng",
+            "by_category": "Theo nhóm món",
+            "by_restaurant": "Theo chi nhánh",
+            "footer": "Giá vốn ghi lúc phục vụ theo giá bình quân khi đó, không đổi khi giá nhập thay đổi sau này."
+        },
+        "variance": {
+            "title": "Tiêu hao lý thuyết và kiểm kê",
+            "description": "Kiểm kê âm nghĩa là thực tế dùng nhiều hơn định lượng (hao hụt, hỏng, định lượng sai)",
+            "consumed": "Tiêu hao theo định lượng",
+            "consumed_value": "Giá trị tiêu hao",
+            "consumed_hint": "Tự trừ khi phục vụ món",
+            "exported": "Xuất tay",
+            "exported_value": "Giá trị xuất tay",
+            "adjusted": "Chênh lệch kiểm kê",
+            "adjusted_value": "Giá trị chênh lệch",
+            "loss_rate": "Tỷ lệ hao hụt",
+            "loss_value": "Giá trị hao hụt",
+            "loss_hint": "Tổng các chênh lệch kiểm kê âm"
         }
     },
     "audit": {
@@ -1088,5 +1151,34 @@
         "confirm_password": "Nhập lại mật khẩu mới",
         "password_min": "Mật khẩu phải có ít nhất 6 ký tự",
         "password_mismatch": "Mật khẩu nhập lại không khớp"
+    },
+    "recipe": {
+        "tab": "Giá vốn",
+        "open": "Định lượng",
+        "title": "Định lượng: {{name}}",
+        "description": "Lượng nguyên liệu cho 1 phần, theo đơn vị tính của nguyên liệu. Định lượng dùng chung cả chuỗi; món được trừ kho theo định lượng khi phục vụ.",
+        "price": "Giá bán",
+        "cost": "Giá vốn",
+        "margin": "Lãi gộp",
+        "food_cost_rate": "Tỷ lệ giá vốn",
+        "category": "Nhóm",
+        "empty": "Món chưa có định lượng: chưa trừ kho và chưa tính giá vốn khi phục vụ.",
+        "inactive": "Ngừng dùng",
+        "unit_cost": "Giá vốn BQ {{amount}} / {{unit}}",
+        "quantity_of": "Định lượng {{name}}",
+        "add_ingredient": "Thêm nguyên liệu...",
+        "hint": "Giá vốn ước tính theo giá bình quân hiện tại của chi nhánh; nguyên liệu vừa thêm được tính giá sau khi lưu.",
+        "costs_branch_hint": "Giá vốn lý thuyết theo định lượng và giá bình quân hiện tại của chi nhánh. Bấm vào món để xem / sửa định lượng.",
+        "costs_chain_hint": "Đang xem cả chuỗi: giá vốn theo giá bình quân trung bình các chi nhánh. Chọn chi nhánh trên thanh trên cùng để xem giá riêng.",
+        "costs_footer": "Combo chỉ có giá vốn khi mọi món bên trong đã có định lượng.",
+        "items": "Món và combo",
+        "missing_recipe": "Chưa có định lượng",
+        "avg_food_cost": "Tỷ lệ giá vốn TB",
+        "no_recipe": "Chưa có",
+        "filter": {
+            "all": "Tất cả",
+            "missing": "Chưa có định lượng",
+            "high": "Tỷ lệ giá vốn ≥ {{rate}}%"
+        }
     }
 }

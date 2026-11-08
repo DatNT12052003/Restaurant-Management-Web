@@ -191,7 +191,7 @@ const MainLayout = ({
             {/* Sidebar desktop - sticky, transition width mượt */}
             <aside
                 className={cn(
-                    "hidden lg:block sticky top-0 h-screen transition-all duration-300 ease-in-out will-change-width",
+                    "no-print hidden lg:block sticky top-0 h-screen transition-all duration-300 ease-in-out will-change-width",
                     collapsed ? "w-16" : "w-64",
                 )}
             >
@@ -200,7 +200,7 @@ const MainLayout = ({
 
             {/* Nội dung chính - flex-1 tự động co giãn theo sidebar */}
             <div className="flex-1 min-w-0">
-                <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 lg:px-6">
+                <header className="no-print sticky top-0 z-20 flex h-16 items-center justify-between border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 lg:px-6">
                     <div className="flex items-center gap-2">
                         <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
                             <SheetTrigger asChild>

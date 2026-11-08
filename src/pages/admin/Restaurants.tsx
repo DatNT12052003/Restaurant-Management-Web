@@ -1,12 +1,13 @@
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { Images, Pencil, Plus, Search, Trash2 } from "lucide-react";
+import { CalendarOff, Images, Pencil, Plus, Search, Trash2 } from "lucide-react";
 
 import { createRestaurant, deleteRestaurant, getRestaurants, updateRestaurant } from "@/apis";
 import ConfirmDialog from "@/components/common/ConfirmDialog";
 import DataPagination from "@/components/common/DataPagination";
 import ImageManager from "@/components/common/ImageManager";
+import ClosedDaysDialog from "./ClosedDaysDialog";
 import PageHeader from "@/components/common/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -42,6 +43,7 @@ const Restaurants = () => {
     const [saving, setSaving] = useState(false);
     const [deleting, setDeleting] = useState<IRestaurant | null>(null);
     const [imagesOf, setImagesOf] = useState<IRestaurant | null>(null);
+    const [closedOf, setClosedOf] = useState<IRestaurant | null>(null);
 
     const fetcher = useCallback(() => {
         const query: IGetQuery = { currentPage: page, limit: PAGE_SIZE, orderBy: [{ field: "name" }] };
@@ -202,6 +204,15 @@ const Restaurants = () => {
                                                 title={t("image.title")}
                                             >
                                                 <Images className="h-4 w-4" />
+                                            </Button>
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => setClosedOf(r)}
+                                                aria-label={t("restaurant.closed_days")}
+                                                title={t("restaurant.closed_days")}
+                                            >
+                                                <CalendarOff className="h-4 w-4" />
                                             </Button>
                                             {can("restaurant.update") && (
                                                 <Button
@@ -381,6 +392,13 @@ const Restaurants = () => {
                     )}
                 </DialogContent>
             </Dialog>
+
+            <ClosedDaysDialog
+                restaurant={closedOf}
+                // Ngày nghỉ: admin hoặc quản lý chi nhánh (room.update)
+                canEdit={can("restaurant.update") || can("room.update")}
+                onOpenChange={(v) => !v && setClosedOf(null)}
+            />
 
             <ConfirmDialog
                 open={!!deleting}

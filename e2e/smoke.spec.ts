@@ -158,3 +158,36 @@ test("tài khoản bị khóa thấy thông báo khóa; quản lý mở khóa xo
     await page.evaluate(() => localStorage.clear());
     await login(page, f.users.locked);
 });
+
+test("giai đoạn 10: bếp trưởng sửa định lượng ở tab Giá vốn", async ({ page }) => {
+    const errors = watchErrors(page);
+    await login(page, fixture().users.chef);
+    await page.goto("/admin/menu");
+    await page.getByRole("tab", { name: "Giá vốn" }).click();
+    await page.getByRole("row", { name: /Phở bò/ }).click();
+    const dialog = page.getByRole("dialog");
+    await expect(dialog.getByText("Định lượng: Phở bò")).toBeVisible();
+    await dialog.getByRole("combobox", { name: "Thêm nguyên liệu..." }).click();
+    await page.getByRole("option", { name: /Thịt bò/ }).click();
+    await dialog.getByRole("button", { name: "Thêm" }).click();
+    await dialog.getByLabel("Định lượng Thịt bò").fill("0.15");
+    const response = page.waitForResponse((r) => r.request().method() === "PUT" && r.url().includes("/recipes/dishes/"));
+    await dialog.getByRole("button", { name: "Lưu" }).click();
+    expect((await response).status()).toBe(200);
+    expect(errors).toEqual([]);
+});
+
+test("giai đoạn 10: quản lý xem tab Lợi nhuận, Hao hụt và xuất Excel", async ({ page }) => {
+    const errors = watchErrors(page);
+    await login(page, fixture().users.manager);
+    await page.goto("/admin/reports");
+    await page.getByRole("tab", { name: "Lợi nhuận" }).click();
+    await expect(page.getByText("Giá vốn và lãi gộp theo thời gian")).toBeVisible();
+    await page.getByRole("tab", { name: "Hao hụt" }).click();
+    await expect(page.getByText("Tiêu hao lý thuyết và kiểm kê")).toBeVisible();
+    await page.getByRole("tab", { name: "Doanh thu" }).click();
+    const download = page.waitForEvent("download");
+    await page.getByRole("button", { name: "Xuất Excel" }).click();
+    expect((await download).suggestedFilename()).toMatch(/^doanh-thu_.*\.xlsx$/);
+    expect(errors).toEqual([]);
+});

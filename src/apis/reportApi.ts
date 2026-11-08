@@ -9,7 +9,9 @@ import type {
     IReportQuery,
     IResponse,
     IRevenueReport,
+    IProfitReport,
     ITipsReport,
+    IVarianceReport,
     ITopItemsReport,
 } from "@/interfaces";
 import api from "./axios";
@@ -34,6 +36,12 @@ export const getInventoryReport = (params: IReportQuery): Promise<IResponse<IInv
 
 export const getTipsReport = (params: IReportQuery): Promise<IResponse<ITipsReport>> =>
     unwrap(api.get("/reports/tips", { params }));
+
+export const getProfitReport = (params: IReportQuery): Promise<IResponse<IProfitReport>> =>
+    unwrap(api.get("/reports/profit", { params }));
+
+export const getVarianceReport = (params: IReportQuery): Promise<IResponse<IVarianceReport>> =>
+    unwrap(api.get("/reports/ingredient-variance", { params }));
 
 // ---- Nhật ký hoạt động (chỉ đọc) ----
 

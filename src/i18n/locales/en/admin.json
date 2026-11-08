@@ -16,7 +16,8 @@
         "previous": "Previous page",
         "next": "Next page",
         "select_branch_first": "Select a branch in the top-right corner to manage its rooms and tables.",
-        "close": "Close"
+        "close": "Close",
+        "add": "Add"
     },
     "menu": {
         "dashboard": "Dashboard",
@@ -211,7 +212,13 @@
         "hours_hint": "Used for table occupancy. A closing time earlier than the opening time means it stays open past midnight.",
         "hold_minutes": "Hold tables before the booking (minutes)",
         "no_show_minutes": "Mark as no-show after (minutes late)",
-        "reservation_timing_hint": "Tables switch to Reserved before the booking time; if guests are later than this, the booking becomes No-show and the tables are released. Enter 0 to turn off."
+        "reservation_timing_hint": "Tables switch to Reserved before the booking time; if guests are later than this, the booking becomes No-show and the tables are released. Enter 0 to turn off.",
+        "closed_days": "Closed days",
+        "closed_days_title": "Closed days: {{name}}",
+        "closed_days_desc": "Closed days are left out of opening hours when computing table occupancy.",
+        "closed_day": "Date",
+        "closed_note": "Note",
+        "no_closed_days": "No closed days yet"
     },
     "room": {
         "title": "Rooms & tables",
@@ -743,7 +750,9 @@
             "total_adjust": "Difference value (at cost)",
             "submit": "Create document"
         },
-        "low_stock_badge": "{{count}} ingredients low on stock"
+        "low_stock_badge": "{{count}} ingredients low on stock",
+        "negative_hint": "Negative stock: items were served without enough stock; import stock or run a stock count",
+        "consume_reason": "Served items (by recipe)"
     },
     "report": {
         "title": "Reports",
@@ -783,7 +792,9 @@
             "top": "Best sellers",
             "occupancy": "Table occupancy",
             "inventory": "Stock purchases",
-            "tips": "Tips"
+            "tips": "Tips",
+            "profit": "Profit",
+            "variance": "Waste"
         },
         "kpi": {
             "net_revenue": "Net revenue",
@@ -816,7 +827,13 @@
             "guests": "Guests",
             "by_method": "By payment method",
             "by_restaurant": "By restaurant",
-            "table": "Figures by period"
+            "table": "Figures by period",
+            "basis": "Revenue basis",
+            "basis_paid": "By payment time",
+            "basis_completed": "By order completion time",
+            "basis_paid_hint": "Money counts on the day it is received (matches the cash book).",
+            "basis_completed_hint": "All payments of an order count on the day the order completes (matches order counts).",
+            "method": "Method"
         },
         "top": {
             "title": "Best sellers",
@@ -831,7 +848,7 @@
         },
         "occupancy": {
             "rate": "Occupancy rate",
-            "rate_hint": "occupied table-hours / opening hours",
+            "rate_hint": "occupied table-hours within opening hours / opening hours (closed days excluded)",
             "occupied_hours": "Occupied table-hours",
             "of_available": "of {{hours}} open table-hours",
             "sessions": "Seatings",
@@ -844,7 +861,12 @@
             "by_room": "By room",
             "room": "Room",
             "table_count": "Tables",
-            "hours_of": "{{name}}: {{open}}–{{close}}"
+            "hours_of": "{{name}}: {{open}}–{{close}}",
+            "available_hours": "Open table-hours",
+            "outside_hours": "Table-hours outside opening hours",
+            "hour": "Hour",
+            "days_closed": "{{count}} days, {{closed}} closed",
+            "outside_note": "{{hours}} occupied table-hours fall outside opening hours or on closed days (not counted in occupancy)."
         },
         "inventory": {
             "title": "Stock in / out value by period",
@@ -873,6 +895,47 @@
             "staff": "Staff member",
             "orders": "Orders",
             "unassigned": "Not assigned"
+        },
+        "export": {
+            "excel": "Export Excel",
+            "print": "Print / Save PDF",
+            "range": "From {{from}} to {{to}}",
+            "scope": "Scope: {{name}}",
+            "scope_chain": "Whole chain",
+            "failed": "Export failed"
+        },
+        "profit": {
+            "title": "Cost and gross profit over time",
+            "chart_hint": "Stacked bars: cost + gross profit = sales of served items",
+            "sales": "Item sales",
+            "sales_hint": "Price at order time × quantity, before discounts, fees and tax",
+            "cost": "Cost",
+            "gross_profit": "Gross profit",
+            "food_cost_rate": "Food cost %",
+            "uncosted_sales": "Sales without cost",
+            "uncosted_hint": "{{amount}} of sales come from items without a recipe (left out of the rate)",
+            "quantity": "Quantity",
+            "item": "Dish / combo",
+            "by_period": "By period",
+            "by_item": "By item (highest gross profit)",
+            "by_item_hint": "Up to 50 items; the warning icon means some sales had no recipe",
+            "by_category": "By group",
+            "by_restaurant": "By branch",
+            "footer": "Cost is recorded at serving time using the average cost then, so later purchase prices do not change it."
+        },
+        "variance": {
+            "title": "Theoretical usage vs stock counts",
+            "description": "A negative count means more was used than the recipes say (waste, spoilage or a wrong recipe)",
+            "consumed": "Usage by recipe",
+            "consumed_value": "Usage value",
+            "consumed_hint": "Deducted automatically when items are served",
+            "exported": "Manual exports",
+            "exported_value": "Manual export value",
+            "adjusted": "Count difference",
+            "adjusted_value": "Difference value",
+            "loss_rate": "Waste rate",
+            "loss_value": "Waste value",
+            "loss_hint": "Sum of negative count differences"
         }
     },
     "audit": {
@@ -1088,5 +1151,34 @@
         "confirm_password": "Repeat new password",
         "password_min": "Password must be at least 6 characters",
         "password_mismatch": "Passwords do not match"
+    },
+    "recipe": {
+        "tab": "Food cost",
+        "open": "Recipe",
+        "title": "Recipe: {{name}}",
+        "description": "Ingredient amounts for one portion, in each ingredient's unit. Recipes are shared across the chain; stock is deducted by recipe when the item is served.",
+        "price": "Price",
+        "cost": "Cost",
+        "margin": "Gross margin",
+        "food_cost_rate": "Food cost %",
+        "category": "Group",
+        "empty": "This dish has no recipe yet: no stock is deducted and no cost is recorded when it is served.",
+        "inactive": "Inactive",
+        "unit_cost": "Avg cost {{amount}} / {{unit}}",
+        "quantity_of": "Amount of {{name}}",
+        "add_ingredient": "Add an ingredient...",
+        "hint": "Estimated from the branch's current average costs; newly added ingredients are priced after saving.",
+        "costs_branch_hint": "Theoretical cost from recipes and the branch's current average costs. Click a dish to view or edit its recipe.",
+        "costs_chain_hint": "Viewing the whole chain: costs use the average across branches. Pick a branch in the top bar to see branch costs.",
+        "costs_footer": "A combo has a cost only when every dish in it has a recipe.",
+        "items": "Dishes and combos",
+        "missing_recipe": "Without a recipe",
+        "avg_food_cost": "Average food cost %",
+        "no_recipe": "None",
+        "filter": {
+            "all": "All",
+            "missing": "Without a recipe",
+            "high": "Food cost ≥ {{rate}}%"
+        }
     }
 }
