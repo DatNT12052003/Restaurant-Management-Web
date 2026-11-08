@@ -169,6 +169,10 @@
         "discount": {
             "active": "Active",
             "inactive": "Inactive"
+        },
+        "ingredient": {
+            "active": "Active",
+            "inactive": "Inactive"
         }
     },
     "user": {
@@ -292,7 +296,9 @@
             "order": "Orders",
             "order_item": "Order items",
             "payment": "Payments",
-            "discount": "Discounts"
+            "discount": "Discounts",
+            "inventory": "Inventory",
+            "ingredient": "Ingredients"
         },
         "actions": {
             "create": "Create",
@@ -305,7 +311,10 @@
             "prepare": "Prepare",
             "serve": "Serve",
             "refund": "Refund",
-            "apply": "Apply to orders"
+            "apply": "Apply to orders",
+            "import": "Receive",
+            "export": "Issue",
+            "adjust": "Stocktake, minimum stock"
         }
     },
     "profile": {
@@ -600,5 +609,85 @@
         "max_short": "max {{amount}}",
         "delete_title": "Delete discount",
         "delete_desc": "Delete code {{code}}? Orders that used it keep their discount."
+    },
+    "inventory": {
+        "title": "Inventory",
+        "description": "Branch stock, stock receipts / issues / stocktakes and movement history.",
+        "tab_stock": "Stock",
+        "tab_receipts": "Documents",
+        "tab_history": "Movements",
+        "tab_ingredients": "Ingredient catalog",
+        "search": "Search ingredients...",
+        "low_only": "Low stock only",
+        "low_badge": "Low stock",
+        "no_items": "No ingredients yet.",
+        "ingredient": "Ingredient",
+        "unit": "Unit",
+        "unit_hint": "The unit can only change while the ingredient has no stock movements.",
+        "quantity": "Quantity",
+        "min_quantity": "Minimum stock",
+        "min_hint": "At or below this level the item is flagged as low stock. Set 0 to turn the alert off.",
+        "set_min": "Set minimum stock",
+        "set_min_title": "Minimum stock: {{name}}",
+        "avg_cost": "Avg. cost",
+        "stock_value": "Stock value",
+        "last_change": "Last movement",
+        "in_stock": "{{qty}} in stock",
+        "summary": {
+            "value": "Total stock value",
+            "items": "Ingredients",
+            "low": "Low-stock items"
+        },
+        "action": {
+            "import": "Receive stock",
+            "export": "Issue stock",
+            "adjust": "Stocktake"
+        },
+        "type": {
+            "import": "Receipt",
+            "export": "Issue",
+            "adjust": "Stocktake",
+            "consume": "Consumption"
+        },
+        "type_label": "Type",
+        "all_types": "All document types",
+        "all_ingredients": "All ingredients",
+        "code": "Document no.",
+        "time": "Time",
+        "supplier": "Supplier",
+        "supplier_or_reason": "Supplier / reason",
+        "reason": "Reason",
+        "note": "Note",
+        "lines": "Lines",
+        "value": "Value",
+        "created_by": "Created by",
+        "change": "Change",
+        "after": "Balance",
+        "unit_price": "Unit price",
+        "system_qty": "System qty",
+        "actual_qty": "Counted",
+        "difference": "Difference",
+        "description_field": "Description",
+        "add_ingredient": "Add ingredient",
+        "edit_ingredient": "Edit ingredient",
+        "catalog_hint": "The catalog is shared by the whole chain; stock is tracked per branch.",
+        "delete_title": "Delete ingredient",
+        "delete_desc": "Delete \"{{name}}\" from the catalog? Only possible when no branch has stock left.",
+        "receipt": {
+            "title_import": "Stock receipt",
+            "title_export": "Stock issue",
+            "title_adjust": "Stocktake",
+            "pick_ingredient": "Select an ingredient",
+            "add_line": "Add line",
+            "count_hint": "Enter the counted quantity for the items you checked; leave the others blank. The difference is recorded.",
+            "lines_required": "The document needs at least one line",
+            "over_stock": "The quantity issued for {{name}} exceeds the stock",
+            "reason_placeholder_export": "E.g. kitchen use, spoiled, expired...",
+            "reason_placeholder_adjust": "E.g. end-of-day count",
+            "total_import": "Total cost",
+            "total_export": "Value issued (at cost)",
+            "total_adjust": "Difference value (at cost)",
+            "submit": "Create document"
+        }
     }
 }

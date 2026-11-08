@@ -169,6 +169,10 @@
         "discount": {
             "active": "Đang áp dụng",
             "inactive": "Tạm ngưng"
+        },
+        "ingredient": {
+            "active": "Đang dùng",
+            "inactive": "Ngừng dùng"
         }
     },
     "user": {
@@ -292,7 +296,9 @@
             "order": "Order",
             "order_item": "Món trong order",
             "payment": "Thanh toán",
-            "discount": "Mã giảm giá"
+            "discount": "Mã giảm giá",
+            "inventory": "Kho",
+            "ingredient": "Nguyên liệu"
         },
         "actions": {
             "create": "Tạo",
@@ -305,7 +311,10 @@
             "prepare": "Chế biến",
             "serve": "Phục vụ",
             "refund": "Hoàn tiền",
-            "apply": "Áp cho order"
+            "apply": "Áp cho order",
+            "import": "Nhập kho",
+            "export": "Xuất kho",
+            "adjust": "Kiểm kê, tồn tối thiểu"
         }
     },
     "profile": {
@@ -600,5 +609,85 @@
         "max_short": "tối đa {{amount}}",
         "delete_title": "Xóa mã giảm giá",
         "delete_desc": "Xóa mã {{code}}? Các order đã dùng mã vẫn giữ số tiền đã giảm."
+    },
+    "inventory": {
+        "title": "Kho nguyên liệu",
+        "description": "Tồn kho của chi nhánh, phiếu nhập / xuất / kiểm kê và lịch sử biến động.",
+        "tab_stock": "Tồn kho",
+        "tab_receipts": "Phiếu kho",
+        "tab_history": "Lịch sử biến động",
+        "tab_ingredients": "Danh mục nguyên liệu",
+        "search": "Tìm nguyên liệu...",
+        "low_only": "Chỉ hiện tồn thấp",
+        "low_badge": "Tồn thấp",
+        "no_items": "Chưa có nguyên liệu nào.",
+        "ingredient": "Nguyên liệu",
+        "unit": "Đơn vị tính",
+        "unit_hint": "Chỉ đổi được đơn vị khi nguyên liệu chưa có biến động kho.",
+        "quantity": "Số lượng",
+        "min_quantity": "Tồn tối thiểu",
+        "min_hint": "Khi tồn kho bằng hoặc thấp hơn mức này sẽ được đánh dấu tồn thấp. Đặt 0 để tắt cảnh báo.",
+        "set_min": "Đặt tồn tối thiểu",
+        "set_min_title": "Tồn tối thiểu: {{name}}",
+        "avg_cost": "Giá vốn BQ",
+        "stock_value": "Giá trị tồn",
+        "last_change": "Biến động gần nhất",
+        "in_stock": "tồn {{qty}}",
+        "summary": {
+            "value": "Tổng giá trị tồn kho",
+            "items": "Số nguyên liệu",
+            "low": "Nguyên liệu tồn thấp"
+        },
+        "action": {
+            "import": "Nhập kho",
+            "export": "Xuất kho",
+            "adjust": "Kiểm kê"
+        },
+        "type": {
+            "import": "Nhập",
+            "export": "Xuất",
+            "adjust": "Kiểm kê",
+            "consume": "Tiêu hao"
+        },
+        "type_label": "Loại",
+        "all_types": "Mọi loại phiếu",
+        "all_ingredients": "Mọi nguyên liệu",
+        "code": "Mã phiếu",
+        "time": "Thời gian",
+        "supplier": "Nhà cung cấp",
+        "supplier_or_reason": "Nhà cung cấp / lý do",
+        "reason": "Lý do",
+        "note": "Ghi chú",
+        "lines": "Số dòng",
+        "value": "Giá trị",
+        "created_by": "Người lập",
+        "change": "Thay đổi",
+        "after": "Tồn sau",
+        "unit_price": "Đơn giá",
+        "system_qty": "Tồn hệ thống",
+        "actual_qty": "Thực tế",
+        "difference": "Chênh lệch",
+        "description_field": "Mô tả",
+        "add_ingredient": "Thêm nguyên liệu",
+        "edit_ingredient": "Sửa nguyên liệu",
+        "catalog_hint": "Danh mục dùng chung cả chuỗi; tồn kho được tính riêng cho từng chi nhánh.",
+        "delete_title": "Xóa nguyên liệu",
+        "delete_desc": "Xóa \"{{name}}\" khỏi danh mục? Chỉ xóa được khi không còn tồn ở chi nhánh nào.",
+        "receipt": {
+            "title_import": "Phiếu nhập kho",
+            "title_export": "Phiếu xuất kho",
+            "title_adjust": "Phiếu kiểm kê",
+            "pick_ingredient": "Chọn nguyên liệu",
+            "add_line": "Thêm dòng",
+            "count_hint": "Nhập số đếm thực tế cho nguyên liệu đã kiểm; để trống những dòng không kiểm. Hệ thống ghi phần chênh lệch.",
+            "lines_required": "Phiếu phải có ít nhất một dòng",
+            "over_stock": "Số lượng xuất của {{name}} vượt quá tồn kho",
+            "reason_placeholder_export": "Ví dụ: dùng cho bếp, hỏng, hết hạn...",
+            "reason_placeholder_adjust": "Ví dụ: kiểm kê cuối ngày",
+            "total_import": "Tổng tiền nhập",
+            "total_export": "Giá trị xuất (theo giá vốn)",
+            "total_adjust": "Giá trị chênh lệch (theo giá vốn)",
+            "submit": "Lập phiếu"
+        }
     }
 }

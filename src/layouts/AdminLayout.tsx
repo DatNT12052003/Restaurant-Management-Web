@@ -72,7 +72,7 @@ const AdminLayout = () => {
         { path: "/admin/kitchen", label: t("menu.kitchen"), icon: ChefHat, permission: "order_item.prepare" },
         { path: "/admin/cashier", label: t("menu.cashier"), icon: Wallet, permission: "payment.view" },
         { path: "/admin/discounts", label: t("menu.discounts"), icon: TicketPercent, permission: "discount.view" },
-        { path: "/admin/inventory", label: t("menu.inventory"), icon: Package },
+        { path: "/admin/inventory", label: t("menu.inventory"), icon: Package, permission: "inventory.view" },
         { path: "/admin/reports", label: t("menu.reports"), icon: BarChart3 },
     ];
 
