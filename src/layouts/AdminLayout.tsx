@@ -6,6 +6,7 @@ import {
     TicketPercent,
     Wallet,
     CalendarClock,
+    History,
     ClipboardList,
     LayoutDashboard,
     MenuIcon,
@@ -53,7 +54,6 @@ const AdminLayout = () => {
         if (userId && isAdmin) subscribeRestaurant(branchId);
     }, [userId, isAdmin, branchId]);
 
-    // Các mục chưa có `permission` là trang của giai đoạn sau (hiện hiển thị trang 404)
     const menuItems: ISidebarMenuItem[] = [
         { path: "/admin/dashboard", label: t("menu.dashboard"), icon: LayoutDashboard },
         { path: "/admin/restaurants", label: t("menu.restaurants"), icon: Building2, permission: "restaurant.view" },
@@ -73,7 +73,8 @@ const AdminLayout = () => {
         { path: "/admin/cashier", label: t("menu.cashier"), icon: Wallet, permission: "payment.view" },
         { path: "/admin/discounts", label: t("menu.discounts"), icon: TicketPercent, permission: "discount.view" },
         { path: "/admin/inventory", label: t("menu.inventory"), icon: Package, permission: "inventory.view" },
-        { path: "/admin/reports", label: t("menu.reports"), icon: BarChart3 },
+        { path: "/admin/reports", label: t("menu.reports"), icon: BarChart3, permission: "report.view" },
+        { path: "/admin/audit-logs", label: t("menu.audit_logs"), icon: History, permission: "audit_log.view" },
     ];
 
     if (!user) {

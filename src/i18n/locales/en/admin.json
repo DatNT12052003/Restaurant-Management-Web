@@ -89,7 +89,8 @@
         "reservations": "Reservations",
         "kitchen": "Kitchen & bar",
         "cashier": "Cashier",
-        "discounts": "Discounts"
+        "discounts": "Discounts",
+        "audit_logs": "Audit log"
     },
     "roles": {
         "admin": "Administrator",
@@ -201,7 +202,10 @@
         "delete_desc": "Delete \"{{name}}\"? A restaurant can only be deleted when it has no rooms and no staff.",
         "service_fee_percent": "Service fee (%)",
         "tax_percent": "Tax (%)",
-        "fee_hint": "Applies to orders opened after saving; open orders keep their current rates."
+        "fee_hint": "Applies to orders opened after saving; open orders keep their current rates.",
+        "open_time": "Opening time",
+        "close_time": "Closing time",
+        "hours_hint": "Used for table occupancy. A closing time earlier than the opening time means it stays open past midnight."
     },
     "room": {
         "title": "Rooms & tables",
@@ -688,6 +692,290 @@
             "total_export": "Value issued (at cost)",
             "total_adjust": "Difference value (at cost)",
             "submit": "Create document"
+        }
+    },
+    "report": {
+        "title": "Reports",
+        "description": "Revenue, best sellers, table occupancy and stock purchases.",
+        "dashboard_description": "Key figures compared with the previous period, plus what is happening now.",
+        "view_reports": "Detailed reports",
+        "welcome": "Hello, {{name}}",
+        "welcome_hint": "Pick a task to get started.",
+        "range": "Date range",
+        "from": "From",
+        "to": "To",
+        "group_by": "Group by",
+        "preset": {
+            "today": "Today",
+            "7d": "Last 7 days",
+            "30d": "Last 30 days",
+            "this_month": "This month",
+            "last_month": "Last month",
+            "custom": "Custom..."
+        },
+        "group": {
+            "auto": "Automatic",
+            "day": "By day",
+            "week": "By week",
+            "month": "By month"
+        },
+        "scope_chain": "Whole chain (pick a branch at the top to see one)",
+        "scope_branch": "Branch: {{name}}",
+        "invalid_range": "Invalid date range (max 366 days)",
+        "no_data": "No data in this range",
+        "vs_previous": "vs previous period",
+        "restaurant": "Restaurant",
+        "period": "Period",
+        "week_of": "Week of {{date}}",
+        "tab": {
+            "revenue": "Revenue",
+            "top": "Best sellers",
+            "occupancy": "Table occupancy",
+            "inventory": "Stock purchases"
+        },
+        "kpi": {
+            "net_revenue": "Net revenue",
+            "completed_orders": "Completed orders",
+            "avg_order_value": "Avg. order value",
+            "guests": "Guests",
+            "refunded": "Refunded",
+            "discount_total": "Discounts given",
+            "gross_sales": "Gross sales {{amount}}",
+            "cancelled_orders": "Cancelled orders",
+            "reservations": "Reservations",
+            "reservations_hint": "{{no_show}} no-show · {{cancelled}} cancelled"
+        },
+        "live": {
+            "title": "Right now",
+            "today_revenue": "Net revenue today",
+            "open_orders": "Open orders",
+            "occupied_tables": "Occupied tables",
+            "upcoming_reservations": "Upcoming reservations today",
+            "low_stock": "Low-stock ingredients",
+            "low_stock_hint": "See the Inventory page"
+        },
+        "revenue": {
+            "title": "Net revenue",
+            "total": "Total {{amount}} · {{orders}} completed orders",
+            "net": "Net",
+            "collected": "Collected",
+            "refunded": "Refunded",
+            "orders": "Orders",
+            "guests": "Guests",
+            "by_method": "By payment method",
+            "by_restaurant": "By restaurant",
+            "table": "Figures by period"
+        },
+        "top": {
+            "title": "Best sellers",
+            "by_quantity": "By quantity sold (cancelled items and orders excluded)",
+            "dishes": "Dishes",
+            "combos": "Combos",
+            "name": "Name",
+            "quantity": "Quantity",
+            "orders": "Orders",
+            "revenue": "Sales",
+            "table": "Details"
+        },
+        "occupancy": {
+            "rate": "Occupancy rate",
+            "rate_hint": "occupied table-hours / opening hours",
+            "occupied_hours": "Occupied table-hours",
+            "of_available": "of {{hours}} open table-hours",
+            "sessions": "Seatings",
+            "days": "over {{count}} days",
+            "turnover": "Seatings / table",
+            "tables": "{{count}} tables",
+            "by_hour": "Occupancy by hour of day",
+            "by_hour_hint": "Average % of tables occupied in each hour",
+            "avg": "Avg. occupancy",
+            "by_room": "By room",
+            "room": "Room",
+            "table_count": "Tables",
+            "hours_of": "{{name}}: {{open}}–{{close}}"
+        },
+        "inventory": {
+            "title": "Stock in / out value by period",
+            "import": "Stock in",
+            "export": "Stock out",
+            "import_value": "Stock-in value",
+            "export_value": "Stock-out value",
+            "adjust_value": "Stock-count difference",
+            "adjust_hint": "negative = loss",
+            "receipts": "{{count}} stock-in slips",
+            "suppliers": "Suppliers",
+            "top_ingredients": "Top purchased ingredients (by value)",
+            "by_supplier": "By supplier",
+            "supplier": "Supplier",
+            "no_supplier": "No supplier recorded",
+            "receipt_count": "Slips",
+            "value": "Value"
+        }
+    },
+    "audit": {
+        "title": "Audit log",
+        "description": "Who did what, when and from where. The log is read-only and cannot be edited or deleted.",
+        "module": "Area",
+        "all_modules": "All areas",
+        "action_label": "Action",
+        "all_actions": "All actions",
+        "time": "Time",
+        "actor": "Performed by",
+        "entity": "Target",
+        "ip": "IP",
+        "device": "Device",
+        "chain": "Whole chain",
+        "empty": "No log entries.",
+        "detail": "Details",
+        "field": "Field",
+        "before": "Before",
+        "after": "After",
+        "no_changes": "No change data.",
+        "readonly": "Read-only",
+        "sensitive": "Sensitive action",
+        "module_name": {
+            "auth": "Sign-in",
+            "role": "Roles",
+            "user": "Users",
+            "employee": "Staff",
+            "guest": "Guests",
+            "account": "Accounts",
+            "restaurant": "Restaurants",
+            "room": "Rooms",
+            "table": "Tables",
+            "dish": "Dishes",
+            "combo": "Combos",
+            "tag": "Tags",
+            "restaurant_menu": "Branch menu",
+            "discount": "Discount codes",
+            "reservation": "Reservations",
+            "order": "Orders",
+            "order_item": "Order items",
+            "payment": "Payments",
+            "inventory": "Inventory",
+            "ingredient": "Ingredients"
+        },
+        "action": {
+            "auth": {
+                "login": "Signed in",
+                "login_failed": "Failed sign-in",
+                "logout": "Signed out",
+                "logout_all": "Signed out of all devices",
+                "change_password": "Changed password",
+                "reset_password": "Reset password"
+            },
+            "role": {
+                "permissions_update": "Changed role permissions"
+            },
+            "user": {
+                "create": "Created user",
+                "update": "Edited profile",
+                "delete": "Deleted user",
+                "permissions_update": "Changed direct permissions"
+            },
+            "employee": {
+                "create": "Added staff member",
+                "update": "Edited staff member",
+                "delete": "Deleted staff member"
+            },
+            "guest": {
+                "create": "Added guest",
+                "update": "Edited guest",
+                "delete": "Deleted guest"
+            },
+            "account": {
+                "create": "Created account",
+                "update": "Edited account",
+                "delete": "Deleted account"
+            },
+            "restaurant": {
+                "create": "Added restaurant",
+                "update": "Edited restaurant",
+                "delete": "Deleted restaurant"
+            },
+            "room": {
+                "create": "Added room",
+                "update": "Edited room",
+                "delete": "Deleted room"
+            },
+            "table": {
+                "create": "Added table",
+                "update": "Edited table",
+                "delete": "Deleted table"
+            },
+            "dish": {
+                "create": "Added dish",
+                "update": "Edited dish",
+                "delete": "Deleted dish"
+            },
+            "combo": {
+                "create": "Added combo",
+                "update": "Edited combo",
+                "delete": "Deleted combo"
+            },
+            "tag": {
+                "create": "Added tag",
+                "update": "Edited tag",
+                "delete": "Deleted tag"
+            },
+            "restaurant_menu": {
+                "dish_update": "Changed branch dish",
+                "combo_update": "Changed branch combo"
+            },
+            "discount": {
+                "create": "Created discount code",
+                "update": "Edited discount code",
+                "delete": "Deleted discount code"
+            },
+            "reservation": {
+                "create": "Created reservation",
+                "update": "Edited reservation",
+                "status_update": "Changed reservation status",
+                "delete": "Deleted reservation"
+            },
+            "order": {
+                "cancel": "Cancelled order",
+                "discount_apply": "Applied discount code",
+                "discount_remove": "Removed discount code"
+            },
+            "order_item": {
+                "cancel": "Cancelled item"
+            },
+            "payment": {
+                "refund": "Refunded",
+                "confirm": "Confirmed payment",
+                "cancel": "Cancelled payment",
+                "fail": "Marked payment failed"
+            },
+            "inventory": {
+                "export": "Stock out",
+                "adjust": "Stock count",
+                "set_min": "Set minimum stock"
+            },
+            "ingredient": {
+                "create": "Added ingredient",
+                "update": "Edited ingredient",
+                "delete": "Deleted ingredient"
+            }
+        },
+        "entity_type": {
+            "account": "Account",
+            "user": "User",
+            "role": "Role",
+            "restaurant": "Restaurant",
+            "room": "Room",
+            "table": "Table",
+            "dish": "Dish",
+            "combo": "Combo",
+            "tag": "Tag",
+            "discount": "Discount code",
+            "reservation": "Reservation",
+            "order": "Order",
+            "order_item": "Order item",
+            "order_combo": "Order combo",
+            "payment": "Payment",
+            "inventory_receipt": "Stock slip",
+            "ingredient": "Ingredient"
         }
     }
 }
