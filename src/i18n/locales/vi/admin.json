@@ -89,7 +89,8 @@
         "reservations": "Đặt bàn",
         "kitchen": "Bếp & pha chế",
         "cashier": "Thu ngân",
-        "discounts": "Mã giảm giá"
+        "discounts": "Mã giảm giá",
+        "audit_logs": "Nhật ký hoạt động"
     },
     "roles": {
         "admin": "Quản trị viên",
@@ -201,7 +202,10 @@
         "delete_desc": "Xóa nhà hàng \"{{name}}\"? Chỉ xóa được khi nhà hàng không còn phòng và nhân viên.",
         "service_fee_percent": "Phí dịch vụ (%)",
         "tax_percent": "Thuế (%)",
-        "fee_hint": "Áp cho order mở sau khi lưu; order đang mở giữ tỷ lệ cũ."
+        "fee_hint": "Áp cho order mở sau khi lưu; order đang mở giữ tỷ lệ cũ.",
+        "open_time": "Giờ mở cửa",
+        "close_time": "Giờ đóng cửa",
+        "hours_hint": "Dùng để tính tỷ lệ lấp đầy bàn. Giờ đóng cửa sớm hơn giờ mở cửa nghĩa là mở qua đêm."
     },
     "room": {
         "title": "Phòng & bàn",
@@ -688,6 +692,290 @@
             "total_export": "Giá trị xuất (theo giá vốn)",
             "total_adjust": "Giá trị chênh lệch (theo giá vốn)",
             "submit": "Lập phiếu"
+        }
+    },
+    "report": {
+        "title": "Báo cáo",
+        "description": "Doanh thu, món bán chạy, tỷ lệ lấp đầy bàn và giá trị nhập kho.",
+        "dashboard_description": "Số liệu chính so với kỳ liền trước và tình hình hiện tại.",
+        "view_reports": "Xem báo cáo chi tiết",
+        "welcome": "Xin chào, {{name}}",
+        "welcome_hint": "Chọn công việc để bắt đầu.",
+        "range": "Khoảng thời gian",
+        "from": "Từ ngày",
+        "to": "Đến ngày",
+        "group_by": "Nhóm theo",
+        "preset": {
+            "today": "Hôm nay",
+            "7d": "7 ngày qua",
+            "30d": "30 ngày qua",
+            "this_month": "Tháng này",
+            "last_month": "Tháng trước",
+            "custom": "Tùy chọn..."
+        },
+        "group": {
+            "auto": "Tự động",
+            "day": "Theo ngày",
+            "week": "Theo tuần",
+            "month": "Theo tháng"
+        },
+        "scope_chain": "Cả chuỗi (chọn chi nhánh ở góc trên để xem riêng)",
+        "scope_branch": "Chi nhánh: {{name}}",
+        "invalid_range": "Khoảng ngày không hợp lệ (tối đa 366 ngày)",
+        "no_data": "Chưa có số liệu trong khoảng này",
+        "vs_previous": "so với kỳ trước",
+        "restaurant": "Nhà hàng",
+        "period": "Kỳ",
+        "week_of": "Tuần từ {{date}}",
+        "tab": {
+            "revenue": "Doanh thu",
+            "top": "Món bán chạy",
+            "occupancy": "Lấp đầy bàn",
+            "inventory": "Nhập kho"
+        },
+        "kpi": {
+            "net_revenue": "Thực thu",
+            "completed_orders": "Order hoàn tất",
+            "avg_order_value": "Giá trị TB / order",
+            "guests": "Lượt khách",
+            "refunded": "Đã hoàn tiền",
+            "discount_total": "Đã giảm giá",
+            "gross_sales": "Doanh số {{amount}}",
+            "cancelled_orders": "Order bị hủy",
+            "reservations": "Lượt đặt bàn",
+            "reservations_hint": "{{no_show}} không đến · {{cancelled}} hủy"
+        },
+        "live": {
+            "title": "Hiện tại",
+            "today_revenue": "Thực thu hôm nay",
+            "open_orders": "Order đang mở",
+            "occupied_tables": "Bàn có khách",
+            "upcoming_reservations": "Đặt bàn sắp tới hôm nay",
+            "low_stock": "Nguyên liệu tồn thấp",
+            "low_stock_hint": "Xem trang Kho hàng"
+        },
+        "revenue": {
+            "title": "Doanh thu thực thu",
+            "total": "Tổng {{amount}} · {{orders}} order hoàn tất",
+            "net": "Thực thu",
+            "collected": "Đã thu",
+            "refunded": "Đã hoàn",
+            "orders": "Order",
+            "guests": "Khách",
+            "by_method": "Theo phương thức thanh toán",
+            "by_restaurant": "Theo nhà hàng",
+            "table": "Bảng số liệu theo kỳ"
+        },
+        "top": {
+            "title": "Món bán chạy",
+            "by_quantity": "Theo số lượng bán (không tính món / order đã hủy)",
+            "dishes": "Món",
+            "combos": "Combo",
+            "name": "Tên",
+            "quantity": "Số lượng",
+            "orders": "Số order",
+            "revenue": "Doanh số",
+            "table": "Chi tiết"
+        },
+        "occupancy": {
+            "rate": "Tỷ lệ lấp đầy",
+            "rate_hint": "giờ-bàn có khách / giờ mở cửa",
+            "occupied_hours": "Giờ-bàn có khách",
+            "of_available": "trên {{hours}} giờ-bàn mở cửa",
+            "sessions": "Lượt ngồi bàn",
+            "days": "trong {{count}} ngày",
+            "turnover": "Lượt / bàn",
+            "tables": "{{count}} bàn",
+            "by_hour": "Mức lấp đầy theo giờ trong ngày",
+            "by_hour_hint": "Trung bình % số bàn có khách ở mỗi khung giờ",
+            "avg": "Lấp đầy TB",
+            "by_room": "Theo phòng",
+            "room": "Phòng",
+            "table_count": "Số bàn",
+            "hours_of": "{{name}}: {{open}}–{{close}}"
+        },
+        "inventory": {
+            "title": "Giá trị nhập / xuất kho theo kỳ",
+            "import": "Nhập kho",
+            "export": "Xuất kho",
+            "import_value": "Giá trị nhập",
+            "export_value": "Giá trị xuất",
+            "adjust_value": "Chênh lệch kiểm kê",
+            "adjust_hint": "âm = hao hụt",
+            "receipts": "{{count}} phiếu nhập",
+            "suppliers": "Nhà cung cấp",
+            "top_ingredients": "Nguyên liệu nhập nhiều nhất (theo giá trị)",
+            "by_supplier": "Theo nhà cung cấp",
+            "supplier": "Nhà cung cấp",
+            "no_supplier": "Không ghi nhà cung cấp",
+            "receipt_count": "Số phiếu",
+            "value": "Giá trị"
+        }
+    },
+    "audit": {
+        "title": "Nhật ký hoạt động",
+        "description": "Ai đã làm gì, lúc nào, từ đâu. Nhật ký chỉ được xem, không thể sửa hoặc xóa.",
+        "module": "Nhóm",
+        "all_modules": "Mọi nhóm",
+        "action_label": "Hành động",
+        "all_actions": "Mọi hành động",
+        "time": "Thời gian",
+        "actor": "Người thực hiện",
+        "entity": "Đối tượng",
+        "ip": "IP",
+        "device": "Thiết bị",
+        "chain": "Cả chuỗi",
+        "empty": "Không có dòng nhật ký nào.",
+        "detail": "Chi tiết",
+        "field": "Trường",
+        "before": "Trước",
+        "after": "Sau",
+        "no_changes": "Không có dữ liệu thay đổi.",
+        "readonly": "Chỉ đọc",
+        "sensitive": "Thao tác nhạy cảm",
+        "module_name": {
+            "auth": "Đăng nhập",
+            "role": "Vai trò",
+            "user": "Người dùng",
+            "employee": "Nhân viên",
+            "guest": "Khách hàng",
+            "account": "Tài khoản",
+            "restaurant": "Nhà hàng",
+            "room": "Phòng",
+            "table": "Bàn",
+            "dish": "Món",
+            "combo": "Combo",
+            "tag": "Thẻ",
+            "restaurant_menu": "Thực đơn chi nhánh",
+            "discount": "Mã giảm giá",
+            "reservation": "Đặt bàn",
+            "order": "Order",
+            "order_item": "Món trong order",
+            "payment": "Thanh toán",
+            "inventory": "Kho",
+            "ingredient": "Nguyên liệu"
+        },
+        "action": {
+            "auth": {
+                "login": "Đăng nhập",
+                "login_failed": "Đăng nhập thất bại",
+                "logout": "Đăng xuất",
+                "logout_all": "Đăng xuất mọi thiết bị",
+                "change_password": "Đổi mật khẩu",
+                "reset_password": "Đặt lại mật khẩu"
+            },
+            "role": {
+                "permissions_update": "Sửa quyền của vai trò"
+            },
+            "user": {
+                "create": "Tạo người dùng",
+                "update": "Sửa hồ sơ",
+                "delete": "Xóa người dùng",
+                "permissions_update": "Sửa quyền riêng"
+            },
+            "employee": {
+                "create": "Thêm nhân viên",
+                "update": "Sửa nhân viên",
+                "delete": "Xóa nhân viên"
+            },
+            "guest": {
+                "create": "Thêm khách",
+                "update": "Sửa khách",
+                "delete": "Xóa khách"
+            },
+            "account": {
+                "create": "Tạo tài khoản",
+                "update": "Sửa tài khoản",
+                "delete": "Xóa tài khoản"
+            },
+            "restaurant": {
+                "create": "Thêm nhà hàng",
+                "update": "Sửa nhà hàng",
+                "delete": "Xóa nhà hàng"
+            },
+            "room": {
+                "create": "Thêm phòng",
+                "update": "Sửa phòng",
+                "delete": "Xóa phòng"
+            },
+            "table": {
+                "create": "Thêm bàn",
+                "update": "Sửa bàn",
+                "delete": "Xóa bàn"
+            },
+            "dish": {
+                "create": "Thêm món",
+                "update": "Sửa món",
+                "delete": "Xóa món"
+            },
+            "combo": {
+                "create": "Thêm combo",
+                "update": "Sửa combo",
+                "delete": "Xóa combo"
+            },
+            "tag": {
+                "create": "Thêm thẻ",
+                "update": "Sửa thẻ",
+                "delete": "Xóa thẻ"
+            },
+            "restaurant_menu": {
+                "dish_update": "Sửa món ở chi nhánh",
+                "combo_update": "Sửa combo ở chi nhánh"
+            },
+            "discount": {
+                "create": "Tạo mã giảm giá",
+                "update": "Sửa mã giảm giá",
+                "delete": "Xóa mã giảm giá"
+            },
+            "reservation": {
+                "create": "Đặt bàn",
+                "update": "Sửa đặt bàn",
+                "status_update": "Đổi trạng thái đặt bàn",
+                "delete": "Xóa đặt bàn"
+            },
+            "order": {
+                "cancel": "Hủy order",
+                "discount_apply": "Áp mã giảm giá",
+                "discount_remove": "Gỡ mã giảm giá"
+            },
+            "order_item": {
+                "cancel": "Hủy món"
+            },
+            "payment": {
+                "refund": "Hoàn tiền",
+                "confirm": "Xác nhận giao dịch",
+                "cancel": "Hủy giao dịch",
+                "fail": "Giao dịch thất bại"
+            },
+            "inventory": {
+                "export": "Xuất kho",
+                "adjust": "Kiểm kê",
+                "set_min": "Đặt tồn tối thiểu"
+            },
+            "ingredient": {
+                "create": "Thêm nguyên liệu",
+                "update": "Sửa nguyên liệu",
+                "delete": "Xóa nguyên liệu"
+            }
+        },
+        "entity_type": {
+            "account": "Tài khoản",
+            "user": "Người dùng",
+            "role": "Vai trò",
+            "restaurant": "Nhà hàng",
+            "room": "Phòng",
+            "table": "Bàn",
+            "dish": "Món",
+            "combo": "Combo",
+            "tag": "Thẻ",
+            "discount": "Mã giảm giá",
+            "reservation": "Đặt bàn",
+            "order": "Order",
+            "order_item": "Món trong order",
+            "order_combo": "Combo trong order",
+            "payment": "Giao dịch",
+            "inventory_receipt": "Phiếu kho",
+            "ingredient": "Nguyên liệu"
         }
     }
 }

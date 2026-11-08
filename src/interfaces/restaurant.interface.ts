@@ -9,6 +9,9 @@ export interface IRestaurant {
     /** Phí dịch vụ / thuế (%) áp cho order mới */
     service_fee_percent?: string;
     tax_percent?: string;
+    /** Giờ mở / đóng cửa ("HH:mm:ss"), dùng tính tỷ lệ lấp đầy bàn */
+    open_time?: string;
+    close_time?: string;
     created_at?: string;
     updated_at?: string;
 }
@@ -28,4 +31,6 @@ export interface IRestaurantPayload {
     status?: RestaurantStatusEnum;
     service_fee_percent?: number | string;
     tax_percent?: number | string;
+    open_time?: string;
+    close_time?: string;
 }

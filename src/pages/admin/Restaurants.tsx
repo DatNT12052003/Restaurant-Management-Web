@@ -24,7 +24,7 @@ import { getErrorMessage } from "@/lib/api-error";
 import { getAllRestaurantsThunk } from "@/store/restaurant/restaurantThunk";
 
 const PAGE_SIZE = 10;
-const EMPTY_FORM: IRestaurantPayload = { name: "", address: "", status: "unblocked", service_fee_percent: 0, tax_percent: 0 };
+const EMPTY_FORM: IRestaurantPayload = { name: "", address: "", status: "unblocked", service_fee_percent: 0, tax_percent: 0, open_time: "08:00", close_time: "22:00" };
 
 const Restaurants = () => {
     const { t } = useTranslation("admin");
@@ -70,6 +70,8 @@ const Restaurants = () => {
             status: restaurant.status,
             service_fee_percent: Number(restaurant.service_fee_percent ?? 0),
             tax_percent: Number(restaurant.tax_percent ?? 0),
+            open_time: restaurant.open_time?.slice(0, 5) ?? "08:00",
+            close_time: restaurant.close_time?.slice(0, 5) ?? "22:00",
         });
         setFormOpen(true);
     };
@@ -298,6 +300,29 @@ const Restaurants = () => {
                                     />
                                 </div>
                                 <p className="col-span-2 text-xs text-muted-foreground">{t("restaurant.fee_hint")}</p>
+                            </div>
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="grid gap-2">
+                                    <Label htmlFor="r-open">{t("restaurant.open_time")}</Label>
+                                    <Input
+                                        id="r-open"
+                                        type="time"
+                                        required
+                                        value={form.open_time ?? ""}
+                                        onChange={(e) => setForm({ ...form, open_time: e.target.value })}
+                                    />
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="r-close">{t("restaurant.close_time")}</Label>
+                                    <Input
+                                        id="r-close"
+                                        type="time"
+                                        required
+                                        value={form.close_time ?? ""}
+                                        onChange={(e) => setForm({ ...form, close_time: e.target.value })}
+                                    />
+                                </div>
+                                <p className="col-span-2 text-xs text-muted-foreground">{t("restaurant.hours_hint")}</p>
                             </div>
                         </div>
                         <DialogFooter>

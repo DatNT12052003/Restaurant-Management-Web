@@ -13,6 +13,8 @@ import Kitchen from "@/pages/admin/kitchen/Kitchen";
 import Cashier from "@/pages/admin/cashier/Cashier";
 import Discounts from "@/pages/admin/Discounts";
 import Inventory from "@/pages/admin/inventory/Inventory";
+import Reports from "@/pages/admin/reports/Reports";
+import AuditLogs from "@/pages/admin/AuditLogs";
 import RequirePermission from "./guards/RequirePermission";
 
 export const adminRoutes: RouteObject[] = [
@@ -115,6 +117,22 @@ export const adminRoutes: RouteObject[] = [
         element: (
             <RequirePermission permission="permission.view">
                 <Permissions />
+            </RequirePermission>
+        ),
+    },
+    {
+        path: "reports",
+        element: (
+            <RequirePermission permission="report.view">
+                <Reports />
+            </RequirePermission>
+        ),
+    },
+    {
+        path: "audit-logs",
+        element: (
+            <RequirePermission permission="audit_log.view">
+                <AuditLogs />
             </RequirePermission>
         ),
     },
