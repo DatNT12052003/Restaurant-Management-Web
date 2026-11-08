@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/api-error";
 import { ArrowLeft, Eye, EyeOff, Lock, KeyRound } from "lucide-react";
 import loginBg from "@/assets/images/login-bg.png";
 
@@ -51,8 +52,8 @@ export const ResetPassword = () => {
             ).unwrap();
             toast.success(result.message);
             navigate("/login");
-        } catch (error: any) {
-            toast.error(error.message);
+        } catch (error) {
+            toast.error(getErrorMessage(error));
         } finally {
             setIsLoading(false);
         }

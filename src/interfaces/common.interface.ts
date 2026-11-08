@@ -3,7 +3,8 @@ export interface IResponse<T> {
     success: boolean;
     statusCode: number;
     message: string;
-    errors?: any;
+    /** Lỗi validation của backend */
+    errors?: { field?: string; message: string }[];
     data?: T;
 }
 
@@ -33,7 +34,7 @@ export interface IGetQuery {
     filters?: {
         field: string;
         operator?: FilterOperatorEnum;
-        value: any;
+        value: string | number | boolean | null | (string | number)[];
     }[];
     orderBy?: {
         field: string;

@@ -90,7 +90,8 @@
         "kitchen": "Bếp & pha chế",
         "cashier": "Thu ngân",
         "discounts": "Mã giảm giá",
-        "audit_logs": "Nhật ký hoạt động"
+        "audit_logs": "Nhật ký hoạt động",
+        "accounts": "Tài khoản"
     },
     "roles": {
         "admin": "Quản trị viên",
@@ -853,7 +854,9 @@
             "order_item": "Món trong order",
             "payment": "Thanh toán",
             "inventory": "Kho",
-            "ingredient": "Nguyên liệu"
+            "ingredient": "Nguyên liệu",
+            "image": "Hình ảnh",
+            "audit": "Nhật ký"
         },
         "action": {
             "auth": {
@@ -862,7 +865,8 @@
                 "logout": "Đăng xuất",
                 "logout_all": "Đăng xuất mọi thiết bị",
                 "change_password": "Đổi mật khẩu",
-                "reset_password": "Đặt lại mật khẩu"
+                "reset_password": "Đặt lại mật khẩu",
+                "account_locked": "Tài khoản bị khóa tạm thời"
             },
             "role": {
                 "permissions_update": "Sửa quyền của vai trò"
@@ -886,7 +890,10 @@
             "account": {
                 "create": "Tạo tài khoản",
                 "update": "Sửa tài khoản",
-                "delete": "Xóa tài khoản"
+                "delete": "Xóa tài khoản",
+                "unlock": "Mở khóa tài khoản",
+                "logout_all": "Đăng xuất từ xa",
+                "reset_password": "Đặt lại mật khẩu"
             },
             "restaurant": {
                 "create": "Thêm nhà hàng",
@@ -956,6 +963,14 @@
                 "create": "Thêm nguyên liệu",
                 "update": "Sửa nguyên liệu",
                 "delete": "Xóa nguyên liệu"
+            },
+            "image": {
+                "upload": "Tải ảnh lên",
+                "set_primary": "Đặt ảnh đại diện",
+                "delete": "Xóa ảnh"
+            },
+            "audit": {
+                "archive": "Lưu trữ nhật ký cũ"
             }
         },
         "entity_type": {
@@ -975,7 +990,41 @@
             "order_combo": "Combo trong order",
             "payment": "Giao dịch",
             "inventory_receipt": "Phiếu kho",
-            "ingredient": "Nguyên liệu"
+            "ingredient": "Nguyên liệu",
+            "image": "Ảnh",
+            "audit_log": "Nhật ký"
         }
+    },
+    "account": {
+        "title": "Tài khoản đăng nhập",
+        "description": "Lần đăng nhập gần nhất, tài khoản bị khóa do đăng nhập sai; mở khóa, đăng xuất từ xa, đặt lại mật khẩu.",
+        "kind": "Loại người dùng",
+        "kind_employee": "Nhân viên",
+        "kind_guest": "Khách hàng",
+        "search": "Tìm theo tên hoặc tên đăng nhập...",
+        "locked_only": "Chỉ tài khoản đang bị khóa",
+        "user": "Người dùng",
+        "username": "Tên đăng nhập",
+        "roles": "Vai trò",
+        "last_login": "Đăng nhập gần nhất",
+        "never": "Chưa đăng nhập",
+        "status": "Trạng thái",
+        "active": "Hoạt động",
+        "inactive": "Đã nghỉ",
+        "locked_until": "Khóa đến {{time}}",
+        "empty": "Không có tài khoản nào.",
+        "unlock": "Mở khóa",
+        "unlock_title": "Mở khóa tài khoản",
+        "unlock_desc": "Mở khóa tài khoản của {{name}} ngay (không cần chờ hết thời gian khóa)?",
+        "logout_all": "Đăng xuất mọi thiết bị",
+        "logout_all_title": "Đăng xuất khỏi mọi thiết bị",
+        "logout_all_desc": "{{name}} sẽ bị đăng xuất trên mọi thiết bị (sau tối đa 15 phút) và phải đăng nhập lại.",
+        "reset_password": "Đặt lại mật khẩu",
+        "reset_password_title": "Đặt lại mật khẩu cho {{name}}",
+        "reset_password_desc": "Người dùng sẽ bị đăng xuất khỏi mọi thiết bị và phải đăng nhập bằng mật khẩu mới. Hãy báo mật khẩu mới cho họ một cách an toàn.",
+        "new_password": "Mật khẩu mới",
+        "confirm_password": "Nhập lại mật khẩu mới",
+        "password_min": "Mật khẩu phải có ít nhất 6 ký tự",
+        "password_mismatch": "Mật khẩu nhập lại không khớp"
     }
 }

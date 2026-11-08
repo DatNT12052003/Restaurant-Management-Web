@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from "./hooks";
 import { useEffect, useRef } from "react";
 import { getMeThunk, refreshTokenThunk } from "./store/auth/authThunk";
 import { setInitialized } from "./store/auth/authSlice";
+import { mayHaveSession } from "./lib/session-hint";
 import { Toaster } from "sonner";
 
 const App = () => {
@@ -18,10 +19,16 @@ const App = () => {
         initializedRef.current = true;
 
         const initAuth = async () => {
+            // Đã biết chắc không có phiên (vừa đăng xuất / refresh thất bại): khỏi gọi /auth/refresh
+            if (!mayHaveSession()) {
+                dispatch(setInitialized(true));
+                return;
+            }
             try {
                 await dispatch(refreshTokenThunk()).unwrap();
                 await dispatch(getMeThunk()).unwrap();
-            } catch (error) {
+            } catch {
+                // Chưa đăng nhập hoặc phiên đã hết hạn: hiển thị trang đăng nhập
             } finally {
                 dispatch(setInitialized(true));
             }

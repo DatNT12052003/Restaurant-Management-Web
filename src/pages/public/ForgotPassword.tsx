@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/api-error";
 import { ArrowLeft, Mail, Send } from "lucide-react";
 import loginBg from "@/assets/images/login-bg.png";
 
@@ -39,8 +40,8 @@ const ForgotPassword = () => {
                 state: { account_id: result.data?.account_id, email: data.email, from: "/forgot-password" },
             });
             toast.success(result.message);
-        } catch (error: any) {
-            toast.error(error.message);
+        } catch (error) {
+            toast.error(getErrorMessage(error));
         } finally {
             setIsLoading(false);
         }

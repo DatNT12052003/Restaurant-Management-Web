@@ -15,6 +15,7 @@ import Discounts from "@/pages/admin/Discounts";
 import Inventory from "@/pages/admin/inventory/Inventory";
 import Reports from "@/pages/admin/reports/Reports";
 import AuditLogs from "@/pages/admin/AuditLogs";
+import Accounts from "@/pages/admin/Accounts";
 import RequirePermission from "./guards/RequirePermission";
 
 export const adminRoutes: RouteObject[] = [
@@ -125,6 +126,14 @@ export const adminRoutes: RouteObject[] = [
         element: (
             <RequirePermission permission="report.view">
                 <Reports />
+            </RequirePermission>
+        ),
+    },
+    {
+        path: "accounts",
+        element: (
+            <RequirePermission permission="account.view">
+                <Accounts />
             </RequirePermission>
         ),
     },

@@ -90,7 +90,8 @@
         "kitchen": "Kitchen & bar",
         "cashier": "Cashier",
         "discounts": "Discounts",
-        "audit_logs": "Audit log"
+        "audit_logs": "Audit log",
+        "accounts": "Accounts"
     },
     "roles": {
         "admin": "Administrator",
@@ -853,7 +854,9 @@
             "order_item": "Order items",
             "payment": "Payments",
             "inventory": "Inventory",
-            "ingredient": "Ingredients"
+            "ingredient": "Ingredients",
+            "image": "Images",
+            "audit": "Audit log"
         },
         "action": {
             "auth": {
@@ -862,7 +865,8 @@
                 "logout": "Signed out",
                 "logout_all": "Signed out of all devices",
                 "change_password": "Changed password",
-                "reset_password": "Reset password"
+                "reset_password": "Reset password",
+                "account_locked": "Account temporarily locked"
             },
             "role": {
                 "permissions_update": "Changed role permissions"
@@ -886,7 +890,10 @@
             "account": {
                 "create": "Created account",
                 "update": "Edited account",
-                "delete": "Deleted account"
+                "delete": "Deleted account",
+                "unlock": "Unlocked account",
+                "logout_all": "Signed out remotely",
+                "reset_password": "Reset password"
             },
             "restaurant": {
                 "create": "Added restaurant",
@@ -956,6 +963,14 @@
                 "create": "Added ingredient",
                 "update": "Edited ingredient",
                 "delete": "Deleted ingredient"
+            },
+            "image": {
+                "upload": "Uploaded images",
+                "set_primary": "Set cover image",
+                "delete": "Deleted image"
+            },
+            "audit": {
+                "archive": "Archived old log entries"
             }
         },
         "entity_type": {
@@ -975,7 +990,41 @@
             "order_combo": "Order combo",
             "payment": "Payment",
             "inventory_receipt": "Stock slip",
-            "ingredient": "Ingredient"
+            "ingredient": "Ingredient",
+            "image": "Image",
+            "audit_log": "Audit log"
         }
+    },
+    "account": {
+        "title": "Sign-in accounts",
+        "description": "Last sign-in and accounts locked after failed sign-ins; unlock, sign out remotely, reset passwords.",
+        "kind": "User type",
+        "kind_employee": "Staff",
+        "kind_guest": "Guests",
+        "search": "Search by name or username...",
+        "locked_only": "Locked accounts only",
+        "user": "User",
+        "username": "Username",
+        "roles": "Roles",
+        "last_login": "Last sign-in",
+        "never": "Never",
+        "status": "Status",
+        "active": "Active",
+        "inactive": "Left",
+        "locked_until": "Locked until {{time}}",
+        "empty": "No accounts.",
+        "unlock": "Unlock",
+        "unlock_title": "Unlock account",
+        "unlock_desc": "Unlock {{name}}'s account now instead of waiting for the lock to expire?",
+        "logout_all": "Sign out everywhere",
+        "logout_all_title": "Sign out of all devices",
+        "logout_all_desc": "{{name}} will be signed out on every device (within 15 minutes) and must sign in again.",
+        "reset_password": "Reset password",
+        "reset_password_title": "Reset password for {{name}}",
+        "reset_password_desc": "The user will be signed out of every device and must sign in with the new password. Share it with them securely.",
+        "new_password": "New password",
+        "confirm_password": "Repeat new password",
+        "password_min": "Password must be at least 6 characters",
+        "password_mismatch": "Passwords do not match"
     }
 }
