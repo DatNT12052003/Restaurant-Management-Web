@@ -2,9 +2,10 @@ import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { CheckCircle2, Clock, ShoppingBag, XCircle } from "lucide-react";
+import { CheckCircle2, Clock, Landmark, ShoppingBag, XCircle } from "lucide-react";
 
-import { getMyTableRequests, getPublicMenu, getPublicTable, sendTableFeedback, sendTableRequest } from "@/apis";
+import { createTableQr, getMyTableRequests, getPublicMenu, getPublicTable, sendTableFeedback, sendTableRequest } from "@/apis";
+import TransferQr from "@/components/common/TransferQr";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useAsyncData } from "@/hooks";
-import type { IPublicMenuItem } from "@/interfaces";
+import type { IPublicMenuItem, IPublicTablePayment } from "@/interfaces";
 import { getErrorMessage } from "@/lib/api-error";
 import { browserToken } from "@/lib/customer";
 import { formatMoney } from "@/lib/format";
@@ -190,6 +191,11 @@ const TablePage = () => {
                 </Card>
             )}
 
+            {/* Giai đoạn 14: khách tự thanh toán chuyển khoản */}
+            {table.order?.payment && Number(table.order.total) > 0 && (
+                <TablePayment token={token} payment={table.order.payment} onChanged={() => setVersion((v) => v + 1)} />
+            )}
+
             {!table.restaurant.qr_ordering_enabled ? (
                 <p className="rounded-md border p-3 text-sm text-muted-foreground">{t("table.ordering_off")}</p>
             ) : menu ? (
@@ -250,6 +256,66 @@ const TablePage = () => {
                 </SheetContent>
             </Sheet>
         </div>
+    );
+};
+
+/** Giai đoạn 14: số còn phải trả của bàn; khách tạo mã VietQR và chuyển khoản, hệ thống tự xác nhận khi ngân hàng báo về */
+const TablePayment = ({ token, payment, onChanged }: { token: string; payment: IPublicTablePayment; onChanged: () => void }) => {
+    const { t } = useTranslation("public");
+    const [busy, setBusy] = useState(false);
+
+    const create = async () => {
+        setBusy(true);
+        try {
+            await createTableQr(token);
+            onChanged();
+        } catch (error) {
+            toast.error(getErrorMessage(error));
+        } finally {
+            setBusy(false);
+        }
+    };
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-base">
+                    <Landmark className="h-4 w-4" />
+                    {t("table.payment.title")}
+                </CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-3 text-sm">
+                <div className="grid gap-1">
+                    {payment.paid > 0 && (
+                        <div className="flex justify-between">
+                            <span>{t("table.payment.paid")}</span>
+                            <span className="tabular-nums">{formatMoney(payment.paid)}</span>
+                        </div>
+                    )}
+                    <div className="flex justify-between font-semibold">
+                        <span>{t("table.payment.remaining")}</span>
+                        <span className="tabular-nums">{formatMoney(Math.max(0, payment.remaining))}</span>
+                    </div>
+                </div>
+                {payment.remaining <= 0 ? (
+                    <p className="flex items-center gap-2 text-emerald-700 dark:text-emerald-300" data-testid="table-paid">
+                        <CheckCircle2 className="h-4 w-4" />
+                        {t("table.payment.done")}
+                    </p>
+                ) : !payment.transfer_qr_enabled ? (
+                    <p className="text-muted-foreground">{t("table.payment.ask_staff")}</p>
+                ) : payment.qr && payment.qr.amount === payment.remaining ? (
+                    <TransferQr qr={payment.qr} />
+                ) : (
+                    <>
+                        <Button onClick={create} disabled={busy}>
+                            {busy ? t("common.loading") : t("table.payment.pay_transfer", { amount: formatMoney(payment.remaining) })}
+                        </Button>
+                        <p className="text-xs text-muted-foreground">{t("table.payment.hint")}</p>
+                    </>
+                )}
+            </CardContent>
+        </Card>
     );
 };
 

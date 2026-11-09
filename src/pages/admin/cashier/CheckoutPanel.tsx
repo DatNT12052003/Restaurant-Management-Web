@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { Banknote, CircleCheck, CreditCard, Landmark, Printer, TicketPercent, Undo2, X } from "lucide-react";
+import { Banknote, CircleCheck, CreditCard, Landmark, Printer, QrCode, TicketPercent, Undo2, X } from "lucide-react";
 
 import {
     applyOrderDiscount,
@@ -9,11 +9,13 @@ import {
     completeOrder,
     confirmPayment,
     createPayment,
+    createQrPayment,
     failPayment,
     getInvoice,
     refundPayment,
     removeOrderDiscount,
 } from "@/apis";
+import TransferQr from "@/components/common/TransferQr";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,7 +28,7 @@ import { OPEN_ORDER_STATUSES, ORDER_STATUS_STYLE } from "@/constants/order";
 import { PAYMENT_METHODS, PAYMENT_STATUS_STYLE, WAITING_PAYMENT_STATUSES, cashSuggestions } from "@/constants/payment";
 import type { PaymentMethodEnum } from "@/enum";
 import { useAsyncData, usePermission, useRealtime } from "@/hooks";
-import type { IInvoice, IPayment } from "@/interfaces";
+import type { IInvoice, IPayment, IQrPayment } from "@/interfaces";
 import { getErrorMessage } from "@/lib/api-error";
 import { formatTime } from "@/lib/datetime";
 import { formatMoney } from "@/lib/format";
@@ -66,6 +68,24 @@ export const CheckoutPanel = ({ orderId, unfinished, onPrint }: CheckoutPanelPro
     const [busy, setBusy] = useState(false);
     const [code, setCode] = useState("");
     const [refunding, setRefunding] = useState<IPayment | null>(null);
+    // Giai đoạn 14: mã QR chuyển khoản đang hiển thị
+    const [qr, setQr] = useState<IQrPayment | null>(null);
+
+    /** Tạo (hoặc lấy lại) mã QR; mã cùng số tiền còn hạn thì backend trả lại mã cũ */
+    const openQr = async (amount?: number) => {
+        setBusy(true);
+        try {
+            const res = await createQrPayment(orderId, amount);
+            setQr(res.data ?? null);
+            reload();
+            return true;
+        } catch (error) {
+            toast.error(getErrorMessage(error));
+            return false;
+        } finally {
+            setBusy(false);
+        }
+    };
 
     const run = async (action: () => Promise<{ message: string }>) => {
         setBusy(true);
@@ -179,6 +199,7 @@ export const CheckoutPanel = ({ orderId, unfinished, onPrint }: CheckoutPanelPro
                     busy={busy}
                     staffName={invoice.order.staff_name}
                     onSubmit={(payload) => run(() => createPayment(orderId, payload))}
+                    onQr={invoice.transfer_qr_enabled ? openQr : undefined}
                 />
             )}
 
@@ -214,6 +235,12 @@ export const CheckoutPanel = ({ orderId, unfinished, onPrint }: CheckoutPanelPro
                                         <Badge variant="outline" className={PAYMENT_STATUS_STYLE[p.status]}>
                                             {t(`status.payment.${p.status}`)}
                                         </Badge>
+                                        {can("payment.create") && p.gateway_ref && p.status === "processing" && open && (
+                                            <Button size="sm" variant="outline" className="h-7" disabled={busy} onClick={() => openQr(Number(p.amount))}>
+                                                <QrCode className="h-3.5 w-3.5" />
+                                                {t("cashier.qr.show")}
+                                            </Button>
+                                        )}
                                         {can("payment.create") && WAITING_PAYMENT_STATUSES.includes(p.status) && (
                                             <>
                                                 <Button size="sm" className="h-7" disabled={busy} onClick={() => run(() => confirmPayment(p.id))}>
@@ -248,6 +275,8 @@ export const CheckoutPanel = ({ orderId, unfinished, onPrint }: CheckoutPanelPro
                 </Button>
             )}
 
+            <QrDialog qr={qr} invoice={invoice} onOpenChange={(v) => !v && setQr(null)} />
+
             <RefundDialog
                 payment={refunding}
                 onOpenChange={(v) => !v && setRefunding(null)}
@@ -269,12 +298,15 @@ const PaymentForm = ({
     busy,
     staffName,
     onSubmit,
+    onQr,
 }: {
     due: number;
     busy: boolean;
     /** Nhân viên phụ trách order (nhận tip) */
     staffName: string | null;
     onSubmit: (payload: Parameters<typeof createPayment>[1]) => Promise<boolean>;
+    /** Giai đoạn 14: có khi nhà hàng đã bật chuyển khoản QR (xác nhận tự động) */
+    onQr?: (amount: number) => Promise<boolean>;
 }) => {
     const { t } = useTranslation("admin");
     const [method, setMethod] = useState<PaymentMethodEnum>("cash");
@@ -353,6 +385,15 @@ const PaymentForm = ({
                         </div>
                     ) : (
                         <div className="grid gap-1.5">
+                            {method === "transfer" && onQr && (
+                                <div className="grid gap-1.5 rounded-md border border-dashed p-3">
+                                    <Button type="button" variant="secondary" disabled={busy || value <= 0 || value > due} onClick={() => onQr(value)}>
+                                        <QrCode className="h-4 w-4" />
+                                        {t("cashier.qr.create", { amount: formatMoney(value) })}
+                                    </Button>
+                                    <p className="text-xs text-muted-foreground">{t("cashier.qr.hint")}</p>
+                                </div>
+                            )}
                             <Label htmlFor="pay-ref">{t("cashier.reference")}</Label>
                             <Input id="pay-ref" maxLength={100} value={reference} onChange={(e) => setReference(e.target.value)} />
                             <label className="flex items-center gap-2 text-sm">
@@ -371,6 +412,39 @@ const PaymentForm = ({
                 </form>
             </CardContent>
         </Card>
+    );
+};
+
+/** Giai đoạn 14: mã QR cho khách quét; khi webhook ngân hàng báo về, hóa đơn tải lại và hộp thoại báo đã nhận tiền */
+const QrDialog = ({ qr, invoice, onOpenChange }: { qr: IQrPayment | null; invoice: IInvoice; onOpenChange: (open: boolean) => void }) => {
+    const { t } = useTranslation("admin");
+    const status = qr ? (invoice.payments.find((p) => p.id === qr.payment.id)?.status ?? qr.payment.status) : null;
+    return (
+        <Dialog open={!!qr} onOpenChange={onOpenChange}>
+            <DialogContent className="max-h-[92vh] overflow-y-auto sm:max-w-sm">
+                <DialogHeader>
+                    <DialogTitle>{t("cashier.qr.title", { code: invoice.order.code })}</DialogTitle>
+                </DialogHeader>
+                {qr && status === "paid" ? (
+                    <div className="grid justify-items-center gap-2 py-6 text-center" data-testid="qr-paid">
+                        <CircleCheck className="h-12 w-12 text-emerald-600" />
+                        <p className="font-semibold">{t("cashier.qr.paid", { amount: formatMoney(qr.qr.amount) })}</p>
+                    </div>
+                ) : qr && status === "processing" ? (
+                    <>
+                        <TransferQr qr={qr.qr} />
+                        <p className="text-center text-xs text-muted-foreground">{t("cashier.qr.waiting")}</p>
+                    </>
+                ) : (
+                    <p className="py-6 text-center text-sm text-muted-foreground">{t("cashier.qr.closed")}</p>
+                )}
+                <DialogFooter>
+                    <Button variant="outline" onClick={() => onOpenChange(false)}>
+                        {t("common.close")}
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     );
 };
 

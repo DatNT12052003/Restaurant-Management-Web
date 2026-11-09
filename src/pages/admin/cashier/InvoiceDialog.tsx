@@ -1,16 +1,20 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { Printer } from "lucide-react";
+import { FileText, Printer, RotateCw } from "lucide-react";
 
-import { getInvoice } from "@/apis";
+import { getInvoice, retryEInvoice } from "@/apis";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useAsyncData } from "@/hooks";
+import { useAsyncData, usePermission, useRealtime } from "@/hooks";
 import type { IInvoice } from "@/interfaces";
 import { getErrorMessage } from "@/lib/api-error";
 import { formatDateTime } from "@/lib/datetime";
 import { formatMoney } from "@/lib/format";
+import { EINVOICE_STATUS_STYLE } from "@/constants/payment";
+import EInvoiceDialog from "./EInvoiceDialog";
+
 
 /** Nội dung hóa đơn (khổ giấy in nhiệt 80mm khi in) */
 export const InvoiceView = ({ invoice }: { invoice: IInvoice }) => {
@@ -108,6 +112,19 @@ export const InvoiceView = ({ invoice }: { invoice: IInvoice }) => {
                         row(invoice.remaining > 0 ? t("cashier.remaining") : t("cashier.overpaid"), formatMoney(Math.abs(invoice.remaining)))}
                 </div>
             )}
+            {invoice.e_invoice?.status === "issued" && (
+                <div className="grid gap-0.5 border-t border-dashed pt-2 text-center text-xs">
+                    <span className="font-semibold">{t("einvoice.receipt_title")}</span>
+                    <span>
+                        {t("einvoice.receipt_number", { series: invoice.e_invoice.series ?? "", number: invoice.e_invoice.invoice_no ?? "" })}
+                    </span>
+                    {invoice.e_invoice.lookup_code && <span>{t("einvoice.receipt_lookup", { code: invoice.e_invoice.lookup_code })}</span>}
+                    {invoice.e_invoice.lookup_url && <span className="break-all">{invoice.e_invoice.lookup_url}</span>}
+                </div>
+            )}
+            {!invoice.e_invoice && invoice.order.status !== "completed" && (
+                <p className="text-center text-[11px] italic">{t("einvoice.provisional")}</p>
+            )}
             <p className="text-center text-xs">{t("cashier.invoice.thanks")}</p>
         </div>
     );
@@ -147,12 +164,74 @@ const InvoiceBody = ({ orderId }: { orderId: number }) => {
             throw error;
         }
     }, [orderId]);
-    const { data, loading } = useAsyncData(fetcher);
+    const { data, loading, reload } = useAsyncData(fetcher);
+    useRealtime(["einvoice:changed", "payment:changed"], reload);
     if (loading && !data) return <p className="text-muted-foreground">{t("common.loading")}</p>;
     if (!data) return null;
     return (
-        <div className="print-area rounded-md border bg-white p-4 text-black">
-            <InvoiceView invoice={data} />
+        <>
+            <div className="print-area rounded-md border bg-white p-4 text-black">
+                <InvoiceView invoice={data} />
+            </div>
+            <EInvoicePanel invoice={data} onChanged={reload} />
+        </>
+    );
+};
+
+/** Giai đoạn 14: trạng thái hóa đơn điện tử của order; phát hành / gửi lại (không in) */
+const EInvoicePanel = ({ invoice, onChanged }: { invoice: IInvoice; onChanged: () => void }) => {
+    const { t } = useTranslation("admin");
+    const canIssue = usePermission("einvoice.issue");
+    const [open, setOpen] = useState(false);
+    const [busy, setBusy] = useState(false);
+    const e = invoice.e_invoice;
+    if (invoice.order.status !== "completed" || (!e && !canIssue)) return null;
+
+    const retry = async () => {
+        if (!e) return;
+        setBusy(true);
+        try {
+            const res = await retryEInvoice(e.id);
+            if (res.data?.status === "failed") toast.warning(t("einvoice.failed_toast", { error: res.data.error_message ?? "" }));
+            else toast.success(res.message);
+            onChanged();
+        } catch (error) {
+            toast.error(getErrorMessage(error));
+        } finally {
+            setBusy(false);
+        }
+    };
+
+    return (
+        <div className="no-print grid gap-2 rounded-md border p-3 text-sm">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="flex items-center gap-1.5 font-medium">
+                    <FileText className="h-4 w-4" />
+                    {t("einvoice.title")}
+                </span>
+                {e ? (
+                    <Badge variant="outline" className={EINVOICE_STATUS_STYLE[e.status]}>
+                        {t(`einvoice.status.${e.status}`)}
+                    </Badge>
+                ) : (
+                    <span className="text-xs text-muted-foreground">{t("einvoice.none")}</span>
+                )}
+            </div>
+            {e?.status === "failed" && e.error_message && <p className="text-xs text-destructive">{e.error_message}</p>}
+            {e?.status === "pending" && <p className="text-xs text-muted-foreground">{t("einvoice.pending_hint")}</p>}
+            {canIssue && !e && (
+                <Button size="sm" variant="outline" onClick={() => setOpen(true)}>
+                    <FileText className="h-4 w-4" />
+                    {t("einvoice.issue")}
+                </Button>
+            )}
+            {canIssue && e && (e.status === "failed" || e.status === "pending") && (
+                <Button size="sm" variant="outline" disabled={busy} onClick={retry}>
+                    <RotateCw className="h-4 w-4" />
+                    {t("einvoice.retry")}
+                </Button>
+            )}
+            <EInvoiceDialog invoice={invoice} open={open} onOpenChange={setOpen} onIssued={onChanged} />
         </div>
     );
 };

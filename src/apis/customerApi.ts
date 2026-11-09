@@ -18,8 +18,7 @@ import type {
     IPublicTable,
     IRegisterPayload,
     IResponse,
-    OrderRequestStatus,
-} from "@/interfaces";
+    OrderRequestStatus, IQrPayment } from "@/interfaces";
 import api from "./axios";
 import { unwrap } from "./request";
 
@@ -40,6 +39,9 @@ export const cancelBookingByCode = (code: string, phone: string, reason?: string
     unwrap(api.post(`/public/reservations/${encodeURIComponent(code)}/cancel`, { phone, reason: reason || null }));
 
 export const getPublicTable = (token: string): Promise<IResponse<IPublicTable>> => unwrap(api.get(`/public/tables/${encodeURIComponent(token)}`));
+/** Giai đoạn 14: khách tạo mã chuyển khoản cho số còn lại của bàn */
+export const createTableQr = (token: string): Promise<IResponse<IQrPayment>> =>
+    unwrap(api.post(`/public/tables/${encodeURIComponent(token)}/payment-qr`, {}));
 export const getMyTableRequests = (token: string, clientToken: string): Promise<IResponse<IOrderRequest[]>> =>
     unwrap(api.get(`/public/tables/${encodeURIComponent(token)}/requests`, { params: { client_token: clientToken } }));
 export const sendTableRequest = (token: string, payload: IOrderRequestPayload): Promise<IResponse<IOrderRequest>> =>

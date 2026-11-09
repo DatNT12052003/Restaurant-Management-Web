@@ -23,6 +23,15 @@ export interface IRestaurant {
     online_booking_max_days?: number;
     online_booking_max_guests?: number;
     qr_ordering_enabled?: boolean;
+    /** Giai đoạn 14: tài khoản nhận chuyển khoản QR, thông tin người bán trên hóa đơn điện tử */
+    bank_bin?: string | null;
+    bank_account_no?: string | null;
+    bank_account_name?: string | null;
+    transfer_qr_enabled?: boolean;
+    legal_name?: string | null;
+    tax_code?: string | null;
+    einvoice_series?: string | null;
+    einvoice_auto_issue?: boolean;
     created_at?: string;
     updated_at?: string;
 }
@@ -53,4 +62,13 @@ export interface IRestaurantPayload {
     online_booking_max_days?: number | string;
     online_booking_max_guests?: number | string;
     qr_ordering_enabled?: boolean;
+    /** Giai đoạn 14: tài khoản nhận chuyển khoản QR, thông tin người bán trên hóa đơn điện tử */
+    bank_bin?: string | null;
+    bank_account_no?: string | null;
+    bank_account_name?: string | null;
+    transfer_qr_enabled?: boolean;
+    legal_name?: string | null;
+    tax_code?: string | null;
+    einvoice_series?: string | null;
+    einvoice_auto_issue?: boolean;
 }

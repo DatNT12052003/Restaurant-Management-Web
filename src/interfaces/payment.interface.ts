@@ -1,3 +1,4 @@
+import type { IInvoiceEInvoice } from "./integration.interface";
 import type {
     DiscountStatusEnum,
     DiscountTypeEnum,
@@ -72,6 +73,10 @@ export interface IPayment {
     tip_amount?: string;
     tip_staff_id?: number | null;
     tip_staff_name?: string | null;
+    /** Giai đoạn 14: payment QR chuyển khoản (xác nhận tự động qua SePay) */
+    provider?: string | null;
+    gateway_ref?: string | null;
+    expires_at?: string | null;
 }
 
 export interface IGetPayments {
@@ -127,4 +132,7 @@ export interface IInvoice {
     points_redeemed?: number;
     points_discount?: number;
     points_awarded?: number;
+    /** Giai đoạn 14: hóa đơn điện tử còn hiệu lực; nhà hàng đã bật chuyển khoản QR */
+    e_invoice?: IInvoiceEInvoice | null;
+    transfer_qr_enabled?: boolean;
 }

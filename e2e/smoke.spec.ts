@@ -411,3 +411,73 @@ test("giai đoạn 13: khách có tài khoản đặt bàn online không cần m
     await expect(page.getByText(code!)).toBeVisible();
     expect(errors).toEqual([]);
 });
+
+test("giai đoạn 14: khách quét mã VietQR ở bàn, SePay báo tiền về thì order tự hoàn tất; thu ngân đối soát giao dịch lạ", async ({ browser, playwright }) => {
+    const f = fixture() as Fixture & { restaurants: number[] };
+    const api = await playwright.request.newContext({ baseURL: "http://localhost:3100/api/" });
+    const token = async (username: string) =>
+        (await (await api.post("auth/login", { data: { username, password: f.password } })).json()).data.access_token as string;
+    const admin = { Authorization: `Bearer ${await token(f.users.admin)}` };
+    const r1 = f.restaurants[0];
+
+    // Admin khai báo tài khoản nhận chuyển khoản; mở order bàn B4 với một phần phở đã phục vụ (60.000)
+    expect(
+        (await api.patch(`restaurants/${r1}`, {
+            headers: admin,
+            data: { bank_bin: "970436", bank_account_no: "0123456789", bank_account_name: "NHA HANG MOT", transfer_qr_enabled: true },
+        })).status(),
+    ).toBe(200);
+    const tables = (await (await api.get("tables/all", { headers: admin })).json()).data as { id: number; name: string; qr_token: string }[];
+    const b4 = tables.find((x) => x.name === "B4")!;
+    const menu = (await (await api.get(`public/restaurants/${r1}/menu`)).json()).data;
+    const pho = (menu.dishes as { id: number; name: string }[]).find((d) => d.name === "Phở bò")!;
+    const orderId = (await (await api.post("orders", { headers: admin, data: { restaurant_id: r1, table_ids: [b4.id], guest_count: 2 } })).json()).data.id;
+    await api.post(`orders/${orderId}/rounds`, { headers: admin, data: { items: [{ dish_id: pho.id, quantity: 1 }] } });
+    const detail = (await (await api.get(`orders/${orderId}`, { headers: admin })).json()).data;
+    for (const line of detail.rounds.flatMap((r: { lines: { id: number }[] }) => r.lines)) {
+        for (const status of ["cooking", "ready", "served"]) {
+            await api.patch(`orders/dishes/${line.id}/status`, { headers: admin, data: { status } });
+        }
+    }
+
+    // Khách mở trang bàn, bấm chuyển khoản, thấy mã QR
+    const guestContext = await browser.newContext({ locale: "vi-VN" });
+    const guest = await guestContext.newPage();
+    const guestErrors = watchErrors(guest);
+    await guest.goto("/");
+    await guest.evaluate(() => localStorage.setItem("i18nextLng", "vi"));
+    await guest.goto(`/t/${b4.qr_token}`);
+    await guest.getByRole("button", { name: /Chuyển khoản 60\.000/ }).click();
+    await expect(guest.getByTestId("transfer-qr")).toBeVisible();
+
+    // Ngân hàng báo tiền về qua webhook SePay (đúng nội dung trên mã)
+    const qr = (await (await api.get(`public/tables/${b4.qr_token}`)).json()).data.order.payment.qr;
+    const sepay = (id: number, content: string, amount: number) =>
+        api.post("payment-gateway/webhooks/sepay", {
+            headers: { Authorization: "Apikey e2e-sepay-key" },
+            data: { id, gateway: "Vietcombank", transactionDate: "2026-11-09 12:00:00", accountNumber: "0123456789", code: null, content, transferType: "in", transferAmount: amount, referenceCode: `FT${id}`, description: "" },
+        });
+    expect((await (await sepay(990001, qr.content, 60000)).json()).data.status).toBe("matched");
+    expect((await (await api.get(`orders/${orderId}`, { headers: admin })).json()).data.status).toBe("completed");
+    await guest.reload();
+    await expect(guest.getByTestId("transfer-qr")).toHaveCount(0);
+
+    // Một khoản chuyển không có mã: thu ngân thấy ở tab Đối soát chuyển khoản
+    expect((await (await sepay(990002, "chuyen khoan an trua", 25000)).json()).data.status).toBe("unmatched");
+    const staffContext = await browser.newContext({ locale: "vi-VN" });
+    const staff = await staffContext.newPage();
+    const staffErrors = watchErrors(staff);
+    await login(staff, f.users.cashier);
+    await staff.goto("/admin/cashier");
+    await staff.getByRole("tab", { name: "Đối soát chuyển khoản" }).click();
+    await expect(staff.getByText("chuyen khoan an trua")).toBeVisible();
+    await expect(staff.getByRole("button", { name: "Ghi vào order" })).toBeVisible();
+    await staff.getByRole("tab", { name: "Hóa đơn điện tử" }).click();
+    await expect(staff.getByRole("textbox")).toBeVisible();
+
+    expect(guestErrors).toEqual([]);
+    expect(staffErrors).toEqual([]);
+    await guestContext.close();
+    await staffContext.close();
+    await api.dispose();
+});

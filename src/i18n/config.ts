@@ -9,7 +9,7 @@ i18n.use(HttpApi) // Tải các file json từ public/locales (nếu cần)
     .init({
         fallbackLng: "en", // Ngôn ngữ mặc định khi không tìm thấy bản dịch
         preload: ["en", "vi"], // Tải sẵn các ngôn ngữ này khi ứng dụng khởi động
-        debug: true,
+        debug: import.meta.env.DEV,
         interpolation: {
             escapeValue: false, // React đã tự bảo mật chống XSS
         },

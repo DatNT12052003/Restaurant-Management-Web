@@ -106,7 +106,16 @@
             "cancelled": "cancelled"
         },
         "total": "Total so far",
-        "ordering_off": "QR ordering is paused at this branch; please call the staff."
+        "ordering_off": "QR ordering is paused at this branch; please call the staff.",
+        "payment": {
+            "title": "Payment",
+            "paid": "Paid",
+            "remaining": "Amount due",
+            "done": "Fully paid. Thank you!",
+            "ask_staff": "Please pay with our staff.",
+            "pay_transfer": "Pay {{amount}} by bank transfer",
+            "hint": "We create a VietQR code; the payment is confirmed automatically after you transfer."
+        }
     },
     "feedback": {
         "title": "Rate your meal",

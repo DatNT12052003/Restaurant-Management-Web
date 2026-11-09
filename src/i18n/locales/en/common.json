@@ -7,5 +7,18 @@
     "not_found": {
         "title": "Page not found",
         "description": "The page you are looking for does not exist or has been moved."
+    },
+    "transfer_qr": {
+        "alt": "Bank transfer QR code",
+        "bank": "Bank",
+        "account_no": "Account number",
+        "account_name": "Account holder",
+        "amount": "Amount",
+        "content": "Transfer note",
+        "copy": "Copy",
+        "copied": "Copied",
+        "hint": "Scan with any banking app. Keep the amount and note unchanged so the payment is confirmed automatically.",
+        "expires_in": "Code expires in {{time}}",
+        "expired": "This code has expired, please create a new one"
     }
 }

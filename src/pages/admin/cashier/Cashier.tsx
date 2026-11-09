@@ -15,13 +15,15 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PAYMENT_METHODS, PAYMENT_STATUSES, PAYMENT_STATUS_STYLE } from "@/constants/payment";
 import type { PaymentMethodEnum, PaymentStatusEnum, PaymentTypeEnum } from "@/enum";
-import { useAppSelector, useAsyncData, useRealtime } from "@/hooks";
+import { useAppSelector, useAsyncData, usePermission, useRealtime } from "@/hooks";
 import type { IOrder } from "@/interfaces";
 import { getErrorMessage } from "@/lib/api-error";
 import { addDays, formatDateTime, startOfDay, toDateInput } from "@/lib/datetime";
 import { formatMoney } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import CheckoutPanel from "./CheckoutPanel";
+import EInvoicesTab from "./EInvoicesTab";
+import ReconcileTab from "./ReconcileTab";
 import InvoiceDialog from "./InvoiceDialog";
 
 const UNFINISHED = ["pending", "confirmed", "cooking", "ready"] as const;
@@ -37,6 +39,7 @@ const Cashier = () => {
     const needBranch = isAdmin && !currentBranch;
 
     const [invoiceOf, setInvoiceOf] = useState<number | null>(null);
+    const can = usePermission();
 
     if (needBranch) {
         return (
@@ -56,6 +59,9 @@ const Cashier = () => {
                 <TabsList className="mb-4">
                     <TabsTrigger value="checkout">{t("cashier.tab_checkout")}</TabsTrigger>
                     <TabsTrigger value="history">{t("cashier.tab_history")}</TabsTrigger>
+                    {/* Giai đoạn 14 */}
+                    {can("payment.reconcile") && <TabsTrigger value="reconcile">{t("cashier.tab_reconcile")}</TabsTrigger>}
+                    {can("einvoice.view") && <TabsTrigger value="einvoices">{t("cashier.tab_einvoices")}</TabsTrigger>}
                 </TabsList>
                 <TabsContent value="checkout">
                     <CheckoutTab restaurantId={restaurantId} onPrint={setInvoiceOf} />
@@ -63,6 +69,16 @@ const Cashier = () => {
                 <TabsContent value="history">
                     <PaymentHistory restaurantId={restaurantId} onInvoice={setInvoiceOf} />
                 </TabsContent>
+                {can("payment.reconcile") && (
+                    <TabsContent value="reconcile">
+                        <ReconcileTab restaurantId={restaurantId} />
+                    </TabsContent>
+                )}
+                {can("einvoice.view") && (
+                    <TabsContent value="einvoices">
+                        <EInvoicesTab restaurantId={restaurantId} onInvoice={setInvoiceOf} />
+                    </TabsContent>
+                )}
             </Tabs>
             <InvoiceDialog orderId={invoiceOf} onOpenChange={(v) => !v && setInvoiceOf(null)} />
         </div>

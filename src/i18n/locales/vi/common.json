@@ -7,5 +7,18 @@
     "not_found": {
         "title": "Không tìm thấy trang",
         "description": "Trang bạn tìm không tồn tại hoặc đã được di chuyển."
+    },
+    "transfer_qr": {
+        "alt": "Mã QR chuyển khoản",
+        "bank": "Ngân hàng",
+        "account_no": "Số tài khoản",
+        "account_name": "Chủ tài khoản",
+        "amount": "Số tiền",
+        "content": "Nội dung",
+        "copy": "Sao chép",
+        "copied": "Đã sao chép",
+        "hint": "Quét bằng app ngân hàng bất kỳ. Giữ nguyên số tiền và nội dung để hệ thống tự xác nhận.",
+        "expires_in": "Mã hết hạn sau {{time}}",
+        "expired": "Mã đã hết hạn, vui lòng tạo mã mới"
     }
 }

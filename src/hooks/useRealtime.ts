@@ -14,7 +14,10 @@ export type RealtimeEvent =
     // Giai đoạn 13
     | "order_request:created"
     | "order_request:changed"
-    | "feedback:created";
+    | "feedback:created"
+    // Giai đoạn 14
+    | "gateway:transaction"
+    | "einvoice:changed";
 
 /**
  * Gọi `handler` khi nhận một trong `events` (gộp các sự kiện dồn dập trong `delayMs`), và khi socket kết nối lại

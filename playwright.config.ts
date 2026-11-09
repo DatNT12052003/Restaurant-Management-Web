@@ -44,6 +44,8 @@ export default defineConfig({
                 RATE_LIMIT_DISABLED: "true",
                 CORS_ORIGINS: `http://localhost:${WEB_PORT}`,
                 DOTENV_CONFIG_QUIET: "true",
+                // Giai đoạn 14: test gửi webhook SePay giả lập
+                SEPAY_WEBHOOK_API_KEY: "e2e-sepay-key",
             },
         },
         {

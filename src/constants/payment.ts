@@ -21,3 +21,19 @@ export const cashSuggestions = (amount: number): number[] => {
     const list = [amount, ...steps.map((s) => Math.ceil(amount / s) * s)];
     return [...new Set(list)].sort((a, b) => a - b).slice(0, 5);
 };
+
+/** Giai đoạn 14: màu trạng thái hóa đơn điện tử */
+export const EINVOICE_STATUS_STYLE: Record<string, string> = {
+    pending: "bg-amber-100 text-amber-900 border-amber-300 dark:bg-amber-900/40 dark:text-amber-100",
+    issued: "bg-emerald-100 text-emerald-900 border-emerald-300 dark:bg-emerald-900/40 dark:text-emerald-100",
+    failed: "bg-rose-100 text-rose-900 border-rose-300 dark:bg-rose-900/40 dark:text-rose-100",
+    cancelled: "bg-muted text-muted-foreground border-border",
+};
+
+/** Giai đoạn 14: màu trạng thái giao dịch ngân hàng (đối soát) */
+export const GATEWAY_STATUS_STYLE: Record<string, string> = {
+    matched: "bg-emerald-100 text-emerald-900 border-emerald-300 dark:bg-emerald-900/40 dark:text-emerald-100",
+    unmatched: "bg-amber-100 text-amber-900 border-amber-300 dark:bg-amber-900/40 dark:text-amber-100",
+    mismatch: "bg-rose-100 text-rose-900 border-rose-300 dark:bg-rose-900/40 dark:text-rose-100",
+    ignored: "bg-muted text-muted-foreground border-border",
+};
