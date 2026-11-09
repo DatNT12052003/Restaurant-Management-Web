@@ -231,7 +231,20 @@
         "online_booking_max_days": "Đặt trước tối đa (ngày)",
         "online_booking_max_guests": "Số khách tối đa / lượt",
         "qr_ordering": "Cho khách gọi món qua mã QR tại bàn",
-        "customer_channel_hint": "Đơn đặt online ở trạng thái chờ, lễ tân xác nhận. Món khách gọi qua QR chờ nhân viên duyệt rồi mới gửi bếp."
+        "customer_channel_hint": "Đơn đặt online ở trạng thái chờ, lễ tân xác nhận. Món khách gọi qua QR chờ nhân viên duyệt rồi mới gửi bếp.",
+        "transfer_qr": "Nhận chuyển khoản qua mã VietQR (tự xác nhận qua SePay)",
+        "bank": "Ngân hàng",
+        "bank_placeholder": "Chọn ngân hàng",
+        "bank_bin": "Mã BIN",
+        "bank_account_no": "Số tài khoản",
+        "bank_account_name": "Tên chủ tài khoản",
+        "transfer_qr_hint": "Tài khoản phải được liên kết trên SePay và có webhook trỏ về hệ thống (xem hướng dẫn triển khai).",
+        "einvoice": "Hóa đơn điện tử",
+        "legal_name": "Tên đơn vị bán (theo đăng ký thuế)",
+        "tax_code": "Mã số thuế",
+        "einvoice_series": "Ký hiệu hóa đơn",
+        "einvoice_auto_issue": "Tự phát hành hóa đơn khi order hoàn tất",
+        "einvoice_hint": "Cần mã số thuế và ký hiệu hóa đơn để phát hành. Bỏ trống tên đơn vị thì dùng tên nhà hàng."
     },
     "room": {
         "title": "Phòng & bàn",
@@ -336,7 +349,8 @@
             "payment": "Thanh toán",
             "discount": "Mã giảm giá",
             "inventory": "Kho",
-            "ingredient": "Nguyên liệu"
+            "ingredient": "Nguyên liệu",
+            "einvoice": "Hóa đơn điện tử"
         },
         "actions": {
             "create": "Tạo",
@@ -352,7 +366,9 @@
             "apply": "Áp cho order",
             "import": "Nhập kho",
             "export": "Xuất kho",
-            "adjust": "Kiểm kê, tồn tối thiểu"
+            "adjust": "Kiểm kê, tồn tối thiểu",
+            "reconcile": "Đối soát chuyển khoản",
+            "issue": "Phát hành"
         }
     },
     "profile": {
@@ -651,7 +667,18 @@
         "tip_hint": "Tip được ghi cho nhân viên phụ trách order: {{name}}",
         "tip_line": "Tip {{amount}} · {{name}}",
         "tip_received": "Tiền tip (ngoài hóa đơn)",
-        "collect_with_tip": "Thu {{amount}} + tip {{tip}}"
+        "collect_with_tip": "Thu {{amount}} + tip {{tip}}",
+        "tab_reconcile": "Đối soát chuyển khoản",
+        "tab_einvoices": "Hóa đơn điện tử",
+        "qr": {
+            "create": "Tạo mã QR {{amount}}",
+            "hint": "Khách quét mã và chuyển khoản; giao dịch tự xác nhận khi ngân hàng báo về.",
+            "show": "Mã QR",
+            "title": "Chuyển khoản · {{code}}",
+            "waiting": "Đang chờ ngân hàng báo về…",
+            "paid": "Đã nhận {{amount}}",
+            "closed": "Mã này không còn hiệu lực (đã hủy hoặc hết hạn)."
+        }
     },
     "discount": {
         "title": "Mã giảm giá",
@@ -1046,7 +1073,8 @@
             "inventory": "Kho",
             "ingredient": "Nguyên liệu",
             "image": "Hình ảnh",
-            "audit": "Nhật ký"
+            "audit": "Nhật ký",
+            "einvoice": "Hóa đơn điện tử"
         },
         "action": {
             "auth": {
@@ -1142,7 +1170,9 @@
                 "refund": "Hoàn tiền",
                 "confirm": "Xác nhận giao dịch",
                 "cancel": "Hủy giao dịch",
-                "fail": "Giao dịch thất bại"
+                "fail": "Giao dịch thất bại",
+                "reconcile": "Đối soát chuyển khoản",
+                "reconcile_ignore": "Bỏ qua giao dịch ngân hàng"
             },
             "inventory": {
                 "export": "Xuất kho",
@@ -1161,6 +1191,10 @@
             },
             "audit": {
                 "archive": "Lưu trữ nhật ký cũ"
+            },
+            "einvoice": {
+                "issue": "Phát hành hóa đơn điện tử",
+                "cancel": "Hủy hóa đơn điện tử"
             }
         },
         "entity_type": {
@@ -1182,7 +1216,9 @@
             "inventory_receipt": "Phiếu kho",
             "ingredient": "Nguyên liệu",
             "image": "Ảnh",
-            "audit_log": "Nhật ký"
+            "audit_log": "Nhật ký",
+            "gateway_transaction": "Giao dịch ngân hàng",
+            "e_invoice": "Hóa đơn điện tử"
         }
     },
     "account": {
@@ -1791,5 +1827,83 @@
             "in_progress": "Đang xử lý",
             "resolved": "Đã xử lý"
         }
+    },
+    "reconcile": {
+        "filter": "Lọc trạng thái",
+        "filter_open": "Cần xử lý",
+        "filter_matched": "Đã khớp",
+        "filter_unmatched": "Chưa khớp",
+        "filter_mismatch": "Sai số tiền",
+        "filter_ignored": "Đã bỏ qua",
+        "filter_all": "Tất cả",
+        "open_count": "{{count}} giao dịch cần xử lý",
+        "hint": "Tiền vào tài khoản do SePay báo về. Giao dịch không khớp mã QR cần ghi tay vào order hoặc bỏ qua.",
+        "content": "Nội dung chuyển khoản",
+        "status": {
+            "matched": "Đã khớp",
+            "unmatched": "Chưa khớp",
+            "mismatch": "Sai số tiền",
+            "ignored": "Bỏ qua"
+        },
+        "note": {
+            "no_ref": "không có mã",
+            "unknown_ref": "mã không tồn tại",
+            "amount_mismatch": "sai số tiền",
+            "order_closed": "order đã đóng",
+            "payment_cancelled": "mã đã hủy",
+            "already_paid": "mã đã thu",
+            "late_payment": "chuyển muộn",
+            "manual": "ghi tay",
+            "outgoing": "tiền ra"
+        },
+        "apply": "Ghi vào order",
+        "apply_title": "Ghi nhận {{amount}} vào order",
+        "apply_hint": "Tạo một giao dịch chuyển khoản đã thu cho order. Các mã QR đang mở của order sẽ bị hủy. Thao tác được ghi nhật ký.",
+        "choose_order": "Chọn order đang mở",
+        "no_open_orders": "Không có order đang mở.",
+        "ignore": "Bỏ qua",
+        "ignore_title": "Bỏ qua giao dịch {{amount}}",
+        "ignore_hint": "Ghi chú lý do (ví dụ: không phải tiền của khách, đã hoàn lại ngoài hệ thống)."
+    },
+    "einvoice": {
+        "title": "Hóa đơn điện tử",
+        "none": "Chưa phát hành",
+        "issue": "Xuất hóa đơn VAT",
+        "issue_title": "Xuất hóa đơn VAT · {{code}}",
+        "issue_hint": "Tổng thanh toán {{total}}. Hóa đơn gửi tới nhà cung cấp hóa đơn điện tử để cấp số.",
+        "buyer_type": {
+            "individual": "Cá nhân",
+            "company": "Doanh nghiệp"
+        },
+        "buyer": "Người mua",
+        "buyer_name": "Họ tên người mua",
+        "buyer_contact": "Người liên hệ",
+        "buyer_company": "Tên công ty",
+        "buyer_tax_code": "Mã số thuế",
+        "buyer_address": "Địa chỉ",
+        "buyer_email": "Email nhận hóa đơn",
+        "buyer_phone": "Số điện thoại",
+        "individual_hint": "Bỏ trống họ tên: hóa đơn ghi \"Người mua không lấy hóa đơn\".",
+        "tax_code_invalid": "Mã số thuế gồm 10 số, chi nhánh thêm -xxx",
+        "status": {
+            "pending": "Đang gửi",
+            "issued": "Đã phát hành",
+            "failed": "Gửi lỗi",
+            "cancelled": "Đã hủy"
+        },
+        "pending_hint": "Đang chờ nhà cung cấp cấp số, thường trong vòng một phút.",
+        "failed_toast": "Gửi hóa đơn lỗi, hệ thống sẽ tự thử lại: {{error}}",
+        "retry": "Gửi lại",
+        "cancel": "Hủy hóa đơn",
+        "cancel_title": "Hủy hóa đơn {{number}}",
+        "cancel_hint": "Nhập lý do hủy. Sau khi hủy có thể phát hành lại hóa đơn mới cho order.",
+        "search": "Số hóa đơn, mã order, MST…",
+        "number": "Ký hiệu · Số",
+        "walk_in": "Khách lẻ",
+        "auto": "Tự phát hành",
+        "receipt_title": "HÓA ĐƠN ĐIỆN TỬ",
+        "receipt_number": "Ký hiệu {{series}} · Số {{number}}",
+        "receipt_lookup": "Mã tra cứu: {{code}}",
+        "provisional": "Phiếu tạm tính, không phải hóa đơn GTGT"
     }
 }

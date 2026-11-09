@@ -19,6 +19,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
+import { BANKS } from "@/constants/banks";
 import type { RestaurantStatusEnum } from "@/enum";
 import { useAppDispatch, useAsyncData, useDebounce, usePermission } from "@/hooks";
 import type { IGetQuery, IPagination, IRestaurant, IRestaurantPayload } from "@/interfaces";
@@ -26,7 +27,7 @@ import { getErrorMessage } from "@/lib/api-error";
 import { getAllRestaurantsThunk } from "@/store/restaurant/restaurantThunk";
 
 const PAGE_SIZE = 10;
-const EMPTY_FORM: IRestaurantPayload = { name: "", address: "", status: "unblocked", service_fee_percent: 0, tax_percent: 0, open_time: "08:00", close_time: "22:00", reservation_hold_minutes: 30, no_show_after_minutes: 15, phone: "", online_booking_enabled: true, online_booking_minutes: 120, online_booking_lead_minutes: 60, online_booking_max_days: 30, online_booking_max_guests: 20, qr_ordering_enabled: true };
+const EMPTY_FORM: IRestaurantPayload = { name: "", address: "", status: "unblocked", service_fee_percent: 0, tax_percent: 0, open_time: "08:00", close_time: "22:00", reservation_hold_minutes: 30, no_show_after_minutes: 15, phone: "", online_booking_enabled: true, online_booking_minutes: 120, online_booking_lead_minutes: 60, online_booking_max_days: 30, online_booking_max_guests: 20, qr_ordering_enabled: true, bank_bin: "", bank_account_no: "", bank_account_name: "", transfer_qr_enabled: false, legal_name: "", tax_code: "", einvoice_series: "", einvoice_auto_issue: false };
 
 const Restaurants = () => {
     const { t } = useTranslation("admin");
@@ -84,6 +85,14 @@ const Restaurants = () => {
             online_booking_max_days: restaurant.online_booking_max_days ?? 30,
             online_booking_max_guests: restaurant.online_booking_max_guests ?? 20,
             qr_ordering_enabled: restaurant.qr_ordering_enabled ?? true,
+            bank_bin: restaurant.bank_bin ?? "",
+            bank_account_no: restaurant.bank_account_no ?? "",
+            bank_account_name: restaurant.bank_account_name ?? "",
+            transfer_qr_enabled: restaurant.transfer_qr_enabled ?? false,
+            legal_name: restaurant.legal_name ?? "",
+            tax_code: restaurant.tax_code ?? "",
+            einvoice_series: restaurant.einvoice_series ?? "",
+            einvoice_auto_issue: restaurant.einvoice_auto_issue ?? false,
         });
         setFormOpen(true);
     };
@@ -405,6 +414,66 @@ const Restaurants = () => {
                                     {t("restaurant.qr_ordering")}
                                 </label>
                                 <p className="text-xs text-muted-foreground">{t("restaurant.customer_channel_hint")}</p>
+                            </div>
+                            {/* Giai đoạn 14: tài khoản nhận chuyển khoản QR (xác nhận tự động qua SePay) */}
+                            <div className="grid gap-3 rounded-md border p-3">
+                                <label className="flex items-center gap-2 text-sm font-medium">
+                                    <Checkbox checked={form.transfer_qr_enabled === true} onCheckedChange={(v) => setForm({ ...form, transfer_qr_enabled: v === true })} />
+                                    {t("restaurant.transfer_qr")}
+                                </label>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div className="grid gap-2">
+                                        <Label>{t("restaurant.bank")}</Label>
+                                        <Select value={BANKS.some((b) => b.bin === form.bank_bin) ? (form.bank_bin ?? "") : ""} onValueChange={(v) => setForm({ ...form, bank_bin: v })}>
+                                            <SelectTrigger aria-label={t("restaurant.bank")}>
+                                                <SelectValue placeholder={t("restaurant.bank_placeholder")} />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {BANKS.map((b) => (
+                                                    <SelectItem key={b.bin} value={b.bin}>
+                                                        {b.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="r-bank-bin">{t("restaurant.bank_bin")}</Label>
+                                        <Input id="r-bank-bin" inputMode="numeric" maxLength={6} value={form.bank_bin ?? ""} onChange={(e) => setForm({ ...form, bank_bin: e.target.value.replace(/\D/g, "") })} />
+                                    </div>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="r-bank-acc">{t("restaurant.bank_account_no")}</Label>
+                                        <Input id="r-bank-acc" maxLength={30} value={form.bank_account_no ?? ""} onChange={(e) => setForm({ ...form, bank_account_no: e.target.value.trim() })} />
+                                    </div>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="r-bank-name">{t("restaurant.bank_account_name")}</Label>
+                                        <Input id="r-bank-name" maxLength={100} value={form.bank_account_name ?? ""} onChange={(e) => setForm({ ...form, bank_account_name: e.target.value.toUpperCase() })} />
+                                    </div>
+                                </div>
+                                <p className="text-xs text-muted-foreground">{t("restaurant.transfer_qr_hint")}</p>
+                            </div>
+                            {/* Giai đoạn 14: người bán trên hóa đơn điện tử */}
+                            <div className="grid gap-3 rounded-md border p-3">
+                                <p className="text-sm font-medium">{t("restaurant.einvoice")}</p>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="r-legal">{t("restaurant.legal_name")}</Label>
+                                    <Input id="r-legal" maxLength={255} value={form.legal_name ?? ""} onChange={(e) => setForm({ ...form, legal_name: e.target.value })} />
+                                </div>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="r-tax">{t("restaurant.tax_code")}</Label>
+                                        <Input id="r-tax" inputMode="numeric" maxLength={14} value={form.tax_code ?? ""} onChange={(e) => setForm({ ...form, tax_code: e.target.value.trim() })} />
+                                    </div>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="r-series">{t("restaurant.einvoice_series")}</Label>
+                                        <Input id="r-series" maxLength={20} placeholder="1C26TAA" value={form.einvoice_series ?? ""} onChange={(e) => setForm({ ...form, einvoice_series: e.target.value.toUpperCase().trim() })} />
+                                    </div>
+                                </div>
+                                <label className="flex items-center gap-2 text-sm">
+                                    <Checkbox checked={form.einvoice_auto_issue === true} onCheckedChange={(v) => setForm({ ...form, einvoice_auto_issue: v === true })} />
+                                    {t("restaurant.einvoice_auto_issue")}
+                                </label>
+                                <p className="text-xs text-muted-foreground">{t("restaurant.einvoice_hint")}</p>
                             </div>
                         </div>
                         <DialogFooter>

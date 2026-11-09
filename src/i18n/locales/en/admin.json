@@ -231,7 +231,20 @@
         "online_booking_max_days": "Book up to (days ahead)",
         "online_booking_max_guests": "Max guests per booking",
         "qr_ordering": "Allow QR ordering at tables",
-        "customer_channel_hint": "Online bookings wait for reception to confirm. QR orders wait for staff approval before going to the kitchen."
+        "customer_channel_hint": "Online bookings wait for reception to confirm. QR orders wait for staff approval before going to the kitchen.",
+        "transfer_qr": "Accept bank transfers via VietQR (auto-confirmed by SePay)",
+        "bank": "Bank",
+        "bank_placeholder": "Choose a bank",
+        "bank_bin": "BIN",
+        "bank_account_no": "Account number",
+        "bank_account_name": "Account holder name",
+        "transfer_qr_hint": "The account must be linked in SePay with a webhook pointing to this system (see the deployment guide).",
+        "einvoice": "E-invoices",
+        "legal_name": "Legal seller name (as registered for tax)",
+        "tax_code": "Tax code",
+        "einvoice_series": "Invoice series",
+        "einvoice_auto_issue": "Issue an e-invoice automatically when an order is completed",
+        "einvoice_hint": "A tax code and invoice series are required to issue invoices. Without a legal name the restaurant name is used."
     },
     "room": {
         "title": "Rooms & tables",
@@ -336,7 +349,8 @@
             "payment": "Payments",
             "discount": "Discounts",
             "inventory": "Inventory",
-            "ingredient": "Ingredients"
+            "ingredient": "Ingredients",
+            "einvoice": "E-invoices"
         },
         "actions": {
             "create": "Create",
@@ -352,7 +366,9 @@
             "apply": "Apply to orders",
             "import": "Receive",
             "export": "Issue",
-            "adjust": "Stocktake, minimum stock"
+            "adjust": "Stocktake, minimum stock",
+            "reconcile": "Reconcile transfers",
+            "issue": "Issue"
         }
     },
     "profile": {
@@ -651,7 +667,18 @@
         "tip_hint": "The tip goes to the staff member in charge of the order: {{name}}",
         "tip_line": "Tip {{amount}} · {{name}}",
         "tip_received": "Tips (outside the bill)",
-        "collect_with_tip": "Collect {{amount}} + tip {{tip}}"
+        "collect_with_tip": "Collect {{amount}} + tip {{tip}}",
+        "tab_reconcile": "Transfer reconciliation",
+        "tab_einvoices": "E-invoices",
+        "qr": {
+            "create": "Create QR code {{amount}}",
+            "hint": "The guest scans and transfers; the payment is confirmed automatically when the bank reports it.",
+            "show": "QR code",
+            "title": "Bank transfer · {{code}}",
+            "waiting": "Waiting for the bank…",
+            "paid": "Received {{amount}}",
+            "closed": "This code is no longer valid (cancelled or expired)."
+        }
     },
     "discount": {
         "title": "Discounts",
@@ -1046,7 +1073,8 @@
             "inventory": "Inventory",
             "ingredient": "Ingredients",
             "image": "Images",
-            "audit": "Audit log"
+            "audit": "Audit log",
+            "einvoice": "E-invoices"
         },
         "action": {
             "auth": {
@@ -1142,7 +1170,9 @@
                 "refund": "Refunded",
                 "confirm": "Confirmed payment",
                 "cancel": "Cancelled payment",
-                "fail": "Marked payment failed"
+                "fail": "Marked payment failed",
+                "reconcile": "Reconcile transfer",
+                "reconcile_ignore": "Ignore bank transaction"
             },
             "inventory": {
                 "export": "Stock out",
@@ -1161,6 +1191,10 @@
             },
             "audit": {
                 "archive": "Archived old log entries"
+            },
+            "einvoice": {
+                "issue": "Issue e-invoice",
+                "cancel": "Cancel e-invoice"
             }
         },
         "entity_type": {
@@ -1182,7 +1216,9 @@
             "inventory_receipt": "Stock slip",
             "ingredient": "Ingredient",
             "image": "Image",
-            "audit_log": "Audit log"
+            "audit_log": "Audit log",
+            "gateway_transaction": "Bank transaction",
+            "e_invoice": "E-invoice"
         }
     },
     "account": {
@@ -1791,5 +1827,83 @@
             "in_progress": "In progress",
             "resolved": "Resolved"
         }
+    },
+    "reconcile": {
+        "filter": "Filter by status",
+        "filter_open": "Needs attention",
+        "filter_matched": "Matched",
+        "filter_unmatched": "Unmatched",
+        "filter_mismatch": "Wrong amount",
+        "filter_ignored": "Ignored",
+        "filter_all": "All",
+        "open_count": "{{count}} transactions need attention",
+        "hint": "Incoming transfers reported by SePay. Transfers that don't match a QR code must be recorded on an order or ignored.",
+        "content": "Transfer note",
+        "status": {
+            "matched": "Matched",
+            "unmatched": "Unmatched",
+            "mismatch": "Wrong amount",
+            "ignored": "Ignored"
+        },
+        "note": {
+            "no_ref": "no code",
+            "unknown_ref": "unknown code",
+            "amount_mismatch": "wrong amount",
+            "order_closed": "order closed",
+            "payment_cancelled": "code cancelled",
+            "already_paid": "code already paid",
+            "late_payment": "late payment",
+            "manual": "manual",
+            "outgoing": "outgoing"
+        },
+        "apply": "Record on order",
+        "apply_title": "Record {{amount}} on an order",
+        "apply_hint": "Creates a paid bank-transfer payment on the order. Open QR codes of that order are cancelled. This action is logged.",
+        "choose_order": "Choose an open order",
+        "no_open_orders": "No open orders.",
+        "ignore": "Ignore",
+        "ignore_title": "Ignore transaction {{amount}}",
+        "ignore_hint": "Note the reason (for example: not a guest payment, refunded outside the system)."
+    },
+    "einvoice": {
+        "title": "E-invoice",
+        "none": "Not issued",
+        "issue": "Issue VAT invoice",
+        "issue_title": "Issue VAT invoice · {{code}}",
+        "issue_hint": "Total {{total}}. The invoice is sent to the e-invoice provider to be numbered.",
+        "buyer_type": {
+            "individual": "Individual",
+            "company": "Company"
+        },
+        "buyer": "Buyer",
+        "buyer_name": "Buyer name",
+        "buyer_contact": "Contact person",
+        "buyer_company": "Company name",
+        "buyer_tax_code": "Tax code",
+        "buyer_address": "Address",
+        "buyer_email": "Email for the invoice",
+        "buyer_phone": "Phone",
+        "individual_hint": "Leave the name empty for a walk-in buyer who doesn't need an invoice.",
+        "tax_code_invalid": "Tax code must be 10 digits, optionally followed by -xxx",
+        "status": {
+            "pending": "Sending",
+            "issued": "Issued",
+            "failed": "Failed",
+            "cancelled": "Cancelled"
+        },
+        "pending_hint": "Waiting for the provider to assign a number, usually within a minute.",
+        "failed_toast": "Sending the invoice failed, it will be retried automatically: {{error}}",
+        "retry": "Resend",
+        "cancel": "Cancel invoice",
+        "cancel_title": "Cancel invoice {{number}}",
+        "cancel_hint": "Enter a reason. After cancelling you can issue a new invoice for the order.",
+        "search": "Invoice no., order code, tax code…",
+        "number": "Series · No.",
+        "walk_in": "Walk-in",
+        "auto": "Auto-issued",
+        "receipt_title": "E-INVOICE",
+        "receipt_number": "Series {{series}} · No. {{number}}",
+        "receipt_lookup": "Lookup code: {{code}}",
+        "provisional": "Provisional bill, not a VAT invoice"
     }
 }

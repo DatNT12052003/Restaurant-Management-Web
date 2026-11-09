@@ -106,7 +106,16 @@
             "cancelled": "đã hủy"
         },
         "total": "Tạm tính",
-        "ordering_off": "Chi nhánh tạm ngừng gọi món qua QR, vui lòng gọi nhân viên."
+        "ordering_off": "Chi nhánh tạm ngừng gọi món qua QR, vui lòng gọi nhân viên.",
+        "payment": {
+            "title": "Thanh toán",
+            "paid": "Đã thanh toán",
+            "remaining": "Còn phải trả",
+            "done": "Đã thanh toán đủ. Cảm ơn quý khách!",
+            "ask_staff": "Vui lòng thanh toán với nhân viên.",
+            "pay_transfer": "Chuyển khoản {{amount}}",
+            "hint": "Hệ thống tạo mã VietQR; giao dịch được xác nhận tự động sau khi chuyển."
+        }
     },
     "feedback": {
         "title": "Đánh giá bữa ăn",

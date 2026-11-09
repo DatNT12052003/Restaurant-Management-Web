@@ -1,3 +1,4 @@
+import type { IPublicTablePayment } from "./integration.interface";
 /** Giai đoạn 13: kênh khách hàng. pg trả numeric dưới dạng chuỗi. */
 type Numeric = string | number;
 
@@ -115,7 +116,13 @@ export interface IOrderRequestPayload {
 export interface IPublicTable {
     table: { id: number; name: string; room_name: string };
     restaurant: { id: number; name: string; qr_ordering_enabled: boolean };
-    order: { code: string; total: Numeric; lines: { kind: string; name: string; quantity: number; status: string; price: Numeric }[] } | null;
+    order: {
+        code: string;
+        total: Numeric;
+        lines: { kind: string; name: string; quantity: number; status: string; price: Numeric }[];
+        /** Giai đoạn 14: số còn phải trả, mã chuyển khoản */
+        payment?: IPublicTablePayment | null;
+    } | null;
     feedback_order: { id: number; code: string; completed_at: string } | null;
 }
 
