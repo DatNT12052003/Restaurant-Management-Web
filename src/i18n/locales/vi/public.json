@@ -1,0 +1,162 @@
+{
+    "brand": "Chuỗi nhà hàng",
+    "common": {
+        "loading": "Đang tải...",
+        "processing": "Đang xử lý..."
+    },
+    "nav": {
+        "book": "Đặt bàn",
+        "lookup": "Tra cứu đặt bàn",
+        "account": "Tài khoản",
+        "admin": "Trang quản trị",
+        "login": "Đăng nhập",
+        "logout": "Đăng xuất",
+        "register": "Đăng ký"
+    },
+    "home": {
+        "title": "Chào mừng quý khách",
+        "subtitle": "Xem thực đơn từng chi nhánh và đặt bàn online chỉ trong một phút.",
+        "cta": "Đặt bàn ngay",
+        "branches": "Các chi nhánh",
+        "view_menu": "Xem thực đơn",
+        "book_here": "Đặt bàn"
+    },
+    "menu": {
+        "empty": "Chi nhánh chưa có món đang bán",
+        "all_tags": "Tất cả",
+        "section": {
+            "food": "Món ăn",
+            "drink": "Đồ uống",
+            "combo": "Combo"
+        }
+    },
+    "booking": {
+        "title": "Đặt bàn online",
+        "step_when": "Chi nhánh và thời gian",
+        "step_contact": "Thông tin liên hệ",
+        "branch": "Chi nhánh",
+        "choose_branch": "Chọn chi nhánh",
+        "choose_branch_first": "Chọn chi nhánh để xem giờ còn bàn",
+        "date": "Ngày",
+        "guests": "Số khách",
+        "guests_count": "{{count}} khách",
+        "time": "Giờ đến",
+        "no_slots": "Không còn giờ trống trong ngày này (hoặc nhà hàng nghỉ). Hãy chọn ngày khác.",
+        "rules": "Mỗi lượt đặt giữ bàn {{hours}} giờ; đặt trước ít nhất {{lead}} phút; tối đa {{max}} khách (đông hơn vui lòng gọi điện).",
+        "name": "Họ tên",
+        "phone": "Số điện thoại",
+        "email": "Email",
+        "send_code": "Gửi mã",
+        "resend_code": "Gửi lại",
+        "email_hint": "Chúng tôi gửi mã xác nhận và thông báo xác nhận đặt bàn qua email này.",
+        "logged_in_hint": "Bạn đã đăng nhập nên không cần mã xác nhận.",
+        "code": "Mã xác nhận (6 số)",
+        "code_sent": "Đã gửi mã tới {{email}}, có hiệu lực 10 phút.",
+        "note": "Ghi chú",
+        "note_placeholder": "Ví dụ: có trẻ em, cần ghế em bé, sinh nhật...",
+        "login_prompt": "Có tài khoản thì không cần mã xác nhận và được tích điểm:",
+        "submit": "Đặt bàn lúc {{time}}",
+        "done_title": "Đã gửi yêu cầu đặt bàn",
+        "done_hint": "Nhà hàng sẽ xác nhận sớm và gửi email cho bạn.",
+        "your_code": "Mã đặt bàn của bạn",
+        "view": "Xem / hủy đặt bàn",
+        "status": {
+            "pending": "Chờ xác nhận",
+            "confirmed": "Đã xác nhận",
+            "arrived": "Đã đến",
+            "completed": "Hoàn tất",
+            "cancelled": "Đã hủy",
+            "no_show": "Không đến"
+        }
+    },
+    "lookup": {
+        "title": "Tra cứu đặt bàn",
+        "code": "Mã đặt bàn",
+        "search": "Tra cứu",
+        "cancel": "Hủy đặt bàn",
+        "cancel_confirm": "Bạn chắc chắn muốn hủy đặt bàn này?"
+    },
+    "table": {
+        "title": "Bàn {{table}} · {{room}}",
+        "add": "Thêm",
+        "add_item": "Thêm {{name}}",
+        "more": "Thêm một {{name}}",
+        "less": "Bớt một {{name}}",
+        "view_cart": "Xem {{count}} món · {{total}}",
+        "cart": "Món đã chọn",
+        "line_note": "Ghi chú (ít cay, không hành...)",
+        "line_note_for": "Ghi chú cho {{name}}",
+        "guests": "Số khách",
+        "note": "Ghi chú cho nhân viên",
+        "confirm_hint": "Nhân viên sẽ xác nhận rồi mới gửi bếp. Thanh toán sau bữa ăn tại quầy.",
+        "send": "Gửi món · {{total}}",
+        "my_requests": "Món bạn đã gửi",
+        "request_status": {
+            "pending": "Chờ xác nhận",
+            "accepted": "Đã nhận",
+            "rejected": "Bị từ chối"
+        },
+        "ordered": "Món đã gọi ({{code}})",
+        "line_status": {
+            "pending": "chờ bếp",
+            "confirmed": "bếp đã nhận",
+            "cooking": "đang làm",
+            "ready": "xong",
+            "served": "đã phục vụ",
+            "cancelled": "đã hủy"
+        },
+        "total": "Tạm tính",
+        "ordering_off": "Chi nhánh tạm ngừng gọi món qua QR, vui lòng gọi nhân viên."
+    },
+    "feedback": {
+        "title": "Đánh giá bữa ăn",
+        "for_order": "Order {{code}}",
+        "food": "Món ăn",
+        "service": "Phục vụ",
+        "ambience": "Không gian",
+        "comment": "Nhận xét",
+        "complaint": "Tôi muốn khiếu nại",
+        "phone": "Số điện thoại để nhà hàng liên hệ",
+        "submit": "Gửi đánh giá",
+        "thanks": "Cảm ơn bạn đã đánh giá!"
+    },
+    "register": {
+        "title": "Đăng ký tài khoản",
+        "subtitle": "Đặt bàn nhanh không cần mã xác nhận, tích điểm mỗi lần dùng bữa.",
+        "username": "Tên đăng nhập (từ 5 ký tự)",
+        "password": "Mật khẩu (từ 6 ký tự)",
+        "confirm": "Nhập lại mật khẩu",
+        "mismatch": "Mật khẩu nhập lại không khớp",
+        "submit": "Đăng ký",
+        "done": "Đăng ký thành công",
+        "have_account": "Đã có tài khoản?"
+    },
+    "account": {
+        "points": "Điểm thưởng",
+        "points_rule": "Mỗi {{earn}} được 1 điểm · 1 điểm = {{value}} · đổi tối đa {{max}}% hóa đơn",
+        "points_short": "{{count}} điểm",
+        "regular": "Khách thân thiết",
+        "new": "Khách mới",
+        "regular_progress": "{{visits}}/{{required}} lần ghé trong {{months}} tháng để thành khách thân thiết",
+        "stats": "Đã ghé {{visits}} lần · tổng {{total}}",
+        "tab_reservations": "Đặt bàn",
+        "tab_orders": "Lịch sử dùng bữa",
+        "tab_points": "Lịch sử điểm",
+        "no_reservations": "Chưa có đặt bàn nào",
+        "no_orders": "Chưa có lần dùng bữa nào gắn với tài khoản",
+        "no_points": "Chưa có giao dịch điểm",
+        "reply": "Nhà hàng trả lời:",
+        "order_status": {
+            "completed": "Hoàn tất",
+            "cancelled": "Đã hủy",
+            "serving": "Đang phục vụ",
+            "confirmed": "Đang mở"
+        },
+        "tx": {
+            "earn": "Tích điểm",
+            "redeem": "Đổi điểm",
+            "revoke": "Trừ do hoàn tiền",
+            "adjust": "Điều chỉnh"
+        }
+    }
+}

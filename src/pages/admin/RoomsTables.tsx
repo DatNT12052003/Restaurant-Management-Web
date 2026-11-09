@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { isAxiosError } from "axios";
-import { Images, Lock, MoreVertical, Pencil, Plus, Trash2, Users } from "lucide-react";
+import { Images, Lock, MoreVertical, Pencil, Plus, QrCode, Trash2, Users } from "lucide-react";
 
 import { createRoom, createTable, deleteRoom, deleteTable, getAllRooms, getAllTables, updateRoom, updateTable } from "@/apis";
 import ConfirmDialog from "@/components/common/ConfirmDialog";
@@ -31,6 +31,7 @@ import { useAppSelector, useAsyncData, usePermission } from "@/hooks";
 import type { IRoom, IRoomPayload, ITable, ITablePayload } from "@/interfaces";
 import { getErrorMessage } from "@/lib/api-error";
 import { cn } from "@/lib/utils";
+import TableQrDialog from "./TableQrDialog";
 
 const EMPTY_ROOM: IRoomPayload = { name: "", type: "public", description: "", is_active: true };
 const EMPTY_TABLE: ITablePayload = { name: "", capacity: 4, status: "available" };
@@ -51,6 +52,7 @@ const RoomsTables = () => {
     const [editingRoom, setEditingRoom] = useState<IRoom | null>(null);
     const [tableForm, setTableForm] = useState<ITablePayload | null>(null);
     const [editingTable, setEditingTable] = useState<ITable | null>(null);
+    const [qrTable, setQrTable] = useState<ITable | null>(null);
     const [saving, setSaving] = useState(false);
     const [deletingRoom, setDeletingRoom] = useState<IRoom | null>(null);
     const [deletingTable, setDeletingTable] = useState<ITable | null>(null);
@@ -336,6 +338,10 @@ const RoomsTables = () => {
                                                                             <Pencil className="h-4 w-4" />
                                                                             {t("common.edit")}
                                                                         </DropdownMenuItem>
+                                                                        <DropdownMenuItem onClick={() => setQrTable(table)}>
+                                                                            <QrCode className="h-4 w-4" />
+                                                                            {t("table_qr.menu")}
+                                                                        </DropdownMenuItem>
                                                                     </>
                                                                 )}
                                                                 {can("table.delete") && (
@@ -555,6 +561,7 @@ const RoomsTables = () => {
                 confirmLabel={t("common.delete")}
                 onConfirm={() => run(() => deleteRoom(deletingRoom!.id))}
             />
+            <TableQrDialog table={qrTable} roomName={selectedRoom?.name} onOpenChange={(v) => !v && setQrTable(null)} onRotated={reload} />
             <ConfirmDialog
                 open={!!deletingTable}
                 onOpenChange={(v) => !v && setDeletingTable(null)}

@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -25,7 +26,7 @@ import { getErrorMessage } from "@/lib/api-error";
 import { getAllRestaurantsThunk } from "@/store/restaurant/restaurantThunk";
 
 const PAGE_SIZE = 10;
-const EMPTY_FORM: IRestaurantPayload = { name: "", address: "", status: "unblocked", service_fee_percent: 0, tax_percent: 0, open_time: "08:00", close_time: "22:00", reservation_hold_minutes: 30, no_show_after_minutes: 15 };
+const EMPTY_FORM: IRestaurantPayload = { name: "", address: "", status: "unblocked", service_fee_percent: 0, tax_percent: 0, open_time: "08:00", close_time: "22:00", reservation_hold_minutes: 30, no_show_after_minutes: 15, phone: "", online_booking_enabled: true, online_booking_minutes: 120, online_booking_lead_minutes: 60, online_booking_max_days: 30, online_booking_max_guests: 20, qr_ordering_enabled: true };
 
 const Restaurants = () => {
     const { t } = useTranslation("admin");
@@ -76,6 +77,13 @@ const Restaurants = () => {
             close_time: restaurant.close_time?.slice(0, 5) ?? "22:00",
             reservation_hold_minutes: restaurant.reservation_hold_minutes ?? 30,
             no_show_after_minutes: restaurant.no_show_after_minutes ?? 15,
+            phone: restaurant.phone ?? "",
+            online_booking_enabled: restaurant.online_booking_enabled ?? true,
+            online_booking_minutes: restaurant.online_booking_minutes ?? 120,
+            online_booking_lead_minutes: restaurant.online_booking_lead_minutes ?? 60,
+            online_booking_max_days: restaurant.online_booking_max_days ?? 30,
+            online_booking_max_guests: restaurant.online_booking_max_guests ?? 20,
+            qr_ordering_enabled: restaurant.qr_ordering_enabled ?? true,
         });
         setFormOpen(true);
     };
@@ -246,7 +254,7 @@ const Restaurants = () => {
             </Card>
 
             <Dialog open={formOpen} onOpenChange={(v) => !saving && setFormOpen(v)}>
-                <DialogContent className="sm:max-w-lg">
+                <DialogContent className="max-h-[92vh] overflow-y-auto sm:max-w-lg">
                     <form onSubmit={handleSubmit}>
                         <DialogHeader>
                             <DialogTitle>
@@ -363,6 +371,40 @@ const Restaurants = () => {
                                     />
                                 </div>
                                 <p className="col-span-2 text-xs text-muted-foreground">{t("restaurant.reservation_timing_hint")}</p>
+                            </div>
+                            {/* Giai đoạn 13: kênh khách hàng */}
+                            <div className="grid gap-2">
+                                <Label htmlFor="r-phone">{t("restaurant.phone")}</Label>
+                                <Input id="r-phone" type="tel" maxLength={30} value={form.phone ?? ""} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+                            </div>
+                            <div className="grid gap-3 rounded-md border p-3">
+                                <label className="flex items-center gap-2 text-sm font-medium">
+                                    <Checkbox checked={form.online_booking_enabled !== false} onCheckedChange={(v) => setForm({ ...form, online_booking_enabled: v === true })} />
+                                    {t("restaurant.online_booking")}
+                                </label>
+                                <div className="grid grid-cols-2 gap-3">
+                                <div className="grid gap-2">
+                                    <Label htmlFor="r-ob-minutes">{t("restaurant.online_booking_minutes")}</Label>
+                                    <Input id="r-ob-minutes" type="number" min={30} max={720} step={1} value={form.online_booking_minutes ?? ""} onChange={(e) => setForm({ ...form, online_booking_minutes: e.target.value })} />
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="r-ob-lead">{t("restaurant.online_booking_lead")}</Label>
+                                    <Input id="r-ob-lead" type="number" min={0} max={10080} step={1} value={form.online_booking_lead_minutes ?? ""} onChange={(e) => setForm({ ...form, online_booking_lead_minutes: e.target.value })} />
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="r-ob-days">{t("restaurant.online_booking_max_days")}</Label>
+                                    <Input id="r-ob-days" type="number" min={1} max={365} step={1} value={form.online_booking_max_days ?? ""} onChange={(e) => setForm({ ...form, online_booking_max_days: e.target.value })} />
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="r-ob-guests">{t("restaurant.online_booking_max_guests")}</Label>
+                                    <Input id="r-ob-guests" type="number" min={1} max={500} step={1} value={form.online_booking_max_guests ?? ""} onChange={(e) => setForm({ ...form, online_booking_max_guests: e.target.value })} />
+                                </div>
+                                </div>
+                                <label className="flex items-center gap-2 text-sm font-medium">
+                                    <Checkbox checked={form.qr_ordering_enabled !== false} onCheckedChange={(v) => setForm({ ...form, qr_ordering_enabled: v === true })} />
+                                    {t("restaurant.qr_ordering")}
+                                </label>
+                                <p className="text-xs text-muted-foreground">{t("restaurant.customer_channel_hint")}</p>
                             </div>
                         </div>
                         <DialogFooter>

@@ -104,6 +104,8 @@ export interface IInvoice {
         tables: string[];
         staff_name: string | null;
         guest_name: string | null;
+        guest_user_id?: number | null;
+        guest_phone?: string | null;
     };
     restaurant: { id: number; name: string; address: string };
     lines: { kind: "dish" | "combo"; item_id: number; name: string; unit_price: string; quantity: number; amount: string }[];
@@ -121,4 +123,8 @@ export interface IInvoice {
     remaining: number;
     /** Tổng tip đã nhận */
     tip_total?: number;
+    /** Giai đoạn 13: đổi điểm (tiền giảm nằm trong discount_amount) và điểm đã cộng */
+    points_redeemed?: number;
+    points_discount?: number;
+    points_awarded?: number;
 }

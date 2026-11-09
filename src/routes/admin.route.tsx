@@ -21,6 +21,7 @@ import MyWork from "@/pages/admin/my-work/MyWork";
 import ClockPage from "@/pages/admin/my-work/ClockPage";
 import Workforce from "@/pages/admin/workforce/Workforce";
 import AttendanceKiosk from "@/pages/admin/workforce/AttendanceKiosk";
+import CustomerCare from "@/pages/admin/customer-care/CustomerCare";
 import RequirePermission from "./guards/RequirePermission";
 
 export const adminRoutes: RouteObject[] = [
@@ -187,6 +188,14 @@ export const adminRoutes: RouteObject[] = [
         element: (
             <RequirePermission permission={"attendance.kiosk"}>
                 <AttendanceKiosk />
+            </RequirePermission>
+        ),
+    },
+    {
+        path: "customer-care",
+        element: (
+            <RequirePermission permission={["feedback.view", "loyalty.view"]}>
+                <CustomerCare />
             </RequirePermission>
         ),
     },

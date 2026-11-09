@@ -9,6 +9,7 @@ import {
     CalendarCheck,
     Clock,
     QrCode,
+    HeartHandshake,
     History,
     KeyRound,
     ClipboardList,
@@ -24,7 +25,7 @@ import {
 import { useTranslation } from "react-i18next";
 import type { ISidebarMenuItem } from "@/interfaces";
 import { useAppDispatch, useAppSelector, useAsyncData, usePermission, useRealtime } from "@/hooks";
-import { getStock } from "@/apis";
+import { getOrderRequests, getStock } from "@/apis";
 import { useCallback, useEffect } from "react";
 import { getAllRestaurantsThunk } from "@/store/restaurant/restaurantThunk";
 import { connectSocket, disconnectSocket, subscribeRestaurant } from "@/lib/socket";
@@ -73,6 +74,19 @@ const AdminLayout = () => {
     const { data: lowStock = 0, reload: reloadLowStock } = useAsyncData(lowStockFetcher);
     useRealtime(["inventory:changed"], reloadLowStock, 1000);
 
+    // Giai đoạn 13: số món khách gọi qua QR đang chờ xác nhận
+    const canHandleRequests = can("order_request.handle");
+    const requestsFetcher = useCallback(async () => {
+        if (!userId || !canHandleRequests || (isAdmin && !branchId)) return 0;
+        try {
+            return (await getOrderRequests("pending", isAdmin ? branchId : undefined)).data?.length ?? 0;
+        } catch {
+            return 0;
+        }
+    }, [userId, canHandleRequests, isAdmin, branchId]);
+    const { data: pendingRequests = 0, reload: reloadRequests } = useAsyncData(requestsFetcher);
+    useRealtime(["order_request:created", "order_request:changed"], reloadRequests, 500);
+
     const menuItems: ISidebarMenuItem[] = [
         { path: "/admin/dashboard", label: t("menu.dashboard"), icon: LayoutDashboard },
         { path: "/admin/restaurants", label: t("menu.restaurants"), icon: Building2, permission: "restaurant.view" },
@@ -88,7 +102,14 @@ const AdminLayout = () => {
         { path: "/admin/permissions", label: t("menu.permissions"), icon: ShieldCheck, permission: "permission.view" },
         { path: "/admin/accounts", label: t("menu.accounts"), icon: KeyRound, permission: "account.view" },
         { path: "/admin/menu", label: t("menu.menu"), icon: MenuIcon, permission: ["dish.view", "combo.view"] },
-        { path: "/admin/orders", label: t("menu.orders"), icon: ClipboardList, permission: "order.view" },
+        {
+            path: "/admin/orders",
+            label: t("menu.orders"),
+            icon: ClipboardList,
+            permission: "order.view",
+            badge: pendingRequests,
+            badgeLabel: t("order_request.badge", { count: pendingRequests }),
+        },
         { path: "/admin/kitchen", label: t("menu.kitchen"), icon: ChefHat, permission: "order_item.prepare" },
         { path: "/admin/cashier", label: t("menu.cashier"), icon: Wallet, permission: "payment.view" },
         { path: "/admin/discounts", label: t("menu.discounts"), icon: TicketPercent, permission: "discount.view" },
@@ -114,6 +135,7 @@ const AdminLayout = () => {
             permission: ["shift.view", "attendance.view", "leave.approve", "staff_review.manage", "payroll.view"],
         },
         { path: "/admin/attendance-kiosk", label: t("menu.attendance_kiosk"), icon: QrCode, permission: "attendance.kiosk" },
+        { path: "/admin/customer-care", label: t("menu.customer_care"), icon: HeartHandshake, permission: ["feedback.view", "loyalty.view"] },
         { path: "/admin/reports", label: t("menu.reports"), icon: BarChart3, permission: "report.view" },
         { path: "/admin/audit-logs", label: t("menu.audit_logs"), icon: History, permission: "audit_log.view" },
     ];

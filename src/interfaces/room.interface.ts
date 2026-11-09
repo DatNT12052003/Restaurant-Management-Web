@@ -36,6 +36,8 @@ export interface ITable {
     capacity: number;
     room_id: number;
     restaurant_id?: number;
+    /** Giai đoạn 13: mã QR gọi món tại bàn */
+    qr_token?: string;
 }
 
 export interface ITablePayload {

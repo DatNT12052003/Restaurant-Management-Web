@@ -32,6 +32,7 @@ import { formatTime } from "@/lib/datetime";
 import { formatMoney } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { InvoiceView } from "./InvoiceDialog";
+import LoyaltyCard from "./LoyaltyCard";
 
 const METHOD_ICON: Record<PaymentMethodEnum, React.ComponentType<{ className?: string }>> = {
     cash: Banknote,
@@ -166,6 +167,9 @@ export const CheckoutPanel = ({ orderId, unfinished, onPrint }: CheckoutPanelPro
                     </CardContent>
                 </Card>
             )}
+
+            {/* Giai đoạn 13: khách hàng và điểm thưởng */}
+            {open && can("loyalty.view") && <LoyaltyCard key={orderId} invoice={invoice} onChanged={reload} />}
 
             {/* Thu tiền */}
             {open && can("payment.create") && due > 0 && (

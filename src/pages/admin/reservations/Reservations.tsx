@@ -248,7 +248,10 @@ const Reservations = () => {
                                         </TableCell>
                                         <TableCell>
                                             <div>{r.contact_name}</div>
-                                            <div className="text-xs text-muted-foreground">{r.contact_phone}</div>
+                                            <div className="text-xs text-muted-foreground">
+                                                {r.contact_phone}
+                                                {r.source === "online" && <span className="ml-1 rounded bg-sky-100 px-1 text-sky-900 dark:bg-sky-900/40 dark:text-sky-100">{t("reservation.online")}</span>}
+                                            </div>
                                         </TableCell>
                                         <TableCell className="text-center">{r.guest_count}</TableCell>
                                         <TableCell className="max-w-64">

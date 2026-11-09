@@ -50,12 +50,13 @@ const PAGES: Record<string, string[]> = {
         "purchasing",
         "workforce",
         "attendance-kiosk",
+        "customer-care",
         "reports",
         "audit-logs",
         "profile",
     ],
-    manager: ["dashboard", "employees", "tables", "reservations", "accounts", "orders", "cashier", "inventory", "purchasing", "workforce", "my-work", "reports", "audit-logs"],
-    cashier: ["dashboard", "orders", "cashier", "reservations", "my-work", "attendance-kiosk"],
+    manager: ["dashboard", "employees", "tables", "reservations", "accounts", "orders", "cashier", "inventory", "purchasing", "workforce", "my-work", "customer-care", "reports", "audit-logs"],
+    cashier: ["dashboard", "orders", "cashier", "reservations", "my-work", "attendance-kiosk", "customer-care"],
     receptionist: ["dashboard", "reservations", "orders", "guests", "my-work"],
     waiter: ["dashboard", "orders", "reservations", "menu", "my-work"],
     chef: ["dashboard", "kitchen", "inventory", "menu", "purchasing", "workforce", "my-work"],
@@ -316,4 +317,97 @@ test("giai đoạn 12: quản lý tạo ca mẫu và xếp ca; thu ngân mở m�
         expect(s.errors).toEqual([]);
         await s.context.close();
     }
+});
+
+test("giai đoạn 13: trang công khai mở được khi chưa đăng nhập, không có lỗi", async ({ page }) => {
+    const errors = watchErrors(page);
+    const f = fixture() as Fixture & { restaurants: number[] };
+    await page.goto("/");
+    await page.evaluate(() => localStorage.setItem("i18nextLng", "vi"));
+    await page.goto("/");
+    await expect(page.getByRole("heading", { name: "Các chi nhánh" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Nhà hàng Một" })).toBeVisible();
+    await page.goto(`/menu/${f.restaurants[0]}`);
+    await expect(page.getByText("Phở bò")).toBeVisible();
+    await page.goto("/booking");
+    await expect(page.getByRole("heading", { name: "Đặt bàn online" })).toBeVisible();
+    await page.goto("/booking/lookup");
+    await expect(page.getByRole("heading", { name: "Tra cứu đặt bàn" })).toBeVisible();
+    await page.goto("/register");
+    await expect(page.getByText("Đăng ký tài khoản")).toBeVisible();
+    expect(errors).toEqual([]);
+});
+
+test("giai đoạn 13: khách quét QR gọi món, phục vụ nhận và gửi bếp", async ({ browser, playwright }) => {
+    const f = fixture();
+    // Mã QR của bàn B3 (nhân viên xem ở trang Phòng & bàn)
+    const apiContext = await playwright.request.newContext({ baseURL: "http://localhost:3100/api/" });
+    const auth = await apiContext.post("auth/login", { data: { username: f.users.manager, password: f.password } });
+    const accessToken = (await auth.json()).data.access_token;
+    const tables = await apiContext.get("tables/all", { headers: { Authorization: `Bearer ${accessToken}` } });
+    const b3 = ((await tables.json()).data as { name: string; qr_token: string }[]).find((x) => x.name === "B3")!;
+    await apiContext.dispose();
+
+    const guestContext = await browser.newContext({ locale: "vi-VN" });
+    const guestPage = await guestContext.newPage();
+    const guestErrors = watchErrors(guestPage);
+    await guestPage.goto("/");
+    await guestPage.evaluate(() => localStorage.setItem("i18nextLng", "vi"));
+    await guestPage.goto(`/t/${b3.qr_token}`);
+    await expect(guestPage.getByRole("heading", { name: /Bàn B3/ })).toBeVisible();
+    await guestPage.getByRole("button", { name: "Thêm Phở bò" }).click();
+    await guestPage.getByRole("button", { name: /Xem 1 món/ }).click();
+    const sent = guestPage.waitForResponse((r) => r.request().method() === "POST" && r.url().includes("/requests"));
+    await guestPage.getByRole("button", { name: /Gửi món/ }).click();
+    expect((await sent).status()).toBe(201);
+    await expect(guestPage.getByText("Chờ xác nhận")).toBeVisible();
+
+    const staffContext = await browser.newContext({ locale: "vi-VN" });
+    const staff = await staffContext.newPage();
+    const staffErrors = watchErrors(staff);
+    await login(staff, f.users.waiter);
+    await staff.goto("/admin/orders");
+    const panel = staff.getByTestId("order-requests");
+    await expect(panel.getByText("1× Phở bò")).toBeVisible();
+    const accepted = staff.waitForResponse((r) => r.request().method() === "POST" && r.url().includes("/accept"));
+    await panel.getByRole("button", { name: /Nhận & gửi bếp/ }).click();
+    expect((await accepted).status()).toBe(200);
+    await expect(panel).toHaveCount(0);
+
+    // Khách thấy món đã gọi trên điện thoại
+    await guestPage.reload();
+    await expect(guestPage.getByText(/Món đã gọi/)).toBeVisible();
+
+    expect(guestErrors).toEqual([]);
+    expect(staffErrors).toEqual([]);
+    await guestContext.close();
+    await staffContext.close();
+});
+
+test("giai đoạn 13: khách có tài khoản đặt bàn online không cần mã, xem trong tài khoản", async ({ page }) => {
+    const errors = watchErrors(page);
+    const f = fixture();
+    await page.goto("/login");
+    await page.evaluate(() => localStorage.setItem("i18nextLng", "vi"));
+    await page.locator("#username").fill(f.users.guest);
+    await page.locator("#password").fill(f.password);
+    await page.locator("button[type=submit]").click();
+    await expect(page.getByRole("heading", { name: "Các chi nhánh" })).toBeVisible();
+
+    await page.goto("/booking");
+    await page.getByRole("combobox", { name: "Chi nhánh" }).click();
+    await page.getByRole("option", { name: /Nhà hàng Một/ }).click();
+    await expect(page.locator("#bk-name")).toHaveValue("Khách E2E");
+    await page.getByRole("radio", { name: "19:00" }).click();
+    const created = page.waitForResponse((r) => r.request().method() === "POST" && r.url().endsWith("/public/reservations"));
+    await page.getByRole("button", { name: "Đặt bàn lúc 19:00" }).click();
+    expect((await created).status()).toBe(201);
+    await expect(page.getByRole("heading", { name: "Đã gửi yêu cầu đặt bàn" })).toBeVisible();
+    const code = (await page.getByTestId("booking-code").textContent())?.trim();
+    expect(code).toMatch(/^[A-Z2-9]{8}$/);
+
+    await page.goto("/account");
+    await expect(page.getByText("Khách E2E").first()).toBeVisible();
+    await expect(page.getByText(code!)).toBeVisible();
+    expect(errors).toEqual([]);
 });
