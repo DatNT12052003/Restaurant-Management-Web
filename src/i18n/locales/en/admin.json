@@ -97,7 +97,8 @@
         "purchasing": "Purchasing",
         "my_work": "My work",
         "workforce": "Shifts & payroll",
-        "attendance_kiosk": "Attendance screen"
+        "attendance_kiosk": "Attendance screen",
+        "customer_care": "Customer care"
     },
     "roles": {
         "admin": "Administrator",
@@ -222,7 +223,15 @@
         "closed_days_desc": "Closed days are left out of opening hours when computing table occupancy.",
         "closed_day": "Date",
         "closed_note": "Note",
-        "no_closed_days": "No closed days yet"
+        "no_closed_days": "No closed days yet",
+        "phone": "Phone",
+        "online_booking": "Accept online bookings",
+        "online_booking_minutes": "Booking length (min)",
+        "online_booking_lead": "Minimum notice (min)",
+        "online_booking_max_days": "Book up to (days ahead)",
+        "online_booking_max_guests": "Max guests per booking",
+        "qr_ordering": "Allow QR ordering at tables",
+        "customer_channel_hint": "Online bookings wait for reception to confirm. QR orders wait for staff approval before going to the kitchen."
     },
     "room": {
         "title": "Rooms & tables",
@@ -442,7 +451,9 @@
             "no_free_tables": "No free tables at this time.",
             "tables_hint": "Only tables free at this time are shown; a dashed border marks a suggested table."
         },
-        "order_link": "Order {{code}}"
+        "order_link": "Order {{code}}",
+        "online": "Online",
+        "online_badge": "Online · {{code}}"
     },
     "order": {
         "title": "Service",
@@ -1687,6 +1698,98 @@
             "qr_hint": "Rotate the key if a code may have leaked (e.g. someone shared a screenshot). All codes shown now stop working immediately.",
             "rotate": "Rotate QR key",
             "rotate_confirm": "Rotate the branch QR key? The attendance screen picks up the new code automatically."
+        }
+    },
+    "order_request": {
+        "title": "QR orders from guests ({{count}})",
+        "badge": "{{count}} guest order(s) waiting",
+        "accept": "Accept & send",
+        "reject": "Decline",
+        "reject_title": "Decline guest order",
+        "reject_placeholder": "e.g. item sold out",
+        "guest": "Guest: {{name}}",
+        "guests": "{{count}} guest(s)"
+    },
+    "table_qr": {
+        "menu": "Ordering QR",
+        "title": "QR code for table {{table}}",
+        "hint": "Print and place on the table: guests scan to view the menu and order; staff confirm before it goes to the kitchen.",
+        "missing": "This table has no code",
+        "print": "Print",
+        "print_title": "Table {{table}}",
+        "print_hint": "Scan to view the menu and order",
+        "rotate": "Change code",
+        "rotate_confirm": "The old code (including printed copies) will stop working. Continue?"
+    },
+    "loyalty": {
+        "card_title": "Guest & loyalty",
+        "search_placeholder": "Find a guest by phone, email, name...",
+        "search_hint": "Type at least 2 characters",
+        "no_guest_found": "No registered guest found",
+        "no_guest": "No guest attached",
+        "change_guest": "Change",
+        "detach": "Detach guest",
+        "balance": "{{points}} pts · {{available}} usable",
+        "regular": "Regular",
+        "points_short": "{{count}} pts",
+        "redeem": "Redeem",
+        "redeem_points": "Points to redeem",
+        "redeem_placeholder": "Up to {{max}} pts",
+        "redeemed": "Redeemed {{count}} pts · −{{amount}}",
+        "remove_redeem": "Remove redemption",
+        "after_payment_hint": "The order already has payments, so points can no longer be redeemed.",
+        "rule_hint": "1 point = {{value}}, up to {{max}}% of the bill; 1 point per {{earn}} paid when the order completes.",
+        "invoice_points": "{{count}} points redeemed",
+        "guests_title": "Guests",
+        "settings_title": "Loyalty settings (chain-wide)",
+        "enabled": "Loyalty program on",
+        "field": {
+            "earn_amount": "Amount per point (₫)",
+            "point_value": "Value of 1 point (₫)",
+            "max_redeem_percent": "Max redeem (% of bill)",
+            "regular_visit_count": "Visits to become a regular",
+            "regular_window_months": "Within the last N months"
+        },
+        "adjust": "Adjust points",
+        "adjust_points": "Points (+/−)",
+        "adjust_note": "Reason (required)",
+        "tx": {
+            "earn": "Earned",
+            "redeem": "Redeemed",
+            "revoke": "Refund deduction",
+            "adjust": "Adjustment"
+        }
+    },
+    "customer_care": {
+        "title": "Customer care",
+        "description": "Post-meal feedback, complaints and the loyalty program.",
+        "tab_feedback": "Feedback",
+        "tab_loyalty": "Loyalty"
+    },
+    "feedback": {
+        "count": "Reviews",
+        "avg_food": "Food (avg)",
+        "avg_service": "Service (avg)",
+        "avg_ambience": "Ambience (avg)",
+        "complaints": "Complaints",
+        "open": "{{count}} open",
+        "branch_row": "avg {{avg}} · {{count}} reviews · {{complaints}} complaints",
+        "complaint_only": "Complaints only",
+        "low_only": "Any score ≤ 2",
+        "walk_in": "Walk-in guest",
+        "food": "Food",
+        "service": "Service",
+        "ambience": "Ambience",
+        "reply": "Reply",
+        "edit_reply": "Edit reply",
+        "reply_by": "{{name}} replied:",
+        "reply_title": "Reply to {{code}}",
+        "reply_hint": "Guests with an account see the reply in their meal history.",
+        "no_comment": "(No comment)",
+        "status": {
+            "new": "New",
+            "in_progress": "In progress",
+            "resolved": "Resolved"
         }
     }
 }

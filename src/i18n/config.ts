@@ -13,7 +13,7 @@ i18n.use(HttpApi) // Tải các file json từ public/locales (nếu cần)
         interpolation: {
             escapeValue: false, // React đã tự bảo mật chống XSS
         },
-        ns: ["common", "auth", "validation", "admin"], // Namespace mặc định
+        ns: ["common", "auth", "validation", "admin", "public"], // Namespace mặc định
         defaultNS: "common",
         backend: {
             loadPath: "/src/i18n/locales/{{lng}}/{{ns}}.json", // Đường dẫn file dịch

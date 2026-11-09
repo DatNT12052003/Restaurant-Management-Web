@@ -14,13 +14,17 @@ import { useTranslation } from "react-i18next";
 import { getLoginSchema, type LoginFormValues } from "@/validations/schemas";
 import { useAppDispatch } from "@/hooks";
 import { getMeThunk, loginThunk } from "@/store/auth/authThunk";
-import { useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { getErrorMessage } from "@/lib/api-error";
 
 const Login = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
+    const location = useLocation();
+    // Trang muốn vào trước khi bị chuyển tới đăng nhập (AuthGuard, trang đặt bàn...)
+    const from = (location.state as { from?: { pathname?: string; search?: string } } | null)?.from;
+    const target = from?.pathname && from.pathname !== "/login" ? `${from.pathname}${from.search ?? ""}` : "/";
     const dispatch = useAppDispatch();
     const [showPassword, setShowPassword] = useState(false);
     const {
@@ -39,8 +43,8 @@ const Login = () => {
         try {
             const result = await dispatch(loginThunk(credentials)).unwrap();
             await dispatch(getMeThunk()).unwrap();
-            // HomeRedirect ("/") chọn trang phù hợp theo vai trò
-            navigate("/", { replace: true });
+            // Quay lại trang trước đó; không có thì HomeRedirect ("/") chọn trang theo vai trò
+            navigate(target, { replace: true });
             toast.success(result.message);
         } catch (error) {
             toast.error(getErrorMessage(error));
@@ -155,6 +159,16 @@ const Login = () => {
                             )}
                         </Button>
                     </form>
+                    <p className="mt-4 text-center text-sm text-muted-foreground">
+                        {t("auth:login.no_account")}{" "}
+                        <Link to="/register" className="font-medium text-amber-700 hover:underline dark:text-amber-400">
+                            {t("auth:login.register")}
+                        </Link>
+                        {" · "}
+                        <Link to="/" className="font-medium text-amber-700 hover:underline dark:text-amber-400">
+                            {t("auth:login.home")}
+                        </Link>
+                    </p>
                 </CardContent>
             </Card>
         </div>

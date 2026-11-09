@@ -1,0 +1,162 @@
+{
+    "brand": "Restaurant group",
+    "common": {
+        "loading": "Loading...",
+        "processing": "Processing..."
+    },
+    "nav": {
+        "book": "Book a table",
+        "lookup": "Find my booking",
+        "account": "My account",
+        "admin": "Staff area",
+        "login": "Log in",
+        "logout": "Log out",
+        "register": "Sign up"
+    },
+    "home": {
+        "title": "Welcome",
+        "subtitle": "Browse each branch's menu and book a table online in a minute.",
+        "cta": "Book now",
+        "branches": "Our branches",
+        "view_menu": "View menu",
+        "book_here": "Book a table"
+    },
+    "menu": {
+        "empty": "No dishes on sale at this branch",
+        "all_tags": "All",
+        "section": {
+            "food": "Food",
+            "drink": "Drinks",
+            "combo": "Combos"
+        }
+    },
+    "booking": {
+        "title": "Book a table online",
+        "step_when": "Branch and time",
+        "step_contact": "Contact details",
+        "branch": "Branch",
+        "choose_branch": "Choose a branch",
+        "choose_branch_first": "Choose a branch to see available times",
+        "date": "Date",
+        "guests": "Guests",
+        "guests_count": "{{count}} guest(s)",
+        "time": "Arrival time",
+        "no_slots": "No times left on this day (or the branch is closed). Please pick another day.",
+        "rules": "Each booking holds the table for {{hours}} hour(s); book at least {{lead}} minutes ahead; up to {{max}} guests (call us for larger groups).",
+        "name": "Full name",
+        "phone": "Phone",
+        "email": "Email",
+        "send_code": "Send code",
+        "resend_code": "Resend",
+        "email_hint": "We send the verification code and booking updates to this email.",
+        "logged_in_hint": "You are logged in, so no verification code is needed.",
+        "code": "Verification code (6 digits)",
+        "code_sent": "Code sent to {{email}}; valid for 10 minutes.",
+        "note": "Note",
+        "note_placeholder": "e.g. children, high chair, birthday...",
+        "login_prompt": "With an account you skip the code and earn points:",
+        "submit": "Book for {{time}}",
+        "done_title": "Booking request sent",
+        "done_hint": "The restaurant will confirm soon and email you.",
+        "your_code": "Your booking code",
+        "view": "View / cancel booking",
+        "status": {
+            "pending": "Awaiting confirmation",
+            "confirmed": "Confirmed",
+            "arrived": "Arrived",
+            "completed": "Completed",
+            "cancelled": "Cancelled",
+            "no_show": "No-show"
+        }
+    },
+    "lookup": {
+        "title": "Find my booking",
+        "code": "Booking code",
+        "search": "Search",
+        "cancel": "Cancel booking",
+        "cancel_confirm": "Do you really want to cancel this booking?"
+    },
+    "table": {
+        "title": "Table {{table}} · {{room}}",
+        "add": "Add",
+        "add_item": "Add {{name}}",
+        "more": "One more {{name}}",
+        "less": "One less {{name}}",
+        "view_cart": "View {{count}} item(s) · {{total}}",
+        "cart": "Your selection",
+        "line_note": "Note (less spicy, no onion...)",
+        "line_note_for": "Note for {{name}}",
+        "guests": "Guests",
+        "note": "Note for the staff",
+        "confirm_hint": "Staff confirm before sending to the kitchen. Pay at the counter after your meal.",
+        "send": "Send order · {{total}}",
+        "my_requests": "Your orders",
+        "request_status": {
+            "pending": "Waiting",
+            "accepted": "Accepted",
+            "rejected": "Declined"
+        },
+        "ordered": "Ordered ({{code}})",
+        "line_status": {
+            "pending": "queued",
+            "confirmed": "accepted",
+            "cooking": "cooking",
+            "ready": "ready",
+            "served": "served",
+            "cancelled": "cancelled"
+        },
+        "total": "Total so far",
+        "ordering_off": "QR ordering is paused at this branch; please call the staff."
+    },
+    "feedback": {
+        "title": "Rate your meal",
+        "for_order": "Order {{code}}",
+        "food": "Food",
+        "service": "Service",
+        "ambience": "Ambience",
+        "comment": "Comments",
+        "complaint": "I want to file a complaint",
+        "phone": "Phone so we can contact you",
+        "submit": "Send feedback",
+        "thanks": "Thank you for your feedback!"
+    },
+    "register": {
+        "title": "Create an account",
+        "subtitle": "Book faster without codes and earn points every visit.",
+        "username": "Username (5+ characters)",
+        "password": "Password (6+ characters)",
+        "confirm": "Confirm password",
+        "mismatch": "Passwords do not match",
+        "submit": "Sign up",
+        "done": "Account created",
+        "have_account": "Already have an account?"
+    },
+    "account": {
+        "points": "Loyalty points",
+        "points_rule": "1 point per {{earn}} · 1 point = {{value}} · up to {{max}}% of a bill",
+        "points_short": "{{count}} pts",
+        "regular": "Regular guest",
+        "new": "New guest",
+        "regular_progress": "{{visits}}/{{required}} visits in {{months}} months to become a regular",
+        "stats": "{{visits}} visit(s) · {{total}} in total",
+        "tab_reservations": "Bookings",
+        "tab_orders": "Meals",
+        "tab_points": "Points history",
+        "no_reservations": "No bookings yet",
+        "no_orders": "No meals linked to your account yet",
+        "no_points": "No point transactions yet",
+        "reply": "Restaurant reply:",
+        "order_status": {
+            "completed": "Completed",
+            "cancelled": "Cancelled",
+            "serving": "Serving",
+            "confirmed": "Open"
+        },
+        "tx": {
+            "earn": "Earned",
+            "redeem": "Redeemed",
+            "revoke": "Refund deduction",
+            "adjust": "Adjustment"
+        }
+    }
+}

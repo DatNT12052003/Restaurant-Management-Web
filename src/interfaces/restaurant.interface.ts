@@ -15,6 +15,14 @@ export interface IRestaurant {
     /** Giữ bàn trước giờ hẹn / tự đánh dấu không đến sau số phút trễ (0 = tắt) */
     reservation_hold_minutes?: number;
     no_show_after_minutes?: number;
+    /** Giai đoạn 13: kênh khách hàng */
+    phone?: string | null;
+    online_booking_enabled?: boolean;
+    online_booking_minutes?: number;
+    online_booking_lead_minutes?: number;
+    online_booking_max_days?: number;
+    online_booking_max_guests?: number;
+    qr_ordering_enabled?: boolean;
     created_at?: string;
     updated_at?: string;
 }
@@ -38,4 +46,11 @@ export interface IRestaurantPayload {
     close_time?: string;
     reservation_hold_minutes?: number | string;
     no_show_after_minutes?: number | string;
+    phone?: string | null;
+    online_booking_enabled?: boolean;
+    online_booking_minutes?: number | string;
+    online_booking_lead_minutes?: number | string;
+    online_booking_max_days?: number | string;
+    online_booking_max_guests?: number | string;
+    qr_ordering_enabled?: boolean;
 }

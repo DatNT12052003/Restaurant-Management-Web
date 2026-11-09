@@ -23,6 +23,7 @@ import { formatMoney } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import OpenOrderDialog from "./OpenOrderDialog";
 import OrderSheet, { type IFreeTable } from "./OrderSheet";
+import OrderRequestsPanel from "./OrderRequestsPanel";
 
 /** Phục vụ (đặc tả 4.7): sơ đồ bàn với order đang mở, mở order, gọi món; lịch sử order */
 const Orders = () => {
@@ -90,6 +91,7 @@ const Orders = () => {
     return (
         <div>
             <PageHeader title={t("order.title")} description={t("order.description")} />
+            {can("order_request.handle") && <OrderRequestsPanel restaurantId={restaurantId} onAccepted={setSheetOrderId} />}
             <Tabs value={tab} onValueChange={setTab}>
                 <TabsList className="mb-4">
                     {canSeeFloor && <TabsTrigger value="floor">{t("order.tab_floor")}</TabsTrigger>}

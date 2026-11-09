@@ -1,24 +1,17 @@
 import { Navigate } from "react-router-dom";
 import { useAppSelector } from "@/hooks";
 import { ROUTES } from "@/constants/routes";
-import { getDashboardByRole } from "@/utils/getDashboardByRole";
 import { STAFF_ROLES } from "@/constants/roles";
+import Home from "@/pages/customer/Home";
 
-/** `/`: chuyển tới dashboard theo vai trò (ưu tiên admin), hoặc /login nếu chưa đăng nhập. */
+/** `/`: nhân viên vào khu quản trị; khách (đã hoặc chưa đăng nhập) thấy trang chủ công khai (giai đoạn 13). */
 const HomeRedirect = () => {
-    const { isAuthenticated, roles } = useAppSelector((state) => state.auth);
-
-    if (!isAuthenticated) {
-        return <Navigate to={ROUTES.LOGIN} replace />;
+    const { isAuthenticated, isInitialized, roles } = useAppSelector((state) => state.auth);
+    if (!isInitialized) return null;
+    if (isAuthenticated && roles.some((r) => STAFF_ROLES.includes(r))) {
+        return <Navigate to={ROUTES.ADMIN} replace />;
     }
-
-    const staffRole = roles.find((r) => STAFF_ROLES.includes(r));
-    const target = getDashboardByRole(staffRole);
-    // Khách hàng chưa có giao diện riêng -> tránh vòng lặp chuyển hướng về chính "/"
-    if (target === ROUTES.HOME) {
-        return <Navigate to="/unauthorized" replace />;
-    }
-    return <Navigate to={target} replace />;
+    return <Home />;
 };
 
 export default HomeRedirect;

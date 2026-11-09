@@ -103,6 +103,7 @@ export const ReservationDetailDialog = ({ reservation, onOpenChange, onEdit, onC
                                 <DialogTitle className="flex items-center gap-2 pr-6">
                                     {r.contact_name}
                                     <ReservationStatusBadge status={r.status} />
+                                    {r.source === "online" && <Badge variant="outline">{t("reservation.online_badge", { code: r.lookup_code })}</Badge>}
                                 </DialogTitle>
                             </DialogHeader>
                             <div className="grid gap-3 text-sm">
@@ -115,6 +116,7 @@ export const ReservationDetailDialog = ({ reservation, onOpenChange, onEdit, onC
                                     <a className="hover:underline" href={`tel:${r.contact_phone}`}>
                                         {r.contact_phone}
                                     </a>
+                                    {r.contact_email && <span className="text-muted-foreground">· {r.contact_email}</span>}
                                 </p>
                                 <p className="flex items-center gap-2">
                                     <Users className="h-4 w-4 text-muted-foreground" />

@@ -97,7 +97,8 @@
         "purchasing": "Mua hàng",
         "my_work": "Việc của tôi",
         "workforce": "Ca làm & lương",
-        "attendance_kiosk": "Màn hình chấm công"
+        "attendance_kiosk": "Màn hình chấm công",
+        "customer_care": "Chăm sóc khách hàng"
     },
     "roles": {
         "admin": "Quản trị viên",
@@ -222,7 +223,15 @@
         "closed_days_desc": "Ngày nghỉ không tính vào giờ mở cửa khi tính tỷ lệ lấp đầy bàn.",
         "closed_day": "Ngày",
         "closed_note": "Ghi chú",
-        "no_closed_days": "Chưa có ngày nghỉ nào"
+        "no_closed_days": "Chưa có ngày nghỉ nào",
+        "phone": "Số điện thoại",
+        "online_booking": "Nhận đặt bàn online",
+        "online_booking_minutes": "Thời lượng mỗi lượt (phút)",
+        "online_booking_lead": "Đặt trước ít nhất (phút)",
+        "online_booking_max_days": "Đặt trước tối đa (ngày)",
+        "online_booking_max_guests": "Số khách tối đa / lượt",
+        "qr_ordering": "Cho khách gọi món qua mã QR tại bàn",
+        "customer_channel_hint": "Đơn đặt online ở trạng thái chờ, lễ tân xác nhận. Món khách gọi qua QR chờ nhân viên duyệt rồi mới gửi bếp."
     },
     "room": {
         "title": "Phòng & bàn",
@@ -442,7 +451,9 @@
             "no_free_tables": "Không còn bàn trống trong khung giờ này.",
             "tables_hint": "Chỉ hiện bàn còn trống trong khung giờ; viền đứt là bàn được gợi ý."
         },
-        "order_link": "Order {{code}}"
+        "order_link": "Order {{code}}",
+        "online": "Online",
+        "online_badge": "Online · {{code}}"
     },
     "order": {
         "title": "Phục vụ",
@@ -1687,6 +1698,98 @@
             "qr_hint": "Đổi khóa khi nghi mã bị lộ (ví dụ có người chụp màn hình gửi cho người vắng mặt). Mọi mã đang hiển thị hết hiệu lực ngay.",
             "rotate": "Đổi khóa mã QR",
             "rotate_confirm": "Đổi khóa mã QR của chi nhánh? Màn hình chấm công sẽ tự lấy mã mới."
+        }
+    },
+    "order_request": {
+        "title": "Khách gọi món qua QR ({{count}})",
+        "badge": "{{count}} món khách gọi chờ xác nhận",
+        "accept": "Nhận & gửi bếp",
+        "reject": "Từ chối",
+        "reject_title": "Từ chối món khách gọi",
+        "reject_placeholder": "Ví dụ: món đã hết",
+        "guest": "Khách: {{name}}",
+        "guests": "{{count}} khách"
+    },
+    "table_qr": {
+        "menu": "Mã QR gọi món",
+        "title": "Mã QR bàn {{table}}",
+        "hint": "In và đặt ở bàn: khách quét để xem thực đơn và gọi món, nhân viên xác nhận trước khi gửi bếp.",
+        "missing": "Bàn chưa có mã",
+        "print": "In mã",
+        "print_title": "Bàn {{table}}",
+        "print_hint": "Quét mã để xem thực đơn và gọi món",
+        "rotate": "Đổi mã",
+        "rotate_confirm": "Mã cũ (kể cả bản đã in) sẽ không dùng được nữa. Tiếp tục?"
+    },
+    "loyalty": {
+        "card_title": "Khách hàng & điểm thưởng",
+        "search_placeholder": "Tìm khách theo SĐT, email, tên...",
+        "search_hint": "Nhập ít nhất 2 ký tự",
+        "no_guest_found": "Không tìm thấy khách có tài khoản",
+        "no_guest": "Order chưa gắn khách",
+        "change_guest": "Đổi",
+        "detach": "Bỏ gắn khách",
+        "balance": "{{points}} điểm · dùng được {{available}}",
+        "regular": "Khách thân thiết",
+        "points_short": "{{count}} điểm",
+        "redeem": "Đổi điểm",
+        "redeem_points": "Số điểm đổi",
+        "redeem_placeholder": "Tối đa {{max}} điểm",
+        "redeemed": "Đã đổi {{count}} điểm · giảm {{amount}}",
+        "remove_redeem": "Bỏ đổi điểm",
+        "after_payment_hint": "Order đã có thanh toán nên không đổi điểm được nữa.",
+        "rule_hint": "1 điểm = {{value}}, đổi tối đa {{max}}% hóa đơn; mỗi {{earn}} thực trả được 1 điểm khi order hoàn tất.",
+        "invoice_points": "Đổi {{count}} điểm",
+        "guests_title": "Khách hàng",
+        "settings_title": "Cấu hình điểm thưởng (cả chuỗi)",
+        "enabled": "Bật chương trình điểm thưởng",
+        "field": {
+            "earn_amount": "Số tiền cho 1 điểm (₫)",
+            "point_value": "Giá trị 1 điểm khi đổi (₫)",
+            "max_redeem_percent": "Đổi tối đa (% hóa đơn)",
+            "regular_visit_count": "Số lần ghé để thành khách thân thiết",
+            "regular_window_months": "Trong số tháng gần nhất"
+        },
+        "adjust": "Điều chỉnh điểm",
+        "adjust_points": "Số điểm (+/−)",
+        "adjust_note": "Lý do (bắt buộc)",
+        "tx": {
+            "earn": "Tích điểm",
+            "redeem": "Đổi điểm",
+            "revoke": "Trừ do hoàn tiền",
+            "adjust": "Điều chỉnh"
+        }
+    },
+    "customer_care": {
+        "title": "Chăm sóc khách hàng",
+        "description": "Phản hồi, khiếu nại sau bữa ăn và chương trình điểm thưởng.",
+        "tab_feedback": "Phản hồi",
+        "tab_loyalty": "Điểm thưởng"
+    },
+    "feedback": {
+        "count": "Lượt đánh giá",
+        "avg_food": "Món ăn (TB)",
+        "avg_service": "Phục vụ (TB)",
+        "avg_ambience": "Không gian (TB)",
+        "complaints": "Khiếu nại",
+        "open": "{{count}} chưa xử lý",
+        "branch_row": "TB {{avg}} · {{count}} lượt · {{complaints}} khiếu nại",
+        "complaint_only": "Chỉ khiếu nại",
+        "low_only": "Có điểm ≤ 2",
+        "walk_in": "Khách vãng lai",
+        "food": "Món ăn",
+        "service": "Phục vụ",
+        "ambience": "Không gian",
+        "reply": "Trả lời",
+        "edit_reply": "Sửa trả lời",
+        "reply_by": "{{name}} trả lời:",
+        "reply_title": "Trả lời phản hồi {{code}}",
+        "reply_hint": "Khách có tài khoản thấy câu trả lời trong lịch sử dùng bữa.",
+        "no_comment": "(Không có nhận xét)",
+        "status": {
+            "new": "Mới",
+            "in_progress": "Đang xử lý",
+            "resolved": "Đã xử lý"
         }
     }
 }

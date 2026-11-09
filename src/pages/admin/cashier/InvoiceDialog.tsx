@@ -74,8 +74,13 @@ export const InvoiceView = ({ invoice }: { invoice: IInvoice }) => {
             </table>
             <div className="grid gap-0.5">
                 {row(t("order.subtotal"), formatMoney(invoice.subtotal))}
-                {Number(invoice.discount_amount) > 0 &&
-                    row(`${t("order.discount")}${invoice.discount ? ` (${invoice.discount.code})` : ""}`, `-${formatMoney(invoice.discount_amount)}`)}
+                {Number(invoice.discount_amount) - Number(invoice.points_discount ?? 0) > 0 &&
+                    row(
+                        `${t("order.discount")}${invoice.discount ? ` (${invoice.discount.code})` : ""}`,
+                        `-${formatMoney(Number(invoice.discount_amount) - Number(invoice.points_discount ?? 0))}`,
+                    )}
+                {Number(invoice.points_discount ?? 0) > 0 &&
+                    row(t("loyalty.invoice_points", { count: invoice.points_redeemed }), `-${formatMoney(invoice.points_discount)}`)}
                 {Number(invoice.service_fee) > 0 &&
                     row(t("cashier.service_fee", { rate: Number(invoice.service_fee_rate) }), formatMoney(invoice.service_fee))}
                 {Number(invoice.tax) > 0 && row(t("cashier.tax", { rate: Number(invoice.tax_rate) }), formatMoney(invoice.tax))}

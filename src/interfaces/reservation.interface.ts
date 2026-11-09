@@ -18,6 +18,10 @@ export interface IReservation {
     guest_user_id: number | null;
     contact_name: string;
     contact_phone: string;
+    /** Giai đoạn 13: đặt online (khách tự đặt) hay nhân viên đặt */
+    source?: "staff" | "online";
+    contact_email?: string | null;
+    lookup_code?: string | null;
     guest_count: number;
     /** ISO 8601 */
     start_time: string;
